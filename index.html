@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Collective-Canvas</title>
+  <script src="https://kit.fontawesome.com/d3e48ad6ce.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -13,9 +14,25 @@
     <h3 class="title" id="navbar-logo">🖌️ Collective-Canvas</h3>
   </nav>
 
-  <div id="toolbox">
+  <div id="toolbox" class="toolbox">
+    <button id="pencil" class="tool-button" aria-label="pencil tool button" type="button">
+      <i class="fa fa-pencil"></i>
+    </button>
+    <button id="rectangle" class="tool-button" aria-label="rectangle tool button" type="button">
+      <i class="fa fa-regular fa-square"></i>
+    </button>
+    <button id="ellipse" class="tool-button" aria-label="pencil tool button" type="button">
+      <i class="fa fa-regular fa-circle"></i>
+    </button>
+    <button id="bezier" class="tool-button" aria-label="bezier tool button" type="button">
+      <i class="fa fa-solid fa-bezier-curve"></i>
+    </button>
   </div>
-  </div>
+
+    <div id="tool-settings" class="tool-settings">
+      <input type="range" value="10" min="0" max="10" step="1" aria-label="tool settings" />
+      <input type="checkbox" />
+    </div>
 
   <canvas id="canvas" width="640" height="320"></canvas>
   <script type="module" src="/src/main.ts"></script>
