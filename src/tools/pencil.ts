@@ -55,7 +55,6 @@ export default class Pencil extends Tools {
       event.preventDefault();
     }
     this.mouseSpeedCoefficient += event.deltaY * 0.01;
-    console.log(this.mouseSpeedCoefficient)
   }
 
   getStrokeWidth(): number {

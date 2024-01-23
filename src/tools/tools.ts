@@ -55,7 +55,6 @@ export default abstract class Tools {
     const movementY = Math.abs(mouseY - this.mouseLastPosition[1]);
 
     const distance = movementX + movementY;
-    console.log(distance);
 
     return Math.min(distance, this.MAX_AVERAGE_MOUSE_SPEED)
   }
