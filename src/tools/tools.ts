@@ -1,6 +1,6 @@
 import BaseLayer from "../components/Layer";
 
-export default abstract class Tools {
+export default abstract class BaseTools {
   baseLayer: BaseLayer;
   isDrag: boolean;
   isTouch: boolean;

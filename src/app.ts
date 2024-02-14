@@ -1,16 +1,16 @@
 import BaseLayer from "./components/Layer";
 import Pencil from "./tools/pencil";
-import Tools from "./tools/tools";
+import BaseTools from "./tools/tools";
 
 export default class App {
     baseLayer: BaseLayer;
     connection: WebSocket;
-    tool: Tools;
+    selectedTool: BaseTools;
     
     constructor(connectionUrl: string) {
         this.connection = new WebSocket(connectionUrl);
         this.baseLayer = new BaseLayer();
-        this.tool = new Pencil(this.baseLayer);
+        this.selectedTool = new Pencil(this.baseLayer);
     }
 
     init() {
