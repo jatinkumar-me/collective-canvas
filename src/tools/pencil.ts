@@ -1,24 +1,50 @@
 import BaseLayer from "../components/Layer";
+import ToolAttributes, { DefaultToolAttributes } from "./toolAttributes";
 import BaseTools from "./tools";
 
-export default class Pencil extends BaseTools {
-  ctx: CanvasRenderingContext2D;
+const DEFAULT_PENCIL_TOOL_ATTRIBUTES: DefaultToolAttributes<PencilToolAttributes> =
+  {
+    strokeStyle: "#000000",
+    lineCap: "butt",
+    strokeWidth: 5,
+    speedDependenceFactor: 0,
+    mouseSpeedCoefficient: 4,
+  };
+
+class PencilToolAttributes extends ToolAttributes {
   strokeStyle: string | CanvasGradient | CanvasPattern;
   lineCap: CanvasLineCap;
   strokeWidth: number;
   speedDependenceFactor: number;
-  readonly MAX_STROKE_WIDTH = 5;
   mouseSpeedCoefficient: number;
+
+  constructor(
+    defaultPencilToolAttributes: DefaultToolAttributes<PencilToolAttributes>
+  ) {
+    super();
+    this.strokeWidth = defaultPencilToolAttributes.strokeWidth;
+    this.lineCap = defaultPencilToolAttributes.lineCap;
+    this.strokeStyle = defaultPencilToolAttributes.strokeStyle;
+    this.speedDependenceFactor =
+      defaultPencilToolAttributes.speedDependenceFactor;
+    this.mouseSpeedCoefficient =
+      defaultPencilToolAttributes.mouseSpeedCoefficient;
+  }
+}
+
+export default class Pencil extends BaseTools {
+  ctx: CanvasRenderingContext2D;
+  pencilToolAttributes: PencilToolAttributes;
+  readonly MAX_STROKE_WIDTH: number;
 
   constructor(baseLayer: BaseLayer) {
     super(baseLayer);
-    this.strokeStyle = "#000000";
-    this.strokeWidth = 2;
-    this.lineCap = "square";
-    this.speedDependenceFactor = 0;
     this.events();
     this.ctx = baseLayer.ctx;
-    this.mouseSpeedCoefficient = 2;
+    this.MAX_STROKE_WIDTH = 5;
+    this.pencilToolAttributes = new PencilToolAttributes(
+      DEFAULT_PENCIL_TOOL_ATTRIBUTES
+    );
   }
 
   events() {
@@ -54,33 +80,39 @@ export default class Pencil extends BaseTools {
     if ((event.target as HTMLElement).id === "canvas") {
       event.preventDefault();
     }
-    this.mouseSpeedCoefficient += event.deltaY * 0.01;
+    this.pencilToolAttributes.mouseSpeedCoefficient += event.deltaY * 0.01;
   }
 
   getStrokeWidth(): number {
-    if (this.speedDependenceFactor === 0) {
-      this.strokeWidth *= this.mouseSpeedCoefficient;
-      this.strokeWidth = Math.min(this.MAX_STROKE_WIDTH, this.strokeWidth);
-      return this.strokeWidth;
+    if (this.pencilToolAttributes.speedDependenceFactor === 0) {
+      this.pencilToolAttributes.strokeWidth *=
+        this.pencilToolAttributes.mouseSpeedCoefficient;
+      this.pencilToolAttributes.strokeWidth = Math.min(
+        this.MAX_STROKE_WIDTH,
+        this.pencilToolAttributes.strokeWidth
+      );
+      return this.pencilToolAttributes.strokeWidth;
     }
 
     const temp =
-      this.speedDependenceFactor > 0
-        ? this.mouseAverageSpeed * this.speedDependenceFactor
+      this.pencilToolAttributes.speedDependenceFactor > 0
+        ? this.mouseAverageSpeed *
+          this.pencilToolAttributes.speedDependenceFactor
         : this.MAX_STROKE_WIDTH +
-          this.mouseAverageSpeed * this.speedDependenceFactor;
+          this.mouseAverageSpeed *
+            this.pencilToolAttributes.speedDependenceFactor;
 
-    this.strokeWidth = Math.min(
-      this.MAX_STROKE_WIDTH * this.mouseSpeedCoefficient,
+    this.pencilToolAttributes.strokeWidth = Math.min(
+      this.MAX_STROKE_WIDTH * this.pencilToolAttributes.mouseSpeedCoefficient,
       temp
     );
-    return this.strokeWidth;
+    return this.pencilToolAttributes.strokeWidth;
   }
 
   draw() {
     this.ctx.lineWidth = this.getStrokeWidth();
-    this.ctx.lineCap = this.lineCap;
-    this.ctx.strokeStyle = this.strokeStyle;
+    this.ctx.lineCap = this.pencilToolAttributes.lineCap;
+    this.ctx.strokeStyle = this.pencilToolAttributes.strokeStyle;
 
     this.ctx.lineTo(this.mouseLastPosition[0], this.mouseLastPosition[1]);
     this.ctx.stroke();
