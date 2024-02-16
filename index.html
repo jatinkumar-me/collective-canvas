@@ -1,39 +1,91 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Collective-Canvas</title>
+    <script
+      src="https://kit.fontawesome.com/d3e48ad6ce.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Collective-Canvas</title>
-  <script src="https://kit.fontawesome.com/d3e48ad6ce.js" crossorigin="anonymous"></script>
-</head>
+  <body>
+    <div id="app"></div>
+    <nav class="navbar">
+      <h3 class="title" id="navbar-logo">🖌️ Collective-Canvas</h3>
+    </nav>
 
-<body>
-  <div id="app"></div>
-  <nav class="navbar">
-    <h3 class="title" id="navbar-logo">🖌️ Collective-Canvas</h3>
-  </nav>
-
-  <div id="toolbox" class="toolbox">
-    <button id="pencil" class="tool-button" aria-label="pencil tool button" type="button">
-      <i class="fa fa-pencil"></i>
-    </button>
-    <button id="rectangle" class="tool-button" aria-label="rectangle tool button" type="button">
-      <i class="fa fa-regular fa-square"></i>
-    </button>
-    <button id="ellipse" class="tool-button" aria-label="pencil tool button" type="button">
-      <i class="fa fa-regular fa-circle"></i>
-    </button>
-    <button id="bezier" class="tool-button" aria-label="bezier tool button" type="button">
-      <i class="fa fa-solid fa-bezier-curve"></i>
-    </button>
-  </div>
-
-    <div id="tool-attributes" class="tool-settings">
+    <div id="edit" class="edit">
+      <button
+        id="clear-canvas"
+        class="edit-button"
+        aria-label="clear canvas"
+        type="button"
+      >
+        <i class="fa fa-file-o" aria-hidden="true"></i>
+        clear canvas
+      </button>
+      <button
+        id="clear-canvas"
+        class="edit-button"
+        aria-label="clear canvas"
+        type="button"
+      >
+        <i class="fa fa-download" aria-hidden="true"></i>
+        save as image
+      </button>
     </div>
 
-  <canvas id="canvas" width="640" height="320"></canvas>
-  <script type="module" src="/src/main.ts"></script>
-</body>
+    <div id="toolbox" class="toolbox">
+      <button
+        id="pencil"
+        class="tool-button"
+        aria-label="pencil tool button"
+        type="button"
+        data-tool="pencil"
+      >
+        <i class="fa fa-pencil"></i>
+      </button>
+      <button
+        id="rectangle"
+        class="tool-button"
+        aria-label="rectangle tool button"
+        type="button"
+        data-tool="rectangle"
+      >
+        <i class="fa fa-regular fa-square"></i>
+      </button>
+      <button
+        id="ellipse"
+        class="tool-button"
+        aria-label="pencil tool button"
+        type="button"
+        data-tool="ellipse"
+      >
+        <i class="fa fa-regular fa-circle"></i>
+      </button>
+      <button
+        id="bezier"
+        class="tool-button"
+        aria-label="bezier tool button"
+        type="button"
+        data-tool="bezier"
+      >
+        <i class="fa fa-solid fa-bezier-curve"></i>
+      </button>
+    </div>
 
+    <div id="tool-attributes" class="tool-settings"></div>
+
+    <canvas id="canvas" width="640" height="320"></canvas>
+
+    <div id="user-status-div" class="user-status-div">
+      <h4>
+        <i class="fa fa-users" aria-hidden="true"></i>
+        Users
+      </h4>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>
