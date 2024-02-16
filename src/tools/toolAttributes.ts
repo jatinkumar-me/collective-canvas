@@ -11,7 +11,7 @@ export type ToolAttributesMarkup<T> = Partial<
   Record<keyof DefaultToolAttributes<T>, string>
 >;
 
-export default class ToolAttributes {
+export default abstract class ToolAttributes {
   toolBoxDiv: HTMLDivElement | null;
   toolAttributesMarkup: Record<string, string>
   constructor(toolAttributesMarkup: Record<string, string>) {
