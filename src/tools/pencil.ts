@@ -12,12 +12,10 @@ const DEFAULT_PENCIL_TOOL_ATTRIBUTES: DefaultToolAttributes<PencilToolAttributes
     lineCap: "round",
     strokeWidth: 5,
     speedDependenceFactor: 0,
-    mouseSpeedCoefficient: 1,
   };
 
 const PENCIL_TOOL_ATTRIBUTE_MARKUP: ToolAttributesMarkup<PencilToolAttributes> =
   {
-    mouseSpeedCoefficient: `<input type="range" value="10" min="1" max="10" step="1" aria-label="tool settings" >`,
     strokeStyle: `<input type="color" id="pencil-color-picker" />`,
     lineCap: `<select name="linecap" id="pencil-line-cap">
                 <option value="butt">butt</option>
@@ -35,7 +33,6 @@ class PencilToolAttributes extends ToolAttributes {
   lineCap: CanvasLineCap;
   strokeWidth: number;
   speedDependenceFactor: number;
-  mouseSpeedCoefficient: number;
 
   constructor(
     defaultPencilToolAttributes: DefaultToolAttributes<PencilToolAttributes>
@@ -46,8 +43,6 @@ class PencilToolAttributes extends ToolAttributes {
     this.strokeStyle = defaultPencilToolAttributes.strokeStyle;
     this.speedDependenceFactor =
       defaultPencilToolAttributes.speedDependenceFactor;
-    this.mouseSpeedCoefficient =
-      defaultPencilToolAttributes.mouseSpeedCoefficient;
     this.events();
   }
 
@@ -144,12 +139,10 @@ export default class Pencil extends BaseTools {
 
   getStrokeWidth(): number {
     if (this.toolAttrib.speedDependenceFactor === 0) {
-      this.toolAttrib.strokeWidth *= this.toolAttrib.mouseSpeedCoefficient;
       this.toolAttrib.strokeWidth = Math.min(
         this.MAX_STROKE_WIDTH,
         this.toolAttrib.strokeWidth
       );
-      console.log(this.toolAttrib.strokeWidth);
       return this.toolAttrib.strokeWidth;
     }
 
@@ -160,7 +153,7 @@ export default class Pencil extends BaseTools {
           this.mouseAverageSpeed * this.toolAttrib.speedDependenceFactor;
 
     this.toolAttrib.strokeWidth = Math.min(
-      this.MAX_STROKE_WIDTH * this.toolAttrib.mouseSpeedCoefficient,
+      this.MAX_STROKE_WIDTH,
       temp
     );
     return this.toolAttrib.strokeWidth;
