@@ -14,6 +14,7 @@ export default class App {
 
     init() {
         console.log("app started");
+        this.toolManager.init();
     }
 
     onClose() {
