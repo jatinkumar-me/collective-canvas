@@ -24,7 +24,7 @@ const PENCIL_TOOL_ATTRIBUTE_MARKUP: ToolAttributesMarkup<PencilToolAttributes> =
               </select>`,
     strokeWidth: `<div>
                     <label for="pencil-stroke-width-input">Pencil stroke width</label>
-                    <input type="range" id="pencil-stroke-width-input" name="pencil-stroke-width-input" min="1" max="50" step="1">
+                    <input type="range" id="pencil-stroke-width-input" name="pencil-stroke-width-input" min="1" max="50" step="1" value="${DEFAULT_PENCIL_TOOL_ATTRIBUTES.strokeWidth}">
                   </div>`,
   };
 
