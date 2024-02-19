@@ -176,4 +176,13 @@ export default class Pencil extends BaseTools {
     this.ctx.beginPath();
     this.ctx.moveTo(this.mouseLastPosition[0], this.mouseLastPosition[1]);
   }
+
+  /**
+   * override Basetool destroy method 
+   */
+  destroy() {
+    this.toolAttrib.destroy();
+    this.removeEvents();
+    this.toolAttrib.removeEvents();
+  }
 }

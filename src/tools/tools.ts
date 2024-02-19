@@ -58,4 +58,6 @@ export default abstract class BaseTools {
 
     return Math.min(distance, this.MAX_AVERAGE_MOUSE_SPEED);
   }
+
+  destroy() {}
 }
