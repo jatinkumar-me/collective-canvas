@@ -28,11 +28,24 @@ const PENCIL_TOOL_ATTRIBUTE_MARKUP: ToolAttributesMarkup<PencilToolAttributes> =
                   </div>`,
   };
 
+
 class PencilToolAttributes extends ToolAttributes {
   strokeStyle: string | CanvasGradient | CanvasPattern;
   lineCap: CanvasLineCap;
   strokeWidth: number;
   speedDependenceFactor: number;
+
+  private strokeStyleInput: HTMLInputElement;
+  private strokeWidthInput: HTMLInputElement;
+  private linecapInput: HTMLInputElement;
+
+  /**
+   * Holding on to references to the eventlisteners to remove them when the component is destroyed
+   */
+  private strokeStyleChangeListener: EventListener;
+  private lineCapChangeListener: EventListener;
+  private strokeWidthChangeListener: EventListener;
+  private wheelEventListener: (this: Document, ev: WheelEvent) => any;
 
   constructor(
     defaultPencilToolAttributes: DefaultToolAttributes<PencilToolAttributes>
@@ -43,45 +56,51 @@ class PencilToolAttributes extends ToolAttributes {
     this.strokeStyle = defaultPencilToolAttributes.strokeStyle;
     this.speedDependenceFactor =
       defaultPencilToolAttributes.speedDependenceFactor;
+
+    this.strokeStyleInput = document.getElementById(
+      "pencil-color-picker"
+    ) as HTMLInputElement;
+
+    this.linecapInput = document.getElementById(
+      "pencil-line-cap"
+    ) as HTMLInputElement;
+
+    this.strokeWidthInput = document.getElementById(
+      "pencil-stroke-width-input"
+    ) as HTMLInputElement;
+
+    this.strokeStyleChangeListener = this.setStrokeStyleInput.bind(this);
+    this.lineCapChangeListener = this.setLineCap.bind(this);
+    this.strokeWidthChangeListener = this.setStrokeWidth.bind(this);
+    this.wheelEventListener = this.onWheel.bind(this);
+
     this.events();
   }
 
   events() {
-    const strokeStyleInput = document.getElementById(
-      "pencil-color-picker"
-    ) as HTMLInputElement;
-    strokeStyleInput.addEventListener(
-      "change",
-      this.setStrokeStyleInput.bind(this)
-    );
+    this.strokeStyleInput.addEventListener("change", this.strokeStyleChangeListener);
+    this.linecapInput.addEventListener("change", this.lineCapChangeListener);
+    this.strokeWidthInput.addEventListener("change", this.strokeWidthChangeListener);
+    document.addEventListener("wheel", this.wheelEventListener, { passive: false, });
+  }
 
-    const linecapInput = document.getElementById(
-      "pencil-line-cap"
-    ) as HTMLInputElement;
-    linecapInput.addEventListener("change", this.setLineCap.bind(this));
+  removeEvents() {
+    this.strokeStyleInput.removeEventListener("change", this.strokeStyleChangeListener);
+    this.linecapInput.removeEventListener("change", this.lineCapChangeListener);
+    this.strokeWidthInput.removeEventListener("change", this.strokeWidthChangeListener);
+    document.removeEventListener("wheel", this.wheelEventListener);
+  }
 
-    const strokeWidthInput = document.getElementById(
-      "pencil-stroke-width-input"
-    ) as HTMLInputElement;
-    strokeWidthInput.addEventListener("change", this.setStrokeWidth.bind(this));
-
-    document.addEventListener(
-      "wheel",
-      (event: WheelEvent) => {
+  onWheel(event: WheelEvent) {
         if ((event.target as HTMLElement).id != "canvas") {
           return;
         }
         event.preventDefault();
-        const delta = Math.floor(event.deltaY / 149);
-        const currentVal = parseInt(strokeWidthInput.value);
+        const delta = Math.round(event.deltaY / 149);
+        const currentVal = parseInt(this.strokeWidthInput.value);
         const newVal = clamp(currentVal - delta, 1, 50);
-        strokeWidthInput.value = newVal.toString();
+        this.strokeWidthInput.value = newVal.toString();
         this.strokeWidth = newVal;
-      },
-      {
-        passive: false,
-      }
-    );
   }
 
   setStrokeStyleInput(e: Event) {
@@ -94,14 +113,18 @@ class PencilToolAttributes extends ToolAttributes {
 
   setStrokeWidth(e: Event) {
     this.strokeWidth = parseInt((e.target as HTMLInputElement).value);
-    console.log("stroke width changed", this.strokeWidth);
   }
 }
+
 
 export default class Pencil extends BaseTools {
   ctx: CanvasRenderingContext2D;
   toolAttrib: PencilToolAttributes;
   readonly MAX_STROKE_WIDTH: number;
+
+  private mouseDownEventListener: (this: Document, ev: MouseEvent) => any;
+  private mouseUpEventListener: EventListener;
+  private mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
 
   constructor(baseLayer: BaseLayer) {
     super(baseLayer);
@@ -109,12 +132,24 @@ export default class Pencil extends BaseTools {
     this.ctx = baseLayer.ctx;
     this.MAX_STROKE_WIDTH = 100;
     this.toolAttrib = new PencilToolAttributes(DEFAULT_PENCIL_TOOL_ATTRIBUTES);
+
+    this.mouseDownEventListener = this.onMouseDown.bind(this);
+    this.mouseUpEventListener = this.onMouseUp.bind(this);
+    this.mouseMoveEventListener = this.onMouseMove.bind(this);
+
+    this.events();
   }
 
   events() {
-    document.addEventListener("mousedown", this.onMouseDown.bind(this));
-    document.addEventListener("mouseup", this.onMouseUp.bind(this));
-    document.addEventListener("mousemove", this.onMouseMove.bind(this));
+    document.addEventListener("mousedown", this.mouseDownEventListener);
+    document.addEventListener("mouseup", this.mouseUpEventListener);
+    document.addEventListener("mousemove", this.mouseMoveEventListener);
+  }
+
+  removeEvents() {
+    document.removeEventListener("mousedown", this.mouseDownEventListener);
+    document.removeEventListener("mouseup", this.mouseUpEventListener);
+    document.removeEventListener("mousemove", this.mouseMoveEventListener);
   }
 
   onMouseMove(event: MouseEvent): void {
