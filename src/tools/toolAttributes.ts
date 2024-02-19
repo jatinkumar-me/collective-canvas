@@ -1,7 +1,7 @@
 export type DefaultToolAttributes<T> = Omit<
   ExcludeMethods<T>,
   keyof ToolAttributes
->;
+>
 
 type ExcludeMethods<T> = {
   [K in keyof T as T[K] extends Function ? never : K]: T[K];
@@ -38,7 +38,6 @@ export default abstract class ToolAttributes {
     if (!this.toolBoxDiv) {
       return;
     }
-
-    this.toolBoxDiv.innerHTML = ''
+    this.toolBoxDiv = null;
   }
 }
