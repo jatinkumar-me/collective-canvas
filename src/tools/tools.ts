@@ -9,6 +9,8 @@ export default abstract class BaseTools {
   mouseAverageSpeed: number;
   readonly MAX_AVERAGE_MOUSE_SPEED = 100;
 
+  private canvasFocusEventListener: (this: HTMLCanvasElement, ev: FocusEvent) => any;
+
   constructor(baseLayer: BaseLayer) {
     this.baseLayer = baseLayer;
     this.isDrag = false;
@@ -16,9 +18,17 @@ export default abstract class BaseTools {
     this.mouseLastClickPosition = [0, 0];
     this.mouseLastPosition = [0, 0];
     this.mouseAverageSpeed = 0;
+
+    this.canvasFocusEventListener = this.onCanvasBlur.bind(this);
+    this.baseToolEvents();
+  }
+
+  baseToolEvents() {
+    this.baseLayer.canvas.addEventListener('blur', this.canvasFocusEventListener);
   }
 
   onMouseDown(event: MouseEvent) {
+    console.log('basetool mousedown')
     this.isDrag = true;
     this.mouseAverageSpeed = 0;
     this.mouseLastPosition = this.getMouseCoordinates(event);
@@ -59,5 +69,16 @@ export default abstract class BaseTools {
     return Math.min(distance, this.MAX_AVERAGE_MOUSE_SPEED);
   }
 
-  destroy() {}
+  onCanvasBlur(_event: FocusEvent) {
+    this.isDrag = false;
+    console.log('canvasblur')
+  }
+
+  removeEvents() {
+    this.baseLayer.canvas.removeEventListener('blur', this.canvasFocusEventListener);
+  }
+
+  destroy() {
+    this.removeEvents();
+  }
 }
