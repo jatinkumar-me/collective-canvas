@@ -1,7 +1,10 @@
 import BaseLayer from "../components/Layer";
+import { Connection } from "../modules/network";
 
 export default abstract class BaseTools {
   baseLayer: BaseLayer;
+  connection: Connection | null;
+
   isDrag: boolean;
   isTouch: boolean;
   mouseLastClickPosition: [number, number];
@@ -11,8 +14,9 @@ export default abstract class BaseTools {
 
   private canvasFocusEventListener: (this: HTMLCanvasElement, ev: FocusEvent) => any;
 
-  constructor(baseLayer: BaseLayer) {
+  constructor(baseLayer: BaseLayer, connection?: Connection) {
     this.baseLayer = baseLayer;
+    this.connection = connection ?? null;
     this.isDrag = false;
     this.isTouch = false;
     this.mouseLastClickPosition = [0, 0];
@@ -28,7 +32,6 @@ export default abstract class BaseTools {
   }
 
   onMouseDown(event: MouseEvent) {
-    console.log('basetool mousedown')
     this.isDrag = true;
     this.mouseAverageSpeed = 0;
     this.mouseLastPosition = this.getMouseCoordinates(event);
@@ -71,7 +74,6 @@ export default abstract class BaseTools {
 
   onCanvasBlur(_event: FocusEvent) {
     this.isDrag = false;
-    console.log('canvasblur')
   }
 
   removeEvents() {
