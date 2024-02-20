@@ -1,5 +1,5 @@
+import ToolAttributes, { DefaultToolAttributes } from "../tools/toolAttributes";
 import { ToolName } from "../tools/toolManager";
-import BaseTools from "../tools/tools";
 import User from "./user";
 
 enum SocketMessageKind {
@@ -8,23 +8,24 @@ enum SocketMessageKind {
     USER_COMMAND = 3
 }
 
-type UserCommand = {
+export type UserCommand<T extends ToolAttributes> = {
     x: number;
     y: number;
     isDrag: boolean;
     toolName: ToolName
-    tool: BaseTools
+    toolAttributes: DefaultToolAttributes<T>
 }
 
-type SocketMessage = {
+export type SocketMessage = {
     type: SocketMessageKind.USER_CONNECTED;
     user: User;
 } | {
     type: SocketMessageKind.USER_DISCONNECTED;
 } | {
     type: SocketMessageKind.USER_COMMAND;
-    command: UserCommand
+    command: UserCommand<any>
 }
+
 
 export class Connection {
     webSocket: WebSocket;
@@ -34,16 +35,39 @@ export class Connection {
         this.webSocket.onmessage = this.socketMessageHandler.bind(this);
     }
 
-    socketMessageHandler(event: MessageEvent<SocketMessage>) {
-        const data = event.data;
+    socketMessageHandler(event: MessageEvent<string>) {
+        const data = JSON.parse(event.data) as SocketMessage;
+        console.log(data);
         switch (data.type) {
             case SocketMessageKind.USER_CONNECTED:
+                break;
             case SocketMessageKind.USER_DISCONNECTED:
+                break;
             case SocketMessageKind.USER_COMMAND:
+                console.log(data.command);
+                break;
             default: {
                 console.error("invalid message sent by the socket");
             }
         }
+    }
+
+    handleUserConnected() {
+    }
+
+    handleUserDisconnected() {
+    }
+
+    handleUserCommand() {
+    }
+
+    sendUserCommand<T extends ToolAttributes>(command: UserCommand<T>) {
+        const message: SocketMessage = {
+            type: SocketMessageKind.USER_COMMAND,
+            command: command
+        }
+        const messageString = JSON.stringify(message);
+        this.webSocket.send(messageString);
     }
 
     closeConnection() {
