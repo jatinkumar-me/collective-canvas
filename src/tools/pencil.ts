@@ -215,9 +215,30 @@ export default class Pencil extends BaseTools {
   }
 
   /**
-   * override Basetool destroy method 
+   * Static method for drawing a small line segment, using two points
+   */
+  static drawSegment(
+    ctx: CanvasRenderingContext2D,
+    toolAttrib: DefaultToolAttributes<PencilToolAttributes>,
+    newMouseCoord: [number, number],
+    oldMouseCoord: [number, number]
+  ) {
+    ctx.lineWidth = toolAttrib.strokeWidth;
+    ctx.lineCap = toolAttrib.lineCap;
+    ctx.strokeStyle = toolAttrib.strokeStyle;
+
+    ctx.beginPath();
+    ctx.moveTo(oldMouseCoord[0], oldMouseCoord[1]);
+    ctx.lineTo(newMouseCoord[0], newMouseCoord[1]);
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+  /**
+   * override Basetool destroy method
    */
   destroy() {
+    super.destroy();
     this.toolAttrib.destroy();
     this.removeEvents();
     this.toolAttrib.removeEvents();
