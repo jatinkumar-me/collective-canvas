@@ -76,6 +76,15 @@ class PencilToolAttributes extends ToolAttributes {
     this.events();
   }
 
+  getAttributes(): DefaultToolAttributes<PencilToolAttributes> {
+    return {
+      strokeWidth: this.strokeWidth,
+      lineCap: this.lineCap,
+      strokeStyle: this.strokeStyle,
+      speedDependenceFactor: this.speedDependenceFactor,
+    };
+  }
+
   events() {
     this.strokeStyleInput.addEventListener(
       "change",
