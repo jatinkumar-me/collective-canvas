@@ -1,9 +1,11 @@
 import BaseLayer from "../components/Layer";
+import { Connection, UserCommand } from "../modules/network";
 import { clamp } from "../utils/utils";
 import ToolAttributes, {
   DefaultToolAttributes,
   ToolAttributesMarkup,
 } from "./toolAttributes";
+import { ToolName } from "./toolManager";
 import BaseTools from "./tools";
 
 const DEFAULT_PENCIL_TOOL_ATTRIBUTES: DefaultToolAttributes<PencilToolAttributes> =
@@ -147,9 +149,9 @@ export default class Pencil extends BaseTools {
   private mouseUpEventListener: EventListener;
   private mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
 
-  constructor(baseLayer: BaseLayer) {
-    super(baseLayer);
-    this.events();
+  constructor(baseLayer: BaseLayer, connection: Connection) {
+    super(baseLayer, connection);
+    this.baseToolEvents();
     this.ctx = baseLayer.ctx;
     this.MAX_STROKE_WIDTH = 100;
     this.toolAttrib = new PencilToolAttributes(DEFAULT_PENCIL_TOOL_ATTRIBUTES);
@@ -179,6 +181,7 @@ export default class Pencil extends BaseTools {
     }
     super.onMouseMove(event);
     this.draw();
+    this.sendMessageOverConnection();
   }
 
   onMouseDown(event: MouseEvent): void {
@@ -187,10 +190,12 @@ export default class Pencil extends BaseTools {
     }
     super.onMouseDown(event);
     this.ctx.beginPath();
+    this.sendMessageOverConnection();
   }
 
   onMouseUp(): void {
     super.onMouseUp();
+    this.sendMessageOverConnection();
   }
 
   getStrokeWidth(): number {
@@ -241,6 +246,17 @@ export default class Pencil extends BaseTools {
     ctx.lineTo(newMouseCoord[0], newMouseCoord[1]);
     ctx.closePath();
     ctx.stroke();
+  }
+
+  sendMessageOverConnection() {
+    const userCommand: UserCommand<PencilToolAttributes> = {
+      x: this.mouseLastPosition[0],
+      y: this.mouseLastPosition[1],
+      isDrag: this.isDrag,
+      toolName: ToolName.PENCIL,
+      toolAttributes: this.toolAttrib.getAttributes(),
+    }
+    this.connection?.sendUserCommand(userCommand);
   }
 
   /**
