@@ -10,6 +10,16 @@ export default class BaseLayer {
         }
         this.ctx = context;
         this.ctx.save();
+        this.events();
+    }
+
+    events() {
+        const clearCanvasButton = document.querySelector('#clear-canvas');
+        if (!clearCanvasButton) {
+            console.warn("clear canvas button not in the dom");
+            return;
+        }
+        clearCanvasButton.addEventListener('click', this.clearCanvas.bind(this));
     }
 
     clearCanvas() {

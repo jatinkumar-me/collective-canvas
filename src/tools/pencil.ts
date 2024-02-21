@@ -1,9 +1,11 @@
 import BaseLayer from "../components/Layer";
+import { Connection, UserCommand } from "../modules/network";
 import { clamp } from "../utils/utils";
 import ToolAttributes, {
   DefaultToolAttributes,
   ToolAttributesMarkup,
 } from "./toolAttributes";
+import { ToolName } from "./toolManager";
 import BaseTools from "./tools";
 
 const DEFAULT_PENCIL_TOOL_ATTRIBUTES: DefaultToolAttributes<PencilToolAttributes> =
@@ -25,9 +27,8 @@ const PENCIL_TOOL_ATTRIBUTE_MARKUP: ToolAttributesMarkup<PencilToolAttributes> =
     strokeWidth: `<div>
                     <label for="pencil-stroke-width-input">Pencil stroke width</label>
                     <input type="range" id="pencil-stroke-width-input" name="pencil-stroke-width-input" min="1" max="50" step="1" value="${DEFAULT_PENCIL_TOOL_ATTRIBUTES.strokeWidth}">
-                  </div>`,
+               </div>`,
   };
-
 
 class PencilToolAttributes extends ToolAttributes {
   strokeStyle: string | CanvasGradient | CanvasPattern;
@@ -77,30 +78,53 @@ class PencilToolAttributes extends ToolAttributes {
     this.events();
   }
 
+  getAttributes(): DefaultToolAttributes<PencilToolAttributes> {
+    return {
+      strokeWidth: this.strokeWidth,
+      lineCap: this.lineCap,
+      strokeStyle: this.strokeStyle,
+      speedDependenceFactor: this.speedDependenceFactor,
+    };
+  }
+
   events() {
-    this.strokeStyleInput.addEventListener("change", this.strokeStyleChangeListener);
+    this.strokeStyleInput.addEventListener(
+      "change",
+      this.strokeStyleChangeListener
+    );
     this.linecapInput.addEventListener("change", this.lineCapChangeListener);
-    this.strokeWidthInput.addEventListener("change", this.strokeWidthChangeListener);
-    document.addEventListener("wheel", this.wheelEventListener, { passive: false, });
+    this.strokeWidthInput.addEventListener(
+      "change",
+      this.strokeWidthChangeListener
+    );
+    document.addEventListener("wheel", this.wheelEventListener, {
+      passive: false,
+    });
   }
 
   removeEvents() {
-    this.strokeStyleInput.removeEventListener("change", this.strokeStyleChangeListener);
+    this.strokeStyleInput.removeEventListener(
+      "change",
+      this.strokeStyleChangeListener
+    );
     this.linecapInput.removeEventListener("change", this.lineCapChangeListener);
-    this.strokeWidthInput.removeEventListener("change", this.strokeWidthChangeListener);
+    this.strokeWidthInput.removeEventListener(
+      "change",
+      this.strokeWidthChangeListener
+    );
     document.removeEventListener("wheel", this.wheelEventListener);
   }
 
   onWheel(event: WheelEvent) {
-        if ((event.target as HTMLElement).id != "canvas") {
-          return;
-        }
-        event.preventDefault();
-        const delta = Math.round(event.deltaY / 149);
-        const currentVal = parseInt(this.strokeWidthInput.value);
-        const newVal = clamp(currentVal - delta, 1, 50);
-        this.strokeWidthInput.value = newVal.toString();
-        this.strokeWidth = newVal;
+    if ((event.target as HTMLElement).id != "canvas") {
+      return;
+    }
+    event.preventDefault();
+    const delta = Math.round(event.deltaY / 149);
+    const currentVal = parseInt(this.strokeWidthInput.value);
+    const newVal = clamp(currentVal - delta, 1, 50);
+    this.strokeWidthInput.value = newVal.toString();
+    this.strokeWidth = newVal;
   }
 
   setStrokeStyleInput(e: Event) {
@@ -116,7 +140,6 @@ class PencilToolAttributes extends ToolAttributes {
   }
 }
 
-
 export default class Pencil extends BaseTools {
   ctx: CanvasRenderingContext2D;
   toolAttrib: PencilToolAttributes;
@@ -126,9 +149,9 @@ export default class Pencil extends BaseTools {
   private mouseUpEventListener: EventListener;
   private mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
 
-  constructor(baseLayer: BaseLayer) {
-    super(baseLayer);
-    this.events();
+  constructor(baseLayer: BaseLayer, connection: Connection) {
+    super(baseLayer, connection);
+    this.baseToolEvents();
     this.ctx = baseLayer.ctx;
     this.MAX_STROKE_WIDTH = 100;
     this.toolAttrib = new PencilToolAttributes(DEFAULT_PENCIL_TOOL_ATTRIBUTES);
@@ -158,6 +181,7 @@ export default class Pencil extends BaseTools {
     }
     super.onMouseMove(event);
     this.draw();
+    this.sendMessageOverConnection();
   }
 
   onMouseDown(event: MouseEvent): void {
@@ -166,10 +190,12 @@ export default class Pencil extends BaseTools {
     }
     super.onMouseDown(event);
     this.ctx.beginPath();
+    this.sendMessageOverConnection();
   }
 
   onMouseUp(): void {
     super.onMouseUp();
+    this.sendMessageOverConnection();
   }
 
   getStrokeWidth(): number {
@@ -187,10 +213,7 @@ export default class Pencil extends BaseTools {
         : this.MAX_STROKE_WIDTH +
           this.mouseAverageSpeed * this.toolAttrib.speedDependenceFactor;
 
-    this.toolAttrib.strokeWidth = Math.min(
-      this.MAX_STROKE_WIDTH,
-      temp
-    );
+    this.toolAttrib.strokeWidth = Math.min(this.MAX_STROKE_WIDTH, temp);
     return this.toolAttrib.strokeWidth;
   }
 
@@ -206,9 +229,41 @@ export default class Pencil extends BaseTools {
   }
 
   /**
-   * override Basetool destroy method 
+   * Static method for drawing a small line segment, using two points
+   */
+  static drawSegment(
+    ctx: CanvasRenderingContext2D,
+    toolAttrib: DefaultToolAttributes<PencilToolAttributes>,
+    newMouseCoord: [number, number],
+    oldMouseCoord: [number, number]
+  ) {
+    ctx.lineWidth = toolAttrib.strokeWidth;
+    ctx.lineCap = toolAttrib.lineCap;
+    ctx.strokeStyle = toolAttrib.strokeStyle;
+
+    ctx.beginPath();
+    ctx.moveTo(oldMouseCoord[0], oldMouseCoord[1]);
+    ctx.lineTo(newMouseCoord[0], newMouseCoord[1]);
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+  sendMessageOverConnection() {
+    const userCommand: UserCommand<PencilToolAttributes> = {
+      x: this.mouseLastPosition[0],
+      y: this.mouseLastPosition[1],
+      isDrag: this.isDrag,
+      toolName: ToolName.PENCIL,
+      toolAttributes: this.toolAttrib.getAttributes(),
+    }
+    this.connection?.sendUserCommand(userCommand);
+  }
+
+  /**
+   * override Basetool destroy method
    */
   destroy() {
+    super.destroy();
     this.toolAttrib.destroy();
     this.removeEvents();
     this.toolAttrib.removeEvents();
