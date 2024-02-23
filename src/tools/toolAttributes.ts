@@ -1,4 +1,4 @@
-export type DefaultToolAttributes<T> = Omit<
+export type DefaultToolAttributes<T extends ToolAttributes> = Omit<
   ExcludeMethods<T>,
   keyof ToolAttributes
 >
@@ -7,7 +7,7 @@ type ExcludeMethods<T> = {
   [K in keyof T as T[K] extends Function ? never : K]: T[K];
 };
 
-export type ToolAttributesMarkup<T> = Partial<
+export type ToolAttributesMarkup<T extends ToolAttributes> = Partial<
   Record<keyof DefaultToolAttributes<T>, string>
 >;
 
