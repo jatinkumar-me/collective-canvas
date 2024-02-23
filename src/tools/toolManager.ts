@@ -1,9 +1,10 @@
 import BaseLayer from "../components/Layer";
+import { Connection } from "../modules/network";
 import Bezier from "./bezier";
 import Pencil from "./pencil";
 import BaseTools from "./tools";
 
-enum ToolIds {
+export enum ToolName {
   PENCIL = 'pencil',
   BEZIER = 'bezier',
 }
@@ -13,11 +14,13 @@ enum ToolIds {
  */
 export default class ToolManager {
   private selectedTool: BaseTools;
-  selectedToolName: ToolIds;
+  private connection: Connection;
+  selectedToolName: ToolName;
 
-  constructor(private baseLayer: BaseLayer) {
-    this.selectedTool = new Pencil(baseLayer);
-    this.selectedToolName = ToolIds.PENCIL;
+  constructor(private baseLayer: BaseLayer, connection: Connection) {
+    this.connection = connection;
+    this.selectedTool = new Pencil(baseLayer, connection);
+    this.selectedToolName = ToolName.PENCIL;
     this.events();
   }
 
@@ -57,22 +60,22 @@ export default class ToolManager {
       return;
     }
 
-    this.selectTool(tool, toolName as ToolIds);
+    this.selectTool(tool, toolName as ToolName);
     target.setAttribute('disabled', 'true');
   }
 
   createToolFromName(toolName: string): BaseTools | null {
     switch (toolName) {
-      case ToolIds.PENCIL:
-        return new Pencil(this.baseLayer);
-      case ToolIds.BEZIER:
+      case ToolName.PENCIL:
+        return new Pencil(this.baseLayer, this.connection);
+      case ToolName.BEZIER:
         return new Bezier(this.baseLayer);
       default:
         return null;
     }
   }
 
-  selectTool(tool: BaseTools, toolName: ToolIds) {
+  selectTool(tool: BaseTools, toolName: ToolName) {
     this.selectedTool.destroy();
     const selectedToolButton = document.getElementById(this.selectedToolName) as HTMLButtonElement;
     selectedToolButton.disabled = false;
