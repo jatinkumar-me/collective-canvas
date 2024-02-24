@@ -1,5 +1,7 @@
-import { DefaultToolAttributes } from "../tools/toolAttributes";
+import Pencil from "../tools/pencil";
+import ToolAttributes, { DefaultToolAttributes } from "../tools/toolAttributes";
 import { ToolName } from "../tools/toolManager";
+import { UserCommand } from "./network";
 
 export type UserId = string;
 
@@ -23,11 +25,11 @@ export default class User {
 }
 
 export class ExternalUser extends User {
-    x: number;
-    y: number;
-    isDrag: boolean;
-    toolName: ToolName
-    toolAttributes: DefaultToolAttributes<any>
+    private x: number;
+    private y: number;
+    private isDrag: boolean;
+    private toolName: ToolName
+    private toolAttributes: DefaultToolAttributes<any>
 
     constructor(userId: string, userName: string) {
         super(userId, userName);
@@ -37,5 +39,15 @@ export class ExternalUser extends User {
         this.toolName = ToolName.PENCIL;
         this.toolAttributes = {};
         super(userId, userName);
+    }
+
+    receiveCommand<T extends ToolAttributes>(command: UserCommand<T>, ctx: CanvasRenderingContext2D) {
+        console.log("received command");
+        this.toolName = command.toolName;
+        this.isDrag = command.isDrag;
+        this.toolAttributes = command.toolAttributes;
+        Pencil.drawSegment(ctx, this.toolAttributes, [command.x, command.y], [this.x, this.y])
+        this.x = command.x;
+        this.y = command.y;
     }
 }
