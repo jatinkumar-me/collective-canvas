@@ -11,7 +11,7 @@ export default class App {
     
     constructor(connectionUrl: string) {
         this.baseLayer = new BaseLayer();
-        this.userManager = new UserManager();
+        this.userManager = new UserManager(this.baseLayer.ctx);
         this.connection = new Connection(connectionUrl, this.userManager);
         this.toolManager = new ToolManager(this.baseLayer, this.connection);
     }

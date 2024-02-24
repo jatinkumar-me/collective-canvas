@@ -1,11 +1,15 @@
+import ToolAttributes from "../tools/toolAttributes";
+import { UserCommand } from "./network";
 import User, { ExternalUser, UserId } from "./user";
 
 export default class UserManager {
-    users: Map<UserId, User>;
+    users: Map<UserId, ExternalUser>;
     private currentUser: User;
     userListDiv: HTMLDivElement;
+    ctx: CanvasRenderingContext2D;
 
-    constructor() {
+    constructor(ctx: CanvasRenderingContext2D) {
+        this.ctx = ctx;
         this.users = new Map<UserId, ExternalUser>();
         this.currentUser = new User("unassigned-user-id", "unassigned-username")
         const userListDiv = document.getElementById('user-list-div');
