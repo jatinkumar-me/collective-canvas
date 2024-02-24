@@ -194,7 +194,6 @@ export default class Pencil extends BaseTools {
     }
     super.onMouseDown(event);
     this.ctx.beginPath();
-    this.sendMessageOverConnection();
   }
 
   onMouseUp(): void {
@@ -248,12 +247,12 @@ export default class Pencil extends BaseTools {
     ctx.beginPath();
     ctx.moveTo(oldMouseCoord[0], oldMouseCoord[1]);
     ctx.lineTo(newMouseCoord[0], newMouseCoord[1]);
-    ctx.closePath();
+    // ctx.closePath();
     ctx.stroke();
   }
 
   sendMessageOverConnection() {
-    if (!this.connection) {
+    if (!this.connection?.isConnected()) {
       return;
     }
     const userCommand: UserCommand<PencilToolAttributes> = {
