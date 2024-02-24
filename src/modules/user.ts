@@ -40,12 +40,34 @@ export class ExternalUser extends User {
         this.toolAttributes = {};
     }
 
-    receiveCommand<T extends ToolAttributes>(command: UserCommand<T>, ctx: CanvasRenderingContext2D) {
-        console.log("received command");
+    receiveCommand<T extends ToolAttributes>(
+        command: UserCommand<T>,
+        ctx: CanvasRenderingContext2D
+    ) {
         this.toolName = command.toolName;
         this.isDrag = command.isDrag;
+
+        if (this.x === 0 && this.y === 0) {
+            this.x = command.x;
+            this.y = command.y;
+            return;
+        }
+
+        if (!this.isDrag) {
+            this.x = 0;
+            this.y = 0;
+            ctx.closePath();
+            return;
+        }
+
         this.toolAttributes = command.toolAttributes;
-        Pencil.drawSegment(ctx, this.toolAttributes, [command.x, command.y], [this.x, this.y])
+        Pencil.drawSegment(
+            ctx,
+            this.toolAttributes,
+            [command.x, command.y],
+            [this.x, this.y]
+        );
+
         this.x = command.x;
         this.y = command.y;
     }
