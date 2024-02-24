@@ -30,6 +30,7 @@ const PENCIL_TOOL_ATTRIBUTE_MARKUP: ToolAttributesMarkup<PencilToolAttributes> =
                </div>`,
   };
 
+
 class PencilToolAttributes extends ToolAttributes {
   strokeStyle: string | CanvasGradient | CanvasPattern;
   lineCap: CanvasLineCap;
@@ -140,6 +141,7 @@ class PencilToolAttributes extends ToolAttributes {
   }
 }
 
+
 export default class Pencil extends BaseTools {
   ctx: CanvasRenderingContext2D;
   toolAttrib: PencilToolAttributes;
@@ -149,9 +151,8 @@ export default class Pencil extends BaseTools {
   private mouseUpEventListener: EventListener;
   private mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
 
-  constructor(baseLayer: BaseLayer, connection: Connection) {
-    super(baseLayer, connection);
-    this.baseToolEvents();
+  constructor(baseLayer: BaseLayer, connection?: Connection) {
+    super(baseLayer, connection ?? undefined);
     this.ctx = baseLayer.ctx;
     this.MAX_STROKE_WIDTH = 100;
     this.toolAttrib = new PencilToolAttributes(DEFAULT_PENCIL_TOOL_ATTRIBUTES);
@@ -160,10 +161,13 @@ export default class Pencil extends BaseTools {
     this.mouseUpEventListener = this.onMouseUp.bind(this);
     this.mouseMoveEventListener = this.onMouseMove.bind(this);
 
-    this.events();
+    this.baseToolEvents();
   }
 
-  events() {
+  /**
+   * Override basetoolevents
+   */
+  baseToolEvents() {
     document.addEventListener("mousedown", this.mouseDownEventListener);
     document.addEventListener("mouseup", this.mouseUpEventListener);
     document.addEventListener("mousemove", this.mouseMoveEventListener);
@@ -190,7 +194,6 @@ export default class Pencil extends BaseTools {
     }
     super.onMouseDown(event);
     this.ctx.beginPath();
-    this.sendMessageOverConnection();
   }
 
   onMouseUp(): void {
@@ -244,11 +247,14 @@ export default class Pencil extends BaseTools {
     ctx.beginPath();
     ctx.moveTo(oldMouseCoord[0], oldMouseCoord[1]);
     ctx.lineTo(newMouseCoord[0], newMouseCoord[1]);
-    ctx.closePath();
+    // ctx.closePath();
     ctx.stroke();
   }
 
   sendMessageOverConnection() {
+    if (!this.connection?.isConnected()) {
+      return;
+    }
     const userCommand: UserCommand<PencilToolAttributes> = {
       x: this.mouseLastPosition[0],
       y: this.mouseLastPosition[1],
@@ -256,7 +262,7 @@ export default class Pencil extends BaseTools {
       toolName: ToolName.PENCIL,
       toolAttributes: this.toolAttrib.getAttributes(),
     }
-    this.connection?.sendUserCommand(userCommand);
+    this.connection.sendUserCommand(userCommand);
   }
 
   /**

@@ -1,11 +1,17 @@
-import User, { UserId } from "./user";
+import ToolAttributes from "../tools/toolAttributes";
+import { UserCommand } from "./network";
+import User, { ExternalUser, UserId } from "./user";
 
 export default class UserManager {
-    users: Map<UserId, User>;
+    users: Map<UserId, ExternalUser>;
+    private currentUser: User;
     userListDiv: HTMLDivElement;
+    ctx: CanvasRenderingContext2D;
 
-    constructor() {
-        this.users = new Map<UserId, User>();
+    constructor(ctx: CanvasRenderingContext2D) {
+        this.ctx = ctx;
+        this.users = new Map<UserId, ExternalUser>();
+        this.currentUser = new User("unassigned-user-id", "unassigned-username")
         const userListDiv = document.getElementById('user-list-div');
         if (!userListDiv) {
             throw new Error('user list div not present');
@@ -13,18 +19,51 @@ export default class UserManager {
         this.userListDiv = userListDiv as HTMLDivElement;
     }
 
-    addUser(user: User) {
-        this.users.set(user.userId, user);
-        this.userListDiv.appendChild(user.userElement);
+    getCurrentUser() {
+        return this.currentUser;
+    }
+
+    setCurrentUser(userId: UserId, userName: string) {
+        this.currentUser = new User(userId, userName);
+        this.userListDiv.appendChild(this.currentUser.userElement);
+    }
+
+    addUser(user: ExternalUser) {
+        const newUser = new ExternalUser(user.userId, user.userName);
+        this.users.set(newUser.userId, newUser);
+        this.userListDiv.appendChild(newUser.userElement);
+    }
+
+    addMany(users: ExternalUser[]) {
+        if (!users || users.length === 0) {
+            return
+        }
+        users.forEach(user => this.addUser(user));
     }
 
     removeUser(userId: string) {
         this.users.delete(userId);
-        const userDiv = this.users.get(userId);
-        this.userListDiv.removeChild(userDiv);
+        const user = this.users.get(userId);
+        if (!user) {
+            console.warn("Attempting to remove non existent user");
+            return;
+        }
+        this.userListDiv.removeChild(user.userElement);
     }
 
     getUser(userId: string) {
         this.users.get(userId);
+    }
+
+    handleUserCommand<T extends ToolAttributes>(
+        userId: UserId,
+        command: UserCommand<T>
+    ) { 
+        const externalUser = this.users.get(userId)
+        if (!externalUser) {
+            console.warn("Commands received from a user that is not present");
+            return;
+        }
+        externalUser.receiveCommand(command, this.ctx);
     }
 }
