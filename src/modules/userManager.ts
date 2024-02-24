@@ -29,8 +29,9 @@ export default class UserManager {
     }
 
     addUser(user: ExternalUser) {
-        this.users.set(user.userId, user as ExternalUser);
-        this.userListDiv.appendChild(user.userElement);
+        const newUser = new ExternalUser(user.userId, user.userName);
+        this.users.set(newUser.userId, newUser);
+        this.userListDiv.appendChild(newUser.userElement);
     }
 
     addMany(users: ExternalUser[]) {
@@ -59,7 +60,6 @@ export default class UserManager {
         command: UserCommand<T>
     ) { 
         const externalUser = this.users.get(userId)
-        console.log(this.users)
         if (!externalUser) {
             console.warn("Commands received from a user that is not present");
             return;
