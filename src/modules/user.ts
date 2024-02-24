@@ -17,8 +17,8 @@ export default class User {
     }
 
     private createUserDiv(): HTMLDivElement {
-        const userDiv = document.createElement('div');
-        userDiv.classList.add('user-div');
+        const userDiv = document.createElement("div");
+        userDiv.classList.add("user-div");
         userDiv.innerHTML = `<strong>${this.userName}</strong>`;
         return userDiv;
     }
@@ -28,8 +28,8 @@ export class ExternalUser extends User {
     private x: number;
     private y: number;
     private isDrag: boolean;
-    private toolName: ToolName
-    private toolAttributes: DefaultToolAttributes<any>
+    private toolName: ToolName;
+    private toolAttributes: DefaultToolAttributes<any>;
 
     constructor(userId: string, userName: string) {
         super(userId, userName);
@@ -38,7 +38,6 @@ export class ExternalUser extends User {
         this.isDrag = false;
         this.toolName = ToolName.PENCIL;
         this.toolAttributes = {};
-        super(userId, userName);
     }
 
     receiveCommand<T extends ToolAttributes>(command: UserCommand<T>, ctx: CanvasRenderingContext2D) {
