@@ -28,12 +28,15 @@ export default class UserManager {
         this.userListDiv.appendChild(this.currentUser.userElement);
     }
 
-    addUser(user: User) {
-        this.users.set(user.userId, user);
+    addUser(user: ExternalUser) {
+        this.users.set(user.userId, user as ExternalUser);
         this.userListDiv.appendChild(user.userElement);
     }
 
-    addMany(users: User[]) {
+    addMany(users: ExternalUser[]) {
+        if (!users || users.length === 0) {
+            return
+        }
         users.forEach(user => this.addUser(user));
     }
 
@@ -49,5 +52,18 @@ export default class UserManager {
 
     getUser(userId: string) {
         this.users.get(userId);
+    }
+
+    handleUserCommand<T extends ToolAttributes>(
+        userId: UserId,
+        command: UserCommand<T>
+    ) { 
+        const externalUser = this.users.get(userId)
+        console.log(this.users)
+        if (!externalUser) {
+            console.warn("Commands received from a user that is not present");
+            return;
+        }
+        externalUser.receiveCommand(command, this.ctx);
     }
 }
