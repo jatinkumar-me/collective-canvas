@@ -50,7 +50,7 @@ export class Connection {
         this.webSocket.onopen = this.connectionOpenHandler.bind(this);
     }
 
-    private isConnected(): boolean {
+    isConnected(): boolean {
         return this.webSocket.readyState === WebSocket.OPEN;
     }
 
@@ -60,7 +60,7 @@ export class Connection {
             user: this.userManager.getCurrentUser() as ExternalUser,
         };
         const messageString = JSON.stringify(message);
-        this.webSocket.send(messageString);
+        this.webSocket.send(SocketMessageKind.USER_CONNECTED + messageString);
     }
 
     connectionCloseHandler() {
@@ -69,12 +69,11 @@ export class Connection {
             userId: this.userManager.getCurrentUser().userId,
         };
         const messageString = JSON.stringify(message);
-        this.webSocket.send(messageString);
+        this.webSocket.send(SocketMessageKind.USER_DISCONNECTED + messageString);
     }
 
     socketMessageHandler(event: MessageEvent<string>) {
         const data = JSON.parse(event.data) as SocketMessage;
-        console.log("Incoming message", data);
         switch (data.type) {
             case SocketMessageKind.USER_CONNECTED:
                 this.handleUserConnected(data.user);
