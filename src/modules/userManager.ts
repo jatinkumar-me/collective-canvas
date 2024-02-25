@@ -36,18 +36,23 @@ export default class UserManager {
 
     addMany(users: ExternalUser[]) {
         if (!users || users.length === 0) {
-            return
+            return;
         }
-        users.forEach(user => this.addUser(user));
+        users.forEach((user) => {
+            if (user.userId === this.currentUser.userId) {
+                return;
+            }
+            this.addUser(user);
+        });
     }
 
     removeUser(userId: string) {
-        this.users.delete(userId);
         const user = this.users.get(userId);
         if (!user) {
             console.warn("Attempting to remove non existent user");
             return;
         }
+        this.users.delete(userId);
         this.userListDiv.removeChild(user.userElement);
     }
 
@@ -58,8 +63,8 @@ export default class UserManager {
     handleUserCommand<T extends ToolAttributes>(
         userId: UserId,
         command: UserCommand<T>
-    ) { 
-        const externalUser = this.users.get(userId)
+    ) {
+        const externalUser = this.users.get(userId);
         if (!externalUser) {
             console.warn("Commands received from a user that is not present");
             return;
