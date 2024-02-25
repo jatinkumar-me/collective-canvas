@@ -11,10 +11,10 @@ export default class UserManager {
     constructor(ctx: CanvasRenderingContext2D) {
         this.ctx = ctx;
         this.users = new Map<UserId, ExternalUser>();
-        this.currentUser = new User("unassigned-user-id", "unassigned-username")
-        const userListDiv = document.getElementById('user-list-div');
+        this.currentUser = new User("unassigned-user-id", "unassigned-username");
+        const userListDiv = document.getElementById("user-list-div");
         if (!userListDiv) {
-            throw new Error('user list div not present');
+            throw new Error("user list div not present");
         }
         this.userListDiv = userListDiv as HTMLDivElement;
     }
