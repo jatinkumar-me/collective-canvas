@@ -31,6 +31,8 @@ export class ExternalUser extends User {
     private toolName: ToolName;
     private toolAttributes: DefaultToolAttributes<any>;
 
+    userCursor: HTMLDivElement;
+
     constructor(userId: string, userName: string) {
         super(userId, userName);
         this.x = 0;
@@ -38,6 +40,21 @@ export class ExternalUser extends User {
         this.isDrag = false;
         this.toolName = ToolName.PENCIL;
         this.toolAttributes = {};
+
+        this.userCursor = this.createUserCursor();
+        const canvas = document.getElementById('canvas-container') as HTMLElement;
+        canvas.appendChild(this.userCursor);
+    }
+
+    createUserCursor() {
+        const userCursorDiv = document.createElement("div");
+        userCursorDiv.classList.add("user-cursor");
+        userCursorDiv.id = this.userId;
+        userCursorDiv.innerHTML = this.userName;
+        userCursorDiv.style.position = 'absolute'
+        userCursorDiv.style.top = '0px'
+        userCursorDiv.style.left = '0px'
+        return userCursorDiv;
     }
 
     receiveCommand<T extends ToolAttributes>(
@@ -70,5 +87,7 @@ export class ExternalUser extends User {
 
         this.x = command.x;
         this.y = command.y;
+        this.userCursor.style.top = this.y.toString() + 'px'
+        this.userCursor.style.left = this.x.toString() + 'px'
     }
 }
