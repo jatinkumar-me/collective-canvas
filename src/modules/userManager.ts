@@ -47,13 +47,14 @@ export default class UserManager {
     }
 
     removeUser(userId: string) {
-        const user = this.users.get(userId);
-        if (!user) {
+        const externalUser = this.users.get(userId);
+        if (!externalUser) {
             console.warn("Attempting to remove non existent user");
             return;
         }
         this.users.delete(userId);
-        this.userListDiv.removeChild(user.userElement);
+        this.userListDiv.removeChild(externalUser.userElement);
+        externalUser.destroy();
     }
 
     getUser(userId: string) {
