@@ -1,7 +1,9 @@
 export default class BaseLayer {
     canvas: HTMLCanvasElement;
+    previewCanvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
-    //Singleton class
+    previewCtx: CanvasRenderingContext2D;
+
     constructor() {
         this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
         const context = this.canvas.getContext('2d');
@@ -9,7 +11,15 @@ export default class BaseLayer {
             throw new Error("Can't get 2d rendering context");
         }
         this.ctx = context;
-        this.ctx.save();
+
+        const previewCanvas = document.getElementById('canvas-preview') as HTMLCanvasElement;
+        const previewCtx = previewCanvas.getContext('2d');
+        if (!previewCtx) {
+            throw new Error("Can't get 2d rendering context");
+        }
+        this.previewCanvas = previewCanvas;
+        this.previewCtx = previewCtx;
+
         this.events();
     }
 
@@ -22,7 +32,11 @@ export default class BaseLayer {
         clearCanvasButton.addEventListener('click', this.clearCanvas.bind(this));
     }
 
-    clearCanvas() {
+    public clearCanvas() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    public clearPreview() {
+        this.previewCtx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
     }
 }

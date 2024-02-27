@@ -49,13 +49,16 @@ export default abstract class BaseTools {
   }
 
   isValidMouseEvent(event: MouseEvent): boolean {
-    return (event.target as HTMLElement).id === "canvas";
+    const rect = this.baseLayer.canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    return (x >= 0 && x <= this.baseLayer.canvas.width && y >= 0 && y <= this.baseLayer.canvas.height); 
   }
 
   getMouseCoordinates(event: MouseEvent): [number, number] {
     const { x, y } = this.baseLayer.canvas.getBoundingClientRect();
-    const mouseX = event.clientX - x;
-    const mouseY = event.clientY - y;
+    const mouseX = Math.round(event.clientX - x);
+    const mouseY = Math.round(event.clientY - y);
 
     return [mouseX, mouseY];
   }
@@ -63,8 +66,8 @@ export default abstract class BaseTools {
   getMouseAverageSpeed([mouseX, mouseY]: [number, number]): number {
     if (this.isDrag == false) return 0;
 
-    const movementX = Math.abs(mouseX - this.mouseLastPosition[0]);
-    const movementY = Math.abs(mouseY - this.mouseLastPosition[1]);
+    const movementX = Math.round(Math.abs(mouseX - this.mouseLastPosition[0]));
+    const movementY = Math.round(Math.abs(mouseY - this.mouseLastPosition[1]));
 
     const distance = movementX + movementY;
 

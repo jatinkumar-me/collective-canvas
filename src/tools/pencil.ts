@@ -41,13 +41,15 @@ class PencilToolAttributes extends ToolAttributes {
   private strokeWidthInput: HTMLInputElement;
   private linecapInput: HTMLInputElement;
 
+  private canvasContainer: HTMLDivElement;
+
   /**
    * Holding on to references to the eventlisteners to remove them when the component is destroyed
    */
   private strokeStyleChangeListener: EventListener;
   private lineCapChangeListener: EventListener;
   private strokeWidthChangeListener: EventListener;
-  private wheelEventListener: (this: Document, ev: WheelEvent) => any;
+  private wheelEventListener: (this: HTMLDivElement, ev: WheelEvent) => any;
 
   constructor(
     defaultPencilToolAttributes: DefaultToolAttributes<PencilToolAttributes>
@@ -70,6 +72,8 @@ class PencilToolAttributes extends ToolAttributes {
     this.strokeWidthInput = document.getElementById(
       "pencil-stroke-width-input"
     ) as HTMLInputElement;
+
+    this.canvasContainer = document.getElementById('canvas-container') as HTMLDivElement;
 
     this.strokeStyleChangeListener = this.setStrokeStyleInput.bind(this);
     this.lineCapChangeListener = this.setLineCap.bind(this);
@@ -98,7 +102,7 @@ class PencilToolAttributes extends ToolAttributes {
       "change",
       this.strokeWidthChangeListener
     );
-    document.addEventListener("wheel", this.wheelEventListener, {
+    this.canvasContainer.addEventListener("wheel", this.wheelEventListener, {
       passive: false,
     });
   }
@@ -113,13 +117,10 @@ class PencilToolAttributes extends ToolAttributes {
       "change",
       this.strokeWidthChangeListener
     );
-    document.removeEventListener("wheel", this.wheelEventListener);
+    this.canvasContainer.removeEventListener("wheel", this.wheelEventListener);
   }
 
   onWheel(event: WheelEvent) {
-    if ((event.target as HTMLElement).id != "canvas") {
-      return;
-    }
     event.preventDefault();
     const delta = Math.round(event.deltaY / 149);
     const currentVal = parseInt(this.strokeWidthInput.value);
