@@ -11,10 +11,10 @@ export default class UserManager {
     constructor(ctx: CanvasRenderingContext2D) {
         this.ctx = ctx;
         this.users = new Map<UserId, ExternalUser>();
-        this.currentUser = new User("unassigned-user-id", "unassigned-username")
-        const userListDiv = document.getElementById('user-list-div');
+        this.currentUser = new User("unassigned-user-id", "unassigned-username");
+        const userListDiv = document.getElementById("user-list-div");
         if (!userListDiv) {
-            throw new Error('user list div not present');
+            throw new Error("user list div not present");
         }
         this.userListDiv = userListDiv as HTMLDivElement;
     }
@@ -36,19 +36,25 @@ export default class UserManager {
 
     addMany(users: ExternalUser[]) {
         if (!users || users.length === 0) {
-            return
+            return;
         }
-        users.forEach(user => this.addUser(user));
+        users.forEach((user) => {
+            if (user.userId === this.currentUser.userId) {
+                return;
+            }
+            this.addUser(user);
+        });
     }
 
     removeUser(userId: string) {
-        this.users.delete(userId);
-        const user = this.users.get(userId);
-        if (!user) {
+        const externalUser = this.users.get(userId);
+        if (!externalUser) {
             console.warn("Attempting to remove non existent user");
             return;
         }
-        this.userListDiv.removeChild(user.userElement);
+        this.users.delete(userId);
+        this.userListDiv.removeChild(externalUser.userElement);
+        externalUser.destroy();
     }
 
     getUser(userId: string) {
@@ -58,8 +64,8 @@ export default class UserManager {
     handleUserCommand<T extends ToolAttributes>(
         userId: UserId,
         command: UserCommand<T>
-    ) { 
-        const externalUser = this.users.get(userId)
+    ) {
+        const externalUser = this.users.get(userId);
         if (!externalUser) {
             console.warn("Commands received from a user that is not present");
             return;

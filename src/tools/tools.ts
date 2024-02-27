@@ -14,9 +14,9 @@ export default abstract class BaseTools {
 
   private canvasFocusEventListener: (this: HTMLCanvasElement, ev: FocusEvent) => any;
 
-  constructor(baseLayer: BaseLayer, connection?: Connection) {
+  constructor(baseLayer: BaseLayer, connection: Connection) {
     this.baseLayer = baseLayer;
-    this.connection = connection ?? null;
+    this.connection = connection;
     this.isDrag = false;
     this.isTouch = false;
     this.mouseLastClickPosition = [0, 0];
@@ -24,10 +24,9 @@ export default abstract class BaseTools {
     this.mouseAverageSpeed = 0;
 
     this.canvasFocusEventListener = this.onCanvasBlur.bind(this);
-    this.baseToolEvents();
   }
 
-  baseToolEvents() {
+  events() {
     this.baseLayer.canvas.addEventListener('blur', this.canvasFocusEventListener);
   }
 
