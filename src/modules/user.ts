@@ -57,12 +57,18 @@ export class ExternalUser extends User {
         return userCursorDiv;
     }
 
+    setUserCursorPosition() {
+        this.userCursor.style.top = this.y.toString() + 'px'
+        this.userCursor.style.left = this.x.toString() + 'px'
+    }
+
     receiveCommand<T extends ToolAttributes>(
         command: UserCommand<T>,
         ctx: CanvasRenderingContext2D
     ) {
         this.toolName = command.toolName;
         this.isDrag = command.isDrag;
+        this.toolAttributes = command.toolAttributes;
 
         if (this.x === 0 && this.y === 0) {
             this.x = command.x;
@@ -89,5 +95,6 @@ export class ExternalUser extends User {
         this.y = command.y;
         this.userCursor.style.top = this.y.toString() + 'px'
         this.userCursor.style.left = this.x.toString() + 'px'
+        this.setUserCursorPosition();
     }
 }
