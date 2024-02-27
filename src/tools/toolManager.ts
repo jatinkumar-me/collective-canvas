@@ -2,11 +2,13 @@ import BaseLayer from "../components/Layer";
 import { Connection } from "../modules/network";
 import Bezier from "./bezier";
 import Pencil from "./pencil";
+import Rectangle from "./rectangle";
 import BaseTools from "./tools";
 
 export enum ToolName {
   PENCIL = 'pencil',
   BEZIER = 'bezier',
+  RECTANGLE = 'rectangle',
 }
 
 /**
@@ -70,6 +72,8 @@ export default class ToolManager {
         return new Pencil(this.baseLayer, this.connection);
       case ToolName.BEZIER:
         return new Bezier(this.baseLayer);
+      case ToolName.RECTANGLE:
+        return new Rectangle(this.baseLayer, this.connection);
       default:
         return null;
     }
