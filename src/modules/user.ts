@@ -76,25 +76,17 @@ export class ExternalUser extends User {
             return;
         }
 
-        if (!this.isDrag) {
-            this.x = 0;
-            this.y = 0;
-            ctx.closePath();
-            return;
+        if (this.isDrag) {
+            Pencil.drawSegment(
+                ctx,
+                this.toolAttributes,
+                [command.x, command.y],
+                [this.x, this.y]
+            );
         }
-
-        this.toolAttributes = command.toolAttributes;
-        Pencil.drawSegment(
-            ctx,
-            this.toolAttributes,
-            [command.x, command.y],
-            [this.x, this.y]
-        );
 
         this.x = command.x;
         this.y = command.y;
-        this.userCursor.style.top = this.y.toString() + 'px'
-        this.userCursor.style.left = this.x.toString() + 'px'
         this.setUserCursorPosition();
     }
 

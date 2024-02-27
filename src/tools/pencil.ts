@@ -181,12 +181,12 @@ export default class Pencil extends BaseTools {
   }
 
   onMouseMove(event: MouseEvent): void {
+    this.sendMessageOverConnection();
+    super.onMouseMove(event);
     if (!this.isDrag) {
       return;
     }
-    super.onMouseMove(event);
     this.draw();
-    this.sendMessageOverConnection();
   }
 
   onMouseDown(event: MouseEvent): void {
@@ -248,7 +248,7 @@ export default class Pencil extends BaseTools {
     ctx.beginPath();
     ctx.moveTo(oldMouseCoord[0], oldMouseCoord[1]);
     ctx.lineTo(newMouseCoord[0], newMouseCoord[1]);
-    // ctx.closePath();
+    ctx.closePath();
     ctx.stroke();
   }
 
