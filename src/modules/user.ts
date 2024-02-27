@@ -97,4 +97,9 @@ export class ExternalUser extends User {
         this.userCursor.style.left = this.x.toString() + 'px'
         this.setUserCursorPosition();
     }
+
+    destroy() {
+        const canvas = document.getElementById('canvas-container') as HTMLElement;
+        canvas.removeChild(this.userCursor);
+    }
 }
