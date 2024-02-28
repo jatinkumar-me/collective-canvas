@@ -1,6 +1,9 @@
 import BaseLayer from "../components/Layer";
 import { Connection } from "../modules/network";
 
+/**
+ * @class BaseTools
+ */
 export default abstract class BaseTools {
   baseLayer: BaseLayer;
   connection: Connection | null;
@@ -44,7 +47,7 @@ export default abstract class BaseTools {
     this.mouseLastPosition = currentMousePosition;
   }
 
-  onMouseUp() {
+  onMouseUp(_event: MouseEvent) {
     this.isDrag = false;
   }
 

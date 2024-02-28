@@ -24,7 +24,7 @@ export default class UserManager {
     }
 
     setCurrentUser(userId: UserId, userName: string) {
-        this.currentUser = new User(userId, userName);
+        this.currentUser = new User(userId, userName, true);
         this.userListDiv.appendChild(this.currentUser.userElement);
     }
 

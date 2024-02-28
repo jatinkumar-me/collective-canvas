@@ -149,7 +149,7 @@ export default class Pencil extends BaseTools {
   readonly MAX_STROKE_WIDTH: number;
 
   private mouseDownEventListener: (this: Document, ev: MouseEvent) => any;
-  private mouseUpEventListener: EventListener;
+  private mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
   private mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
 
   constructor(baseLayer: BaseLayer, connection: Connection) {
@@ -198,8 +198,8 @@ export default class Pencil extends BaseTools {
     this.ctx.beginPath();
   }
 
-  onMouseUp(): void {
-    super.onMouseUp();
+  onMouseUp(event: MouseEvent): void {
+    super.onMouseUp(event);
     this.sendMessageOverConnection();
   }
 
@@ -249,7 +249,6 @@ export default class Pencil extends BaseTools {
     ctx.beginPath();
     ctx.moveTo(oldMouseCoord[0], oldMouseCoord[1]);
     ctx.lineTo(newMouseCoord[0], newMouseCoord[1]);
-    ctx.closePath();
     ctx.stroke();
   }
 

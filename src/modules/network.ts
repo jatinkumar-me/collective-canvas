@@ -13,6 +13,9 @@ enum SocketMessageKind {
 export type UserCommand<T extends ToolAttributes> = {
     x: number;
     y: number;
+    clickX?: number;
+    clickY?: number;
+    draw?: boolean;
     isDrag: boolean;
     toolName: ToolName;
     toolAttributes: DefaultToolAttributes<T>;
