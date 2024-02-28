@@ -30,10 +30,26 @@ export default class BaseLayer {
             return;
         }
         clearCanvasButton.addEventListener('click', this.clearCanvas.bind(this));
+
+        const saveCanvasButton = document.querySelector('#save-canvas');
+        if (!saveCanvasButton) {
+            return;
+        }
+        saveCanvasButton.addEventListener('click', this.saveCanvas.bind(this));
     }
 
     public clearCanvas() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    saveCanvas() {
+        const dataURL = this.canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = 'cc-image.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     public clearPreview() {
