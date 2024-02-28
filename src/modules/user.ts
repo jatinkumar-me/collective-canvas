@@ -10,10 +10,12 @@ export default class User {
     userId: UserId;
     userName: string;
     userElement: HTMLDivElement;
+    isInternal: boolean;
 
-    constructor(userId: string, userName: string) {
+    constructor(userId: string, userName: string, isInternal?: boolean) {
         this.userId = userId;
         this.userName = userName;
+        this.isInternal = isInternal ?? false;
         this.userElement = this.createUserDiv();
     }
 
@@ -21,6 +23,10 @@ export default class User {
         const userDiv = document.createElement("div");
         userDiv.classList.add("user-div");
         userDiv.innerHTML = `<strong>${this.userName}</strong>`;
+        if (this.isInternal) {
+            userDiv.classList.add("internal");
+            userDiv.innerHTML = userDiv.innerHTML + '<span>(You)</span>'
+        }
         return userDiv;
     }
 }
