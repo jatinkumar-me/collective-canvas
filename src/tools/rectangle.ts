@@ -221,8 +221,18 @@ export default class Rectangle extends BaseTools {
 
   drawRect(ctx: CanvasRenderingContext2D,) {
     ctx.beginPath();
-    const width = this.mouseLastPosition[0] - this.mouseLastClickPosition[0];
-    const height = this.mouseLastPosition[1] - this.mouseLastClickPosition[1];
+    let width = this.mouseLastPosition[0] - this.mouseLastClickPosition[0];
+    let height = this.mouseLastPosition[1] - this.mouseLastClickPosition[1];
+
+    if (this.toolAttrib.isSquare) {
+        const signX = Math.sign(width);
+        const signY = Math.sign(height);
+        const absWidth = Math.abs(width);
+        const absHeight = Math.abs(height);
+        const minDimension = Math.max(absWidth, absHeight);
+        width = signX * minDimension;
+        height = signY * minDimension;
+    }
 
     ctx.rect(this.mouseLastClickPosition[0], this.mouseLastClickPosition[1], width, height);
 
