@@ -1,4 +1,5 @@
 import Pencil from "../tools/pencil";
+import Rectangle from "../tools/rectangle";
 import ToolAttributes, { DefaultToolAttributes } from "../tools/toolAttributes";
 import { ToolName } from "../tools/toolManager";
 import { UserCommand } from "./network";
@@ -25,6 +26,8 @@ export default class User {
 }
 
 export class ExternalUser extends User {
+    private clickX: number;
+    private clickY: number;
     private x: number;
     private y: number;
     private isDrag: boolean;
@@ -35,6 +38,8 @@ export class ExternalUser extends User {
 
     constructor(userId: string, userName: string) {
         super(userId, userName);
+        this.clickX = 0;
+        this.clickY = 0;
         this.x = 0;
         this.y = 0;
         this.isDrag = false;
@@ -70,19 +75,45 @@ export class ExternalUser extends User {
         this.isDrag = command.isDrag;
         this.toolAttributes = command.toolAttributes;
 
+        if (this.isDrag && command.clickX && command.clickY) {
+            this.clickX = command.clickX;
+            this.clickY = command.clickY;
+        }
+
         if (this.x === 0 && this.y === 0) {
             this.x = command.x;
             this.y = command.y;
             return;
         }
 
-        if (this.isDrag) {
-            Pencil.drawSegment(
-                ctx,
-                this.toolAttributes,
-                [command.x, command.y],
-                [this.x, this.y]
-            );
+        switch (this.toolName) {
+            case ToolName.PENCIL: {
+                if (!this.isDrag) {
+                    break;
+                }
+                Pencil.drawSegment(
+                    ctx,
+                    this.toolAttributes,
+                    [command.x, command.y],
+                    [this.x, this.y]
+                );
+                break;
+            }
+            case ToolName.BEZIER: {
+                break;
+            }
+            case ToolName.RECTANGLE: {
+                if (!command.draw || this.isDrag) {
+                    break;
+                }
+                Rectangle.drawRect(
+                    ctx,
+                    [this.clickX, this.clickY],
+                    [command.x, command.y],
+                    this.toolAttributes
+                )
+                break;
+            }
         }
 
         this.x = command.x;

@@ -156,7 +156,7 @@ export default class Rectangle extends BaseTools {
   readonly MAX_STROKE_WIDTH: number;
 
   private mouseDownEventListener: (this: Document, ev: MouseEvent) => any;
-  private mouseUpEventListener: EventListener;
+  private mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
   private mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
 
   constructor(baseLayer: BaseLayer, connection: Connection) {
@@ -192,12 +192,11 @@ export default class Rectangle extends BaseTools {
   }
 
   onMouseMove(event: MouseEvent): void {
-    this.sendMessageOverConnection();
     super.onMouseMove(event);
-    if (!this.isDrag) {
-      return;
+    if (this.isDrag) {
+      this.drawPreview();
     }
-    this.drawPreview();
+    this.sendMessageOverConnection(false);
   }
 
   onMouseDown(event: MouseEvent): void {
@@ -205,15 +204,18 @@ export default class Rectangle extends BaseTools {
       return;
     }
     super.onMouseDown(event);
+    this.sendMessageOverConnection(false);
   }
 
-  onMouseUp(): void {
+  onMouseUp(event: MouseEvent): void {
+    let draw: boolean = false;
     if (this.isDrag) {
+      draw = true;
       this.draw();
     }
-    super.onMouseUp();
-    this.sendMessageOverConnection();
+    super.onMouseUp(event);
     this.baseLayer.clearPreview();
+    this.sendMessageOverConnection(draw);
   }
 
   draw() {
@@ -250,19 +252,19 @@ export default class Rectangle extends BaseTools {
    */
   static drawRect(
     ctx: CanvasRenderingContext2D,
-    point: [number, number],
-    dimension: [number, number],
+    startPoint: [number, number],
+    endPoint: [number, number],
     toolAttrib: DefaultToolAttributes<RectangleToolAttributes>
   ) {
     ctx.beginPath();
-    let width = dimension[0];
-    let height = dimension[1];
+    let width = endPoint[0] - startPoint[0];
+    let height = endPoint[1] - startPoint[1];
 
     if (toolAttrib.isSquare) {
       [width, height] = getSquareDimensions(width, height);
     }
 
-    ctx.rect(point[0], point[1], width, height);
+    ctx.rect(startPoint[0], startPoint[1], width, height);
     if (toolAttrib.isFilled) {
       ctx.fillStyle = toolAttrib.fillStyle;
       ctx.fill();
@@ -272,11 +274,14 @@ export default class Rectangle extends BaseTools {
     ctx.stroke();
   }
 
-  sendMessageOverConnection() {
+  sendMessageOverConnection(draw: boolean) {
     if (!this.connection?.isConnected()) {
       return;
     }
     const userCommand: UserCommand<RectangleToolAttributes> = {
+      clickX: this.mouseLastClickPosition[0],
+      clickY: this.mouseLastClickPosition[1],
+      draw: draw,
       x: this.mouseLastPosition[0],
       y: this.mouseLastPosition[1],
       isDrag: this.isDrag,
