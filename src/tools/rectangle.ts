@@ -9,35 +9,35 @@ import { ToolName } from "./toolManager";
 import BaseTools from "./tools";
 
 const DEFAULT_RECTANGLE_TOOL_ATTRIBUTES: DefaultToolAttributes<RectangleToolAttributes> =
-  {
-    strokeStyle: "#000000",
-    strokeWidth: 1,
-    isFilled: false,
-    fillStyle: "#000000",
-    isSquare: false,
-  };
+{
+  strokeStyle: "#000000",
+  strokeWidth: 1,
+  isFilled: false,
+  fillStyle: "#000000",
+  isSquare: false,
+};
 
 const RECTANGLE_TOOL_ATTRIBUTE_MARKUP: ToolAttributesMarkup<RectangleToolAttributes> =
-  {
-    strokeStyle: `<div><label for="rectangle-stroke-color-picker">Stroke color</label>
+{
+  strokeStyle: `<div><label for="rectangle-stroke-color-picker">Stroke color</label>
                   <input type="color" id="rectangle-stroke-color-picker" />
                   </div>`,
-    strokeWidth: `<div>
+  strokeWidth: `<div>
                     <label for="rectangle-stroke-width-input">Stroke width</label>
                     <input type="range" id="rectangle-stroke-width-input" name="rectangle-stroke-width-input" min="1" max="50" step="1" value="${DEFAULT_RECTANGLE_TOOL_ATTRIBUTES.strokeWidth}">
                </div>`,
-    isFilled: `<div>
+  isFilled: `<div>
                   <input type="checkbox" id="rectangle-isfilled" />
                   <label for="rectangle-isfilled">fill</label>
               </div>`,
-    fillStyle: `<div><label for="rectangle-fill-color-picker">Fill color</label>
+  fillStyle: `<div><label for="rectangle-fill-color-picker">Fill color</label>
                   <input type="color" id="rectangle-fill-color-picker" disabled/>
                 </div>`,
-    isSquare: `<div>
+  isSquare: `<div>
                   <input type="checkbox" id="rectangle-issquare" />
                   <label for="rectangle-issquare">square</label>
               </div>`,
-  };
+};
 
 export class RectangleToolAttributes extends ToolAttributes {
   strokeStyle: string | CanvasGradient | CanvasPattern;
@@ -249,9 +249,9 @@ export default class Rectangle extends BaseTools {
    * Static method for drawing a rectangle, using a single point and dimensions
    */
   static drawRect(
-    ctx: CanvasRenderingContext2D, 
+    ctx: CanvasRenderingContext2D,
     point: [number, number],
-    dimension: [number, number], 
+    dimension: [number, number],
     toolAttrib: DefaultToolAttributes<RectangleToolAttributes>
   ) {
     ctx.beginPath();
