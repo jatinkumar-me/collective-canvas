@@ -1,5 +1,6 @@
 import BaseLayer from "../components/Layer";
 import { Connection, UserCommand } from "../modules/network";
+import { getSquareDimensions } from "../utils/utils";
 import ToolAttributes, {
   DefaultToolAttributes,
   ToolAttributesMarkup,
@@ -219,19 +220,18 @@ export default class Rectangle extends BaseTools {
     this.drawRect(this.ctx);
   }
 
+  drawPreview() {
+    this.baseLayer.clearPreview();
+    this.drawRect(this.previewCtx);
+  }
+
   drawRect(ctx: CanvasRenderingContext2D,) {
     ctx.beginPath();
     let width = this.mouseLastPosition[0] - this.mouseLastClickPosition[0];
     let height = this.mouseLastPosition[1] - this.mouseLastClickPosition[1];
 
     if (this.toolAttrib.isSquare) {
-        const signX = Math.sign(width);
-        const signY = Math.sign(height);
-        const absWidth = Math.abs(width);
-        const absHeight = Math.abs(height);
-        const minDimension = Math.max(absWidth, absHeight);
-        width = signX * minDimension;
-        height = signY * minDimension;
+      [width, height] = getSquareDimensions(width, height);
     }
 
     ctx.rect(this.mouseLastClickPosition[0], this.mouseLastClickPosition[1], width, height);
@@ -245,15 +245,32 @@ export default class Rectangle extends BaseTools {
     ctx.stroke();
   }
 
-  drawPreview() {
-    this.baseLayer.clearPreview();
-    this.drawRect(this.previewCtx);
-  }
-
   /**
-   * Static method for drawing a small line segment, using two points
+   * Static method for drawing a rectangle, using a single point and dimensions
    */
-  static drawRect() {}
+  static drawRect(
+    ctx: CanvasRenderingContext2D, 
+    point: [number, number],
+    dimension: [number, number], 
+    toolAttrib: DefaultToolAttributes<RectangleToolAttributes>
+  ) {
+    ctx.beginPath();
+    let width = dimension[0];
+    let height = dimension[1];
+
+    if (toolAttrib.isSquare) {
+      [width, height] = getSquareDimensions(width, height);
+    }
+
+    ctx.rect(point[0], point[1], width, height);
+    if (toolAttrib.isFilled) {
+      ctx.fillStyle = toolAttrib.fillStyle;
+      ctx.fill();
+    }
+    ctx.strokeStyle = toolAttrib.strokeStyle;
+    ctx.lineWidth = toolAttrib.strokeWidth;
+    ctx.stroke();
+  }
 
   sendMessageOverConnection() {
     if (!this.connection?.isConnected()) {
