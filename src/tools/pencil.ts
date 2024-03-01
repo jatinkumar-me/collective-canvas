@@ -252,6 +252,32 @@ export default class Pencil extends BaseTools {
     ctx.stroke();
   }
 
+  /**
+   * Static method for drawing whole path, given an array of line commands
+   * @param ctx CanvasRenderingContext2D for rending the path
+   * @param commands an array of user commands to be drawn at once.
+   */
+  static drawPath(
+    ctx: CanvasRenderingContext2D,
+    commands: UserCommand<PencilToolAttributes>[]
+  ) {
+    if (commands.length < 2) {
+      console.warn("Path require atmost two commands");
+      return;
+    }
+
+    for (let i = 1; i < commands.length; i++) {
+      const curCommand = commands[i];
+      const prevCommand = commands[i - 1];
+      Pencil.drawSegment(
+        ctx,
+        curCommand.toolAttributes,
+        [curCommand.x, curCommand.y],
+        [prevCommand.x, prevCommand.y]
+      );
+    }
+  }
+
   sendMessageOverConnection() {
     if (!this.connection?.isConnected()) {
       return;
