@@ -4,7 +4,7 @@ import Pencil from "../tools/pencil";
 import ToolAttributes from "../tools/toolAttributes";
 import { ToolName } from "../tools/toolManager";
 
-interface Action<T extends ToolAttributes> {
+export interface Action<T extends ToolAttributes> {
   toolName: ToolName;
   commands: UserCommand<T>[];
 }
@@ -30,12 +30,12 @@ export default class State {
       const key = (event.key || '').toLowerCase();
 
       if (key == "u") {
-        this.undo();
         event.preventDefault();
+        this.undo();
       }
       if (key == "r" && (event.ctrlKey == true || event.metaKey)) {
-        this.redo();
         event.preventDefault();
+        this.redo();
       }
     }, false);
   }
@@ -48,9 +48,13 @@ export default class State {
     return this.redoActions.length > 0;
   }
 
+  do(action: Action<any>) {
+    this.actions.push(action);
+  }
+
   undo() {
     if (!this.canUndo()) {
-      console.log("Already the last change");
+      console.info("Already the last change");
       return;
     }
     const lastAction = this.actions.pop();
@@ -62,14 +66,21 @@ export default class State {
   }
 
   redo() {
-    if (!this.canRedo) {
-      console.log("Already the newest change");
+    if (!this.canRedo()) {
+      console.info("Already the newest change");
       return;
     }
 
+    const lastAction = this.redoActions.pop();
+    if (!lastAction) {
+      return;
+    }
+    this.drawAction(lastAction);
+    this.actions.push(lastAction);
   }
 
   drawAllActions() {
+    this.baseLayer.clearCanvas();
     for (let action of this.actions) {
       this.drawAction(action);
     }
