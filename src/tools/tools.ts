@@ -1,3 +1,4 @@
+import State from "../actions/state";
 import BaseLayer from "../components/Layer";
 import { Connection } from "../modules/network";
 
@@ -7,6 +8,7 @@ import { Connection } from "../modules/network";
 export default abstract class BaseTools {
   baseLayer: BaseLayer;
   connection: Connection | null;
+  state: State;
 
   isDrag: boolean;
   isTouch: boolean;
@@ -17,8 +19,9 @@ export default abstract class BaseTools {
 
   private canvasFocusEventListener: (this: HTMLCanvasElement, ev: FocusEvent) => any;
 
-  constructor(baseLayer: BaseLayer, connection: Connection) {
+  constructor(baseLayer: BaseLayer, connection: Connection, state: State) {
     this.baseLayer = baseLayer;
+    this.state = state;
     this.connection = connection;
     this.isDrag = false;
     this.isTouch = false;

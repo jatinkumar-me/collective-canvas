@@ -1,3 +1,4 @@
+import State, { Action } from "../actions/state";
 import BaseLayer from "../components/Layer";
 import { Connection, UserCommand } from "../modules/network";
 import { clamp } from "../utils/utils";
@@ -50,6 +51,7 @@ class PencilToolAttributes extends ToolAttributes {
   private lineCapChangeListener: EventListener;
   private strokeWidthChangeListener: EventListener;
   private wheelEventListener: (this: HTMLDivElement, ev: WheelEvent) => any;
+
 
   constructor(
     defaultPencilToolAttributes: DefaultToolAttributes<PencilToolAttributes>
@@ -152,8 +154,13 @@ export default class Pencil extends BaseTools {
   private mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
   private mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
 
-  constructor(baseLayer: BaseLayer, connection: Connection) {
-    super(baseLayer, connection);
+  /**
+   * Storing the current action, it will be sent to the state
+   */
+  private curAction: Action<PencilToolAttributes>;
+
+  constructor(baseLayer: BaseLayer, connection: Connection, state: State) {
+    super(baseLayer, connection, state);
     this.ctx = baseLayer.ctx;
     this.MAX_STROKE_WIDTH = 100;
     this.toolAttrib = new PencilToolAttributes(DEFAULT_PENCIL_TOOL_ATTRIBUTES);
@@ -163,6 +170,10 @@ export default class Pencil extends BaseTools {
     this.mouseMoveEventListener = this.onMouseMove.bind(this);
 
     this.events();
+    this.curAction = {
+      toolName: ToolName.PENCIL,
+      commands: [],
+    };
   }
 
   /**
@@ -188,6 +199,7 @@ export default class Pencil extends BaseTools {
       return;
     }
     this.draw();
+    this.recordCommand();
   }
 
   onMouseDown(event: MouseEvent): void {
@@ -196,11 +208,16 @@ export default class Pencil extends BaseTools {
     }
     super.onMouseDown(event);
     this.ctx.beginPath();
+    this.curAction = {
+      toolName: ToolName.PENCIL,
+      commands: [],
+    };
   }
 
   onMouseUp(event: MouseEvent): void {
     super.onMouseUp(event);
     this.sendMessageOverConnection();
+    this.state.do(this.curAction);
   }
 
   getStrokeWidth(): number {
@@ -252,18 +269,51 @@ export default class Pencil extends BaseTools {
     ctx.stroke();
   }
 
-  sendMessageOverConnection() {
-    if (!this.connection?.isConnected()) {
+  /**
+   * Static method for drawing whole path, given an array of line commands
+   * @param ctx CanvasRenderingContext2D for rending the path
+   * @param commands an array of user commands to be drawn at once.
+   */
+  static drawPath(
+    ctx: CanvasRenderingContext2D,
+    commands: UserCommand<PencilToolAttributes>[]
+  ) {
+    if (commands.length < 2) {
+      console.warn("Path require atmost two commands");
       return;
     }
-    const userCommand: UserCommand<PencilToolAttributes> = {
+
+    for (let i = 1; i < commands.length; i++) {
+      const curCommand = commands[i];
+      const prevCommand = commands[i - 1];
+      Pencil.drawSegment(
+        ctx,
+        curCommand.toolAttributes,
+        [curCommand.x, curCommand.y],
+        [prevCommand.x, prevCommand.y]
+      );
+    }
+  }
+
+  getCommand(): UserCommand<PencilToolAttributes> {
+    return {
       x: this.mouseLastPosition[0],
       y: this.mouseLastPosition[1],
       isDrag: this.isDrag,
       toolName: ToolName.PENCIL,
       toolAttributes: this.toolAttrib.getAttributes(),
     }
-    this.connection.sendUserCommand(userCommand);
+  }
+
+  sendMessageOverConnection() {
+    if (!this.connection?.isConnected()) {
+      return;
+    }
+    this.connection.sendUserCommand(this.getCommand());
+  }
+
+  recordCommand() {
+    this.curAction.commands.push(this.getCommand())
   }
 
   /**

@@ -35,7 +35,7 @@ const RECTANGLE_TOOL_ATTRIBUTE_MARKUP: ToolAttributesMarkup<RectangleToolAttribu
                 </div>`,
   isSquare: `<div>
                   <input type="checkbox" id="rectangle-issquare" />
-                  <label for="rectangle-issquare">square</label>
+                  <label for="rectangle-issquare" title="Press Shift to toggle this checkbox">square</label>
               </div>`,
 };
 
@@ -61,6 +61,8 @@ export class RectangleToolAttributes extends ToolAttributes {
   private strokeWidthChangeListener: EventListener;
   private isSquareListener: EventListener;
   // private wheelEventListener: (this: Document, ev: WheelEvent) => any;
+  private shiftKeyDownEventListener: (this: Document, ev: KeyboardEvent) => void;
+  private shiftKeyUpEventListener: (this: Document, ev: KeyboardEvent) => void;
 
   constructor(defaultAttribs: DefaultToolAttributes<RectangleToolAttributes>) {
     super(RECTANGLE_TOOL_ATTRIBUTE_MARKUP);
@@ -93,6 +95,8 @@ export class RectangleToolAttributes extends ToolAttributes {
     this.strokeWidthChangeListener = this.setStrokeWidth.bind(this);
     this.isSquareListener = this.setIsSquare.bind(this);
     // this.wheelEventListener = this.onWheel.bind(this);
+    this.shiftKeyUpEventListener = this.onShiftKeyUp.bind(this);
+    this.shiftKeyDownEventListener = this.onShiftKeyDown.bind(this);
 
     this.events();
   }
@@ -106,6 +110,8 @@ export class RectangleToolAttributes extends ToolAttributes {
     // document.addEventListener("wheel", this.wheelEventListener, {
     //   passive: false,
     // });
+    document.addEventListener("keydown", this.shiftKeyDownEventListener);
+    document.addEventListener("keyup", this.shiftKeyUpEventListener);
   }
 
   removeEvents() {
@@ -114,6 +120,8 @@ export class RectangleToolAttributes extends ToolAttributes {
     this.fillStyleInput.removeEventListener("change", this.fillStyleChangeListener);
     this.strokeWidthInput.removeEventListener("change", this.strokeWidthChangeListener);
     this.isSquareInput.removeEventListener("change", this.isSquareListener);
+    document.removeEventListener("keydown", this.shiftKeyDownEventListener);
+    document.removeEventListener("keyup", this.shiftKeyUpEventListener);
     super.destroy();
   }
 
@@ -136,6 +144,23 @@ export class RectangleToolAttributes extends ToolAttributes {
 
   setIsSquare(e: Event) {
     this.isSquare = (e.target as HTMLInputElement).checked;
+  }
+
+  private toggleSetIsSquare() {
+      this.isSquare = !this.isSquare;
+      this.isSquareInput.checked = !this.isSquareInput.checked;
+  }
+
+  onShiftKeyUp(e: KeyboardEvent) {
+    if (e.code === 'ShiftLeft') {
+      this.toggleSetIsSquare();
+    }
+  }
+  
+  onShiftKeyDown(e: KeyboardEvent) {
+    if (e.code === 'ShiftLeft') {
+      this.toggleSetIsSquare();
+    }
   }
 
   getAttributes(): DefaultToolAttributes<RectangleToolAttributes> {

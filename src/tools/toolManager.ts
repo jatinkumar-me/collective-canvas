@@ -1,3 +1,4 @@
+import State from "../actions/state";
 import BaseLayer from "../components/Layer";
 import { Connection } from "../modules/network";
 import Bezier from "./bezier";
@@ -9,6 +10,7 @@ export enum ToolName {
   PENCIL = 'pencil',
   BEZIER = 'bezier',
   RECTANGLE = 'rectangle',
+  LINE = 'line',
 }
 
 /**
@@ -18,10 +20,12 @@ export default class ToolManager {
   private selectedTool: BaseTools;
   private connection: Connection;
   selectedToolName: ToolName;
+  state: State;
 
-  constructor(private baseLayer: BaseLayer, connection: Connection) {
+  constructor(private baseLayer: BaseLayer, connection: Connection, state: State) {
     this.connection = connection;
-    this.selectedTool = new Pencil(baseLayer, connection);
+    this.state = state;
+    this.selectedTool = new Pencil(baseLayer, connection, state);
     this.selectedToolName = ToolName.PENCIL;
     this.events();
   }
@@ -69,11 +73,11 @@ export default class ToolManager {
   createToolFromName(toolName: string): BaseTools | null {
     switch (toolName) {
       case ToolName.PENCIL:
-        return new Pencil(this.baseLayer, this.connection);
+        return new Pencil(this.baseLayer, this.connection, this.state);
       case ToolName.BEZIER:
         return new Bezier(this.baseLayer);
       case ToolName.RECTANGLE:
-        return new Rectangle(this.baseLayer, this.connection);
+        return new Rectangle(this.baseLayer, this.connection, this.state);
       default:
         return null;
     }

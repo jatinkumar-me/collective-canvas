@@ -1,3 +1,4 @@
+import State from "./actions/state";
 import BaseLayer from "./components/Layer";
 import { Connection } from "./modules/network";
 import UserManager from "./modules/userManager";
@@ -8,12 +9,14 @@ export default class App {
     toolManager: ToolManager;
     userManager: UserManager;
     connection: Connection;
+    state: State;
     
     constructor(connectionUrl: string) {
         this.baseLayer = new BaseLayer();
+        this.state = new State(this.baseLayer);
         this.userManager = new UserManager(this.baseLayer.ctx);
         this.connection = new Connection(connectionUrl, this.userManager);
-        this.toolManager = new ToolManager(this.baseLayer, this.connection);
+        this.toolManager = new ToolManager(this.baseLayer, this.connection, this.state);
     }
 
     init() {
