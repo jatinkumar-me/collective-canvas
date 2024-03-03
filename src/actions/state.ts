@@ -1,12 +1,14 @@
 import BaseLayer from "../components/Layer";
 import { UserCommand } from "../modules/network";
 import Pencil from "../tools/pencil";
+import Rectangle from "../tools/rectangle";
 import ToolAttributes from "../tools/toolAttributes";
 import { ToolName } from "../tools/toolManager";
 
 export interface Action<T extends ToolAttributes> {
   toolName: ToolName;
   commands: UserCommand<T>[];
+  isExternal?: boolean
 }
 
 /**
@@ -97,7 +99,14 @@ export default class State {
         break;
       }
       case ToolName.BEZIER:
-      case ToolName.RECTANGLE:
+      case ToolName.RECTANGLE: {
+        const command = action.commands[0];
+        if (!command.clickX || !command.clickY) {
+          break;
+        }
+        Rectangle.drawRect(this.baseLayer.ctx, [command.clickX, command.clickY], [command.x, command.y], command.toolAttributes)
+        break;
+      }
       case ToolName.LINE:
     }
   }
