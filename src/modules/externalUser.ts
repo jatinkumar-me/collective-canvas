@@ -1,4 +1,4 @@
-import State from "../actions/state";
+import State, { Action } from "../actions/state";
 import Pencil from "../tools/pencil";
 import Rectangle from "../tools/rectangle";
 import ToolAttributes, { DefaultToolAttributes } from "../tools/toolAttributes";
@@ -15,6 +15,9 @@ export class ExternalUser extends User {
     private toolName: ToolName;
     private toolAttributes: DefaultToolAttributes<any>;
 
+    private lastCommand: UserCommand<any> | null;
+    private curAction: Action<any>;
+
     userCursor: HTMLDivElement;
 
     constructor(userId: string, userName: string, state: State) {
@@ -30,6 +33,13 @@ export class ExternalUser extends User {
         this.userCursor = this.createUserCursor();
         const canvas = document.getElementById('canvas-container') as HTMLElement;
         canvas.appendChild(this.userCursor);
+
+        this.lastCommand = null;
+        this.curAction = {
+            toolName: ToolName.PENCIL,
+            commands: [],
+            isExternal: true,
+        }
     }
 
     createUserCursor() {
@@ -70,6 +80,10 @@ export class ExternalUser extends User {
         switch (this.toolName) {
             case ToolName.PENCIL: {
                 if (!this.isDrag) {
+                    if (this.lastCommand && this.lastCommand.isDrag) {
+                        this.recordState();
+                        this.initCurAction(ToolName.PENCIL);
+                    }
                     break;
                 }
                 Pencil.drawSegment(
@@ -78,6 +92,9 @@ export class ExternalUser extends User {
                     [command.x, command.y],
                     [this.x, this.y]
                 );
+
+                this.curAction.toolName = ToolName.PENCIL
+                this.recordCommand(command);
                 break;
             }
             case ToolName.BEZIER: {
@@ -93,6 +110,10 @@ export class ExternalUser extends User {
                     [command.x, command.y],
                     this.toolAttributes
                 )
+                this.initCurAction(command.toolName)
+                this.recordCommand(command);
+                this.recordState();
+                this.initCurAction(command.toolName)
                 break;
             }
         }
@@ -100,6 +121,23 @@ export class ExternalUser extends User {
         this.x = command.x;
         this.y = command.y;
         this.setUserCursorPosition();
+        this.lastCommand = command;
+    }
+
+    initCurAction(toolName: ToolName) {
+        this.curAction = {
+            toolName,
+            commands: [],
+            isExternal: true,
+        }
+    }
+
+    recordCommand<T extends ToolAttributes>(command: UserCommand<T>) {
+        this.curAction.commands.push(command)
+    }
+
+    recordState() {
+        this.state.do(this.curAction);
     }
 
     destroy() {
