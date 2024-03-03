@@ -1,3 +1,4 @@
+import State from "../actions/state";
 import BaseLayer from "../components/Layer";
 import { Connection, UserCommand } from "../modules/network";
 import { getSquareDimensions } from "../utils/utils";
@@ -184,8 +185,8 @@ export default class Rectangle extends BaseTools {
   private mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
   private mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
 
-  constructor(baseLayer: BaseLayer, connection: Connection) {
-    super(baseLayer, connection);
+  constructor(baseLayer: BaseLayer, connection: Connection, state: State) {
+    super(baseLayer, connection, state);
     this.ctx = baseLayer.ctx;
     this.previewCtx = baseLayer.previewCtx;
     this.MAX_STROKE_WIDTH = 100;
@@ -237,6 +238,18 @@ export default class Rectangle extends BaseTools {
     if (this.isDrag) {
       draw = true;
       this.draw();
+      this.state.do({
+        toolName: ToolName.RECTANGLE,
+        commands: [{
+          toolName: ToolName.RECTANGLE,
+          toolAttributes: this.toolAttrib,
+          isDrag: false,
+          x: this.mouseLastPosition[0],
+          y: this.mouseLastPosition[1],
+          clickX: this.mouseLastClickPosition[0],
+          clickY: this.mouseLastClickPosition[1],
+        }]
+      })
     }
     super.onMouseUp(event);
     this.baseLayer.clearPreview();
@@ -253,23 +266,7 @@ export default class Rectangle extends BaseTools {
   }
 
   drawRect(ctx: CanvasRenderingContext2D,) {
-    ctx.beginPath();
-    let width = this.mouseLastPosition[0] - this.mouseLastClickPosition[0];
-    let height = this.mouseLastPosition[1] - this.mouseLastClickPosition[1];
-
-    if (this.toolAttrib.isSquare) {
-      [width, height] = getSquareDimensions(width, height);
-    }
-
-    ctx.rect(this.mouseLastClickPosition[0], this.mouseLastClickPosition[1], width, height);
-
-    if (this.toolAttrib.isFilled) {
-      ctx.fillStyle = this.toolAttrib.fillStyle;
-      ctx.fill();
-    }
-    ctx.strokeStyle = this.toolAttrib.strokeStyle;
-    ctx.lineWidth = this.toolAttrib.strokeWidth;
-    ctx.stroke();
+    Rectangle.drawRect(ctx, this.mouseLastClickPosition, this.mouseLastPosition, this.toolAttrib);
   }
 
   /**
