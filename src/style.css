@@ -9,4 +9,12 @@
 }
 
 #canvas{
+    background: #ffffff;
+}
+
+.white-board{
+    background: #4a4a4a;
+    display: flex;
+    justify-content: center;
+    padding: 1rem 2rem;
 }
