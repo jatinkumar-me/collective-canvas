@@ -1,6 +1,7 @@
 import ToolAttributes, { DefaultToolAttributes } from "../tools/toolAttributes";
 import { ToolName } from "../tools/toolManager";
-import User, { ExternalUser, UserId } from "./user";
+import { ExternalUser } from "./externalUser";
+import User, { UserId }  from "./user";
 import UserManager from "./userManager";
 
 enum SocketMessageKind {
@@ -24,7 +25,7 @@ export type UserCommand<T extends ToolAttributes> = {
 export type SocketMessage =
     | {
         type: SocketMessageKind.USER_CONNECTED;
-        user: ExternalUser;
+        user: User;
     }
     | {
         type: SocketMessageKind.USER_DISCONNECTED;
@@ -60,7 +61,7 @@ export class Connection {
     connectionOpenHandler() {
         const message: SocketMessage = {
             type: SocketMessageKind.USER_CONNECTED,
-            user: this.userManager.getCurrentUser() as ExternalUser,
+            user: this.userManager.getCurrentUser() as User,
         };
         const messageString = JSON.stringify(message);
         this.webSocket.send(SocketMessageKind.USER_CONNECTED + messageString);
@@ -101,7 +102,7 @@ export class Connection {
         this.userManager.addMany(existingUsers);
     }
 
-    handleUserConnected(user: ExternalUser) {
+    handleUserConnected(user: User) {
         this.userManager.addUser(user);
     }
 
