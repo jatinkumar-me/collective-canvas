@@ -1,7 +1,6 @@
 import ToolAttributes, { DefaultToolAttributes } from "../tools/toolAttributes";
 import { ToolName } from "../tools/toolManager";
-import { ExternalUser } from "./externalUser";
-import User, { UserId }  from "./user";
+import User, { UserData, UserId }  from "./user";
 import UserManager from "./userManager";
 
 enum SocketMessageKind {
@@ -25,7 +24,7 @@ export type UserCommand<T extends ToolAttributes> = {
 export type SocketMessage =
     | {
         type: SocketMessageKind.USER_CONNECTED;
-        user: User;
+        user: UserData;
     }
     | {
         type: SocketMessageKind.USER_DISCONNECTED;
@@ -35,11 +34,10 @@ export type SocketMessage =
         type: SocketMessageKind.USER_COMMAND;
         userId: UserId;
         command: UserCommand<any>;
-    }
-    | {
+    } | {
         type: SocketMessageKind.USER_CONNECTION_ACKNOWLEDGED;
-        user: User;
-        users: ExternalUser[];
+        user: UserData;
+        users: UserData[];
     };
 
 export class Connection {
@@ -97,13 +95,13 @@ export class Connection {
         }
     }
 
-    handlUserConnectionAcknowledged(user: User, existingUsers: ExternalUser[]) {
+    handlUserConnectionAcknowledged(user: UserData, existingUsers: UserData[]) {
         this.userManager.setCurrentUser(user.userId, user.userName);
         this.userManager.addMany(existingUsers);
     }
 
-    handleUserConnected(user: User) {
-        this.userManager.addUser(user);
+    handleUserConnected(user: UserData) {
+        this.userManager.addExternalUser(user);
     }
 
     handleUserDisconnected(userId: UserId) {

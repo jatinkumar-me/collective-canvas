@@ -4,7 +4,7 @@ import ToolAttributes from "../tools/toolAttributes";
 import { ExternalUser } from "./externalUser";
 import InternalUser from "./internalUser";
 import { UserCommand } from "./network";
-import User, { UserId } from "./user";
+import { UserData, UserId } from "./user";
 
 export default class UserManager {
     private users: Map<UserId, ExternalUser>;
@@ -25,9 +25,11 @@ export default class UserManager {
         this.userListDiv = userListDiv as HTMLDivElement;
     }
 
-    getCurrentUser() {
-        console.log(this.currentUser)
-        return this.currentUser;
+    getCurrentUser(): UserData {
+        return {
+            userId: this.currentUser.userId,
+            userName: this.currentUser.userName,
+        };
     }
 
     setCurrentUser(userId: UserId, userName: string) {
@@ -35,13 +37,13 @@ export default class UserManager {
         this.userListDiv.appendChild(this.currentUser.userElement);
     }
 
-    addUser(user: User) {
-        const newUser = new ExternalUser(user.userId, user.userName, this.state);
+    addExternalUser(userData: UserData) {
+        const newUser = new ExternalUser(userData.userId, userData.userName, this.state);
         this.users.set(newUser.userId, newUser);
         this.userListDiv.appendChild(newUser.userElement);
     }
 
-    addMany(users: ExternalUser[]) {
+    addMany(users: UserData[]) {
         if (!users || users.length === 0) {
             return;
         }
@@ -49,7 +51,7 @@ export default class UserManager {
             if (user.userId === this.currentUser.userId) {
                 return;
             }
-            this.addUser(user);
+            this.addExternalUser(user);
         });
     }
 

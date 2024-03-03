@@ -2,6 +2,11 @@ import State from "../actions/state";
 
 export type UserId = string;
 
+export type UserData = {
+    userId: UserId;
+    userName: string;
+}
+
 export default class User {
     userId: UserId;
     userName: string;
