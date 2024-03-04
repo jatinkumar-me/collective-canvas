@@ -31,7 +31,7 @@ export default abstract class ToolAttributes {
     }
 
     const toolBoxInnerHTML = Object.values(this.toolAttributesMarkup).join('');
-    this.toolBoxDiv.innerHTML = toolBoxInnerHTML;
+    this.toolBoxDiv.innerHTML = `<fieldset><legend>Tool Attributes</legend>${toolBoxInnerHTML}</fieldset>`;
   }
 
   destroy() {
