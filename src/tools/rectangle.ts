@@ -148,8 +148,8 @@ export class RectangleToolAttributes extends ToolAttributes {
   }
 
   private toggleSetIsSquare() {
-      this.isSquare = !this.isSquare;
-      this.isSquareInput.checked = !this.isSquareInput.checked;
+    this.isSquare = !this.isSquare;
+    this.isSquareInput.checked = !this.isSquareInput.checked;
   }
 
   onShiftKeyUp(e: KeyboardEvent) {
@@ -157,7 +157,7 @@ export class RectangleToolAttributes extends ToolAttributes {
       this.toggleSetIsSquare();
     }
   }
-  
+
   onShiftKeyDown(e: KeyboardEvent) {
     if (e.code === 'ShiftLeft') {
       this.toggleSetIsSquare();
@@ -181,6 +181,14 @@ export default class Rectangle extends BaseTools {
   toolAttrib: RectangleToolAttributes;
   readonly MAX_STROKE_WIDTH: number;
 
+  /**
+   * `shouldDraw` is a boolean value used as a flag, to be sent along with the command,
+   * it tells the command receiver whether to draw the received command or not.
+   * This is necessary because we are sending command on each mouse move to keep all the
+   * users in sync.
+   */
+  private shouldDraw: boolean;
+
   private mouseDownEventListener: (this: Document, ev: MouseEvent) => any;
   private mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
   private mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
@@ -197,6 +205,7 @@ export default class Rectangle extends BaseTools {
     this.mouseDownEventListener = this.onMouseDown.bind(this);
     this.mouseUpEventListener = this.onMouseUp.bind(this);
     this.mouseMoveEventListener = this.onMouseMove.bind(this);
+    this.shouldDraw = false;
 
     this.events();
   }
@@ -218,42 +227,30 @@ export default class Rectangle extends BaseTools {
   }
 
   onMouseMove(event: MouseEvent): void {
+    this.shouldDraw = false;
     super.onMouseMove(event);
     if (this.isDrag) {
       this.drawPreview();
     }
-    this.sendMessageOverConnection(false);
   }
 
   onMouseDown(event: MouseEvent): void {
+    this.shouldDraw = false;
     if (!this.isValidMouseEvent(event)) {
       return;
     }
     super.onMouseDown(event);
-    this.sendMessageOverConnection(false);
   }
 
   onMouseUp(event: MouseEvent): void {
-    let draw: boolean = false;
+    this.shouldDraw = false;
     if (this.isDrag) {
-      draw = true;
+      this.shouldDraw = true;
       this.draw();
-      this.state.do({
-        toolName: ToolName.RECTANGLE,
-        commands: [{
-          toolName: ToolName.RECTANGLE,
-          toolAttributes: this.toolAttrib.getAttributes(),
-          isDrag: false,
-          x: this.mouseLastPosition[0],
-          y: this.mouseLastPosition[1],
-          clickX: this.mouseLastClickPosition[0],
-          clickY: this.mouseLastClickPosition[1],
-        }]
-      })
+      this.recordCommand();
     }
     super.onMouseUp(event);
     this.baseLayer.clearPreview();
-    this.sendMessageOverConnection(draw);
   }
 
   draw() {
@@ -296,14 +293,14 @@ export default class Rectangle extends BaseTools {
     ctx.stroke();
   }
 
-  sendMessageOverConnection(draw: boolean) {
+  sendMessageOverConnection() {
     if (!this.connection?.isConnected()) {
       return;
     }
     const userCommand: UserCommand<RectangleToolAttributes> = {
       clickX: this.mouseLastClickPosition[0],
       clickY: this.mouseLastClickPosition[1],
-      draw: draw,
+      draw: this.shouldDraw,
       x: this.mouseLastPosition[0],
       y: this.mouseLastPosition[1],
       isDrag: this.isDrag,
@@ -311,6 +308,21 @@ export default class Rectangle extends BaseTools {
       toolAttributes: this.toolAttrib.getAttributes(),
     }
     this.connection.sendUserCommand(userCommand);
+  }
+
+  recordCommand() {
+    this.state.do({
+      toolName: ToolName.RECTANGLE,
+      commands: [{
+        toolName: ToolName.RECTANGLE,
+        toolAttributes: this.toolAttrib.getAttributes(),
+        isDrag: false,
+        x: this.mouseLastPosition[0],
+        y: this.mouseLastPosition[1],
+        clickX: this.mouseLastClickPosition[0],
+        clickY: this.mouseLastClickPosition[1],
+      }]
+    })
   }
 
   /**

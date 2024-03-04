@@ -41,6 +41,7 @@ export default abstract class BaseTools {
     this.mouseAverageSpeed = 0;
     this.mouseLastPosition = this.getMouseCoordinates(event);
     this.mouseLastClickPosition = this.mouseLastPosition;
+    this.sendMessageOverConnection();
   }
 
   onMouseMove(event: MouseEvent) {
@@ -48,10 +49,12 @@ export default abstract class BaseTools {
 
     this.mouseAverageSpeed = this.getMouseAverageSpeed(currentMousePosition);
     this.mouseLastPosition = currentMousePosition;
+    this.sendMessageOverConnection();
   }
 
   onMouseUp(_event: MouseEvent) {
     this.isDrag = false;
+    this.sendMessageOverConnection();
   }
 
   isValidMouseEvent(event: MouseEvent): boolean {
@@ -91,4 +94,11 @@ export default abstract class BaseTools {
   destroy() {
     this.removeEvents();
   }
+
+  /**
+  * Abstract methods needs to implemented by the child tool class.
+  */
+  abstract draw(): void;
+  abstract sendMessageOverConnection(): void;
+  abstract recordCommand(): void;
 }

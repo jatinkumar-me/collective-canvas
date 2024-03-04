@@ -196,7 +196,6 @@ export default class Pencil extends BaseTools {
   }
 
   onMouseMove(event: MouseEvent): void {
-    this.sendMessageOverConnection();
     super.onMouseMove(event);
     if (!this.isDrag) {
       return;
@@ -219,7 +218,6 @@ export default class Pencil extends BaseTools {
 
   onMouseUp(event: MouseEvent): void {
     super.onMouseUp(event);
-    this.sendMessageOverConnection();
     this.state.do(this.curAction);
   }
 
