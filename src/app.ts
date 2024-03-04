@@ -15,7 +15,6 @@ export default class App {
         this.baseLayer = new BaseLayer();
         this.state = new State(this.baseLayer);
         this.currentUser = new InternalUser("unassigned-user-id", "unassigned-username", this.state, this.baseLayer);
-        console.log(this.currentUser)
         this.userManager = new UserManager(this.baseLayer, this.state, this.currentUser);
         this.connection = new Connection(connectionUrl, this.userManager);
     }
