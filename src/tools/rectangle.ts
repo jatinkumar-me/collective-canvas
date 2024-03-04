@@ -242,7 +242,7 @@ export default class Rectangle extends BaseTools {
         toolName: ToolName.RECTANGLE,
         commands: [{
           toolName: ToolName.RECTANGLE,
-          toolAttributes: this.toolAttrib,
+          toolAttributes: this.toolAttrib.getAttributes(),
           isDrag: false,
           x: this.mouseLastPosition[0],
           y: this.mouseLastPosition[1],
