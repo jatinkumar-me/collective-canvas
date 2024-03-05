@@ -3,6 +3,7 @@ import BaseLayer from "../components/Layer";
 import { Connection } from "../modules/network";
 import Bezier from "./bezier";
 import Ellipse from "./ellipse";
+import Line from "./line";
 import Pencil from "./pencil";
 import Rectangle from "./rectangle";
 import BaseTools from "./tools";
@@ -82,6 +83,8 @@ export default class ToolManager {
         return new Rectangle(this.baseLayer, this.connection, this.state);
       case ToolName.ELLIPSE:
         return new Ellipse(this.baseLayer, this.connection, this.state);
+      case ToolName.LINE:
+        return new Line(this.baseLayer, this.connection, this.state);
       default:
         return null;
     }
