@@ -4,6 +4,9 @@ import { Connection } from "../modules/network";
 
 /**
  * @class BaseTools
+ * TODO:
+ * - Add support for touch devices.
+ * - Make the code a lot more cleaner.
  */
 export default abstract class BaseTools implements Reversible {
   baseLayer: BaseLayer;

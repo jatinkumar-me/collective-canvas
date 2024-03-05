@@ -166,7 +166,10 @@ export abstract class ShapeToolAttributes extends ToolAttributes {
 }
 
 /**
- * Shape tool is an abstract class that has it's own eventlisteners
+ * @class Shape - is an abstract class that has it's own eventlisteners
+ * TODO:
+ * - Add a functionality to cancel the draw. this can be done using a flag, I will see if I can make it work using the exising `shouldDraw` flag.
+ * - Make it more extensible, so that tools can add additional functionality to it.
  */
 export default abstract class Shape extends BaseTools {
   ctx: CanvasRenderingContext2D;
