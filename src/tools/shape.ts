@@ -35,10 +35,10 @@ function getShapeToolAttributeMarkup(shapeName: string): ToolAttributesMarkup<Sh
 
 export abstract class ShapeToolAttributes extends ToolAttributes {
   strokeStyle: string | CanvasGradient | CanvasPattern;
-  isFilled: boolean;
-  fillStyle: string;
+  isFilled?: boolean;
+  fillStyle?: string;
   strokeWidth: number;
-  isEqual: boolean;
+  isEqual?: boolean;
 
   private strokeStyleInput: HTMLInputElement;
   private isFilledInput: HTMLInputElement;
