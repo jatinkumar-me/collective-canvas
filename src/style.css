@@ -1,3 +1,13 @@
+:root {
+ --content-width: 50rem;
+}
+
+main {
+    max-width: var(--content-width);
+    margin: auto;
+}
+
+
 #canvas-container{
     position: relative;
 }
@@ -17,4 +27,5 @@
     display: flex;
     justify-content: center;
     padding: 1rem 2rem;
+    margin: 1rem 0;
 }
