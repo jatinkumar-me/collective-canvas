@@ -9,14 +9,6 @@ import ToolAttributes, {
 import { ToolName } from "./toolManager";
 import BaseTools from "./tools";
 
-const DEFAULT_SHAPE_TOOL_ATTRIBUTES: DefaultToolAttributes<ShapeToolAttributes> =
-{
-  strokeStyle: "#000000",
-  strokeWidth: 1,
-  isFilled: false,
-  fillStyle: "#000000",
-  isEqual: false,
-};
 
 function getShapeToolAttributeMarkup(shapeName: string): ToolAttributesMarkup<ShapeToolAttributes> {
   return {
@@ -25,7 +17,7 @@ function getShapeToolAttributeMarkup(shapeName: string): ToolAttributesMarkup<Sh
                   </div>`,
     strokeWidth: `<div>
                     <label for="${shapeName}-stroke-width-input">Stroke width</label>
-                    <input type="range" id="${shapeName}-stroke-width-input" name="${shapeName}-stroke-width-input" min="0" max="50" step="1" value="${DEFAULT_SHAPE_TOOL_ATTRIBUTES.strokeWidth}">
+                    <input type="range" id="${shapeName}-stroke-width-input" name="${shapeName}-stroke-width-input" min="0" max="50" step="1" value="1">
                </div>`,
     isFilled: `<div>
                   <input type="checkbox" id="${shapeName}-isfilled" />
