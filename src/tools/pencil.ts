@@ -98,30 +98,18 @@ class PencilToolAttributes extends ToolAttributes {
   }
 
   events() {
-    this.strokeStyleInput.addEventListener(
-      "change",
-      this.strokeStyleChangeListener
-    );
+    this.strokeStyleInput.addEventListener("change", this.strokeStyleChangeListener);
     this.linecapInput.addEventListener("change", this.lineCapChangeListener);
-    this.strokeWidthInput.addEventListener(
-      "change",
-      this.strokeWidthChangeListener
-    );
+    this.strokeWidthInput.addEventListener("change", this.strokeWidthChangeListener);
     this.canvasContainer.addEventListener("wheel", this.wheelEventListener, {
       passive: false,
     });
   }
 
   removeEvents() {
-    this.strokeStyleInput.removeEventListener(
-      "change",
-      this.strokeStyleChangeListener
-    );
+    this.strokeStyleInput.removeEventListener("change", this.strokeStyleChangeListener);
     this.linecapInput.removeEventListener("change", this.lineCapChangeListener);
-    this.strokeWidthInput.removeEventListener(
-      "change",
-      this.strokeWidthChangeListener
-    );
+    this.strokeWidthInput.removeEventListener("change", this.strokeWidthChangeListener);
     this.canvasContainer.removeEventListener("wheel", this.wheelEventListener);
   }
 
