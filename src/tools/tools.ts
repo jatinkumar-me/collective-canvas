@@ -1,11 +1,11 @@
-import State from "../actions/state";
+import State, { Reversible } from "../actions/state";
 import BaseLayer from "../components/Layer";
 import { Connection } from "../modules/network";
 
 /**
  * @class BaseTools
  */
-export default abstract class BaseTools {
+export default abstract class BaseTools implements Reversible {
   baseLayer: BaseLayer;
   connection: Connection | null;
   state: State;

@@ -12,6 +12,16 @@ export interface Action<T extends ToolAttributes> {
 }
 
 /**
+ * Using Reversible because `Undoable` doesn't make much sense
+ */
+export interface Reversible {
+  /**
+   * `recordCommand` method must call `do` method from `state` class
+   */
+  recordCommand(): void;
+}
+
+/**
  * Maintaining state for undoing and redoing.
  * The state maintains two stacks actions and redoActions
  */
