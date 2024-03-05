@@ -9,14 +9,6 @@ import ToolAttributes, {
 import { ToolName } from "./toolManager";
 import BaseTools from "./tools";
 
-const DEFAULT_SHAPE_TOOL_ATTRIBUTES: DefaultToolAttributes<ShapeToolAttributes> =
-{
-  strokeStyle: "#000000",
-  strokeWidth: 1,
-  isFilled: false,
-  fillStyle: "#000000",
-  isEqual: false,
-};
 
 function getShapeToolAttributeMarkup(shapeName: string): ToolAttributesMarkup<ShapeToolAttributes> {
   return {
@@ -25,7 +17,7 @@ function getShapeToolAttributeMarkup(shapeName: string): ToolAttributesMarkup<Sh
                   </div>`,
     strokeWidth: `<div>
                     <label for="${shapeName}-stroke-width-input">Stroke width</label>
-                    <input type="range" id="${shapeName}-stroke-width-input" name="${shapeName}-stroke-width-input" min="0" max="50" step="1" value="${DEFAULT_SHAPE_TOOL_ATTRIBUTES.strokeWidth}">
+                    <input type="range" id="${shapeName}-stroke-width-input" name="${shapeName}-stroke-width-input" min="0" max="50" step="1" value="1">
                </div>`,
     isFilled: `<div>
                   <input type="checkbox" id="${shapeName}-isfilled" />
@@ -43,10 +35,10 @@ function getShapeToolAttributeMarkup(shapeName: string): ToolAttributesMarkup<Sh
 
 export abstract class ShapeToolAttributes extends ToolAttributes {
   strokeStyle: string | CanvasGradient | CanvasPattern;
-  isFilled: boolean;
-  fillStyle: string;
+  isFilled?: boolean;
+  fillStyle?: string;
   strokeWidth: number;
-  isEqual: boolean;
+  isEqual?: boolean;
 
   private strokeStyleInput: HTMLInputElement;
   private isFilledInput: HTMLInputElement;
@@ -174,7 +166,10 @@ export abstract class ShapeToolAttributes extends ToolAttributes {
 }
 
 /**
- * Shape tool is an abstract class that has it's own eventlisteners
+ * @class Shape - is an abstract class that has it's own eventlisteners
+ * TODO:
+ * - Add a functionality to cancel the draw. this can be done using a flag, I will see if I can make it work using the exising `shouldDraw` flag.
+ * - Make it more extensible, so that tools can add additional functionality to it.
  */
 export default abstract class Shape extends BaseTools {
   ctx: CanvasRenderingContext2D;
@@ -272,7 +267,7 @@ export default abstract class Shape extends BaseTools {
       x: this.mouseLastPosition[0],
       y: this.mouseLastPosition[1],
       isDrag: this.isDrag,
-      toolName: ToolName.RECTANGLE,
+      toolName: this.toolName,
       toolAttributes: this.toolAttrib.getAttributes(),
     }
     this.connection.sendUserCommand(userCommand);

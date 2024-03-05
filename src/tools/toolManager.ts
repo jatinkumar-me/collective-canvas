@@ -2,6 +2,8 @@ import State from "../actions/state";
 import BaseLayer from "../components/Layer";
 import { Connection } from "../modules/network";
 import Bezier from "./bezier";
+import Ellipse from "./ellipse";
+import Line from "./line";
 import Pencil from "./pencil";
 import Rectangle from "./rectangle";
 import BaseTools from "./tools";
@@ -11,6 +13,7 @@ export enum ToolName {
   BEZIER = 'bezier',
   RECTANGLE = 'rectangle',
   LINE = 'line',
+  ELLIPSE = 'ellipse',
 }
 
 /**
@@ -59,7 +62,7 @@ export default class ToolManager {
     if (this.selectedToolName === toolName) {
       return;
     }
-    
+
     const tool = this.createToolFromName(toolName);
     if (!tool) {
       console.error('tool either not implemented or properly defined');
@@ -78,6 +81,10 @@ export default class ToolManager {
         return new Bezier(this.baseLayer);
       case ToolName.RECTANGLE:
         return new Rectangle(this.baseLayer, this.connection, this.state);
+      case ToolName.ELLIPSE:
+        return new Ellipse(this.baseLayer, this.connection, this.state);
+      case ToolName.LINE:
+        return new Line(this.baseLayer, this.connection, this.state);
       default:
         return null;
     }

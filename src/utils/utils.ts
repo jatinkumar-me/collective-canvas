@@ -25,3 +25,17 @@ export function getSquareDimensions(
   height = signY * minDimension;
   return [width, height];
 }
+
+
+/**
+ * function to get the circle dimensions of the ellipse
+ * @param radiusX
+ * @param radiusY
+ * @returns maximumRadius
+ */
+export function getCircleDimensions(
+  radiusX: number,
+  radiusY: number
+): number {
+  return Math.max(radiusX, radiusY);
+}
