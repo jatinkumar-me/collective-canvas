@@ -272,7 +272,7 @@ export default abstract class Shape extends BaseTools {
       x: this.mouseLastPosition[0],
       y: this.mouseLastPosition[1],
       isDrag: this.isDrag,
-      toolName: ToolName.RECTANGLE,
+      toolName: this.toolName,
       toolAttributes: this.toolAttrib.getAttributes(),
     }
     this.connection.sendUserCommand(userCommand);
