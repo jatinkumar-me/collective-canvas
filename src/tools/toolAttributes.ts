@@ -14,6 +14,7 @@ export type ToolAttributesMarkup<T extends ToolAttributes> = Partial<
 export default abstract class ToolAttributes {
   toolBoxDiv: HTMLDivElement | null;
   toolAttributesMarkup: Record<string, string>
+
   constructor(toolAttributesMarkup: Record<string, string>) {
     this.toolAttributesMarkup = toolAttributesMarkup;
     this.toolBoxDiv = document.getElementById(
@@ -40,4 +41,7 @@ export default abstract class ToolAttributes {
     }
     this.toolBoxDiv = null;
   }
+
+  abstract events(): void;
+  abstract removeEvents(): void;
 }
