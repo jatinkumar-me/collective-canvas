@@ -30,20 +30,23 @@
     <div id="toolbox" class="toolbox">
       <fieldset id="tool-selector">
         <legend>Tools</legend>
-        <button id="pencil" class="tool-button" aria-label="pencil tool button" type="button" data-tool="pencil" title="Pencil">
+        <button id="pencil" class="tool-button" aria-label="pencil tool button" type="button" data-tool="pencil"
+          title="Pencil">
           <i class="fa fa-pencil"></i>
         </button>
         <button id="rectangle" class="tool-button" aria-label="rectangle tool button" type="button"
           data-tool="rectangle" title="Rectangle">
           <i class="fa fa-regular fa-square"></i>
         </button>
-        <button id="ellipse" class="tool-button" aria-label="pencil tool button" type="button" data-tool="ellipse" title="Ellipse">
+        <button id="ellipse" class="tool-button" aria-label="pencil tool button" type="button" data-tool="ellipse"
+          title="Ellipse">
           <i class="fa fa-regular fa-circle"></i>
         </button>
         <button id="line" class="tool-button" aria-label="line tool button" type="button" data-tool="line" title="Line">
           <i class="fa fa-solid fa-slash"></i>
         </button>
-        <button id="bezier" class="tool-button" aria-label="bezier tool button" type="button" data-tool="bezier" title="Bezier">
+        <button id="bezier" class="tool-button" aria-label="bezier tool button" type="button" data-tool="bezier"
+          title="Bezier">
           <i class="fa fa-solid fa-bezier-curve"></i>
         </button>
       </fieldset>
@@ -59,12 +62,16 @@
     </div>
 
     <div id="user-status-div" class="user-status-div">
-      <h4>
-        <i class="fa fa-users" aria-hidden="true"></i>
-        Users
-      </h4>
-      <div class="user-list" id="user-list-div">
-      </div>
+      <fieldset id="user-status">
+        <legend>
+          <h4>
+            <i class="fa fa-users" aria-hidden="true"></i>
+            Users
+          </h4>
+        </legend>
+        <div class="user-list" id="user-list-div">
+        </div>
+      </fieldset>
     </div>
   </main>
   <script type="module" src="/src/main.ts"></script>

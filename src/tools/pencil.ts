@@ -141,9 +141,9 @@ export default class Pencil extends BaseTools {
   toolAttrib: PencilToolAttributes;
   readonly MAX_STROKE_WIDTH: number;
 
-  private mouseDownEventListener: (this: Document, ev: MouseEvent) => any;
-  private mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
-  private mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
+  mouseDownEventListener: (this: Document, ev: MouseEvent) => any;
+  mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
+  mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
 
   /**
    * Storing the current action, it will be sent to the state
@@ -156,9 +156,9 @@ export default class Pencil extends BaseTools {
     this.MAX_STROKE_WIDTH = 100;
     this.toolAttrib = new PencilToolAttributes(DEFAULT_PENCIL_TOOL_ATTRIBUTES);
 
-    this.mouseDownEventListener = this.onMouseDown.bind(this);
+    this.mouseDownEventListener = this.mouseDown.bind(this);
     this.mouseUpEventListener = this.onMouseUp.bind(this);
-    this.mouseMoveEventListener = this.onMouseMove.bind(this);
+    this.mouseMoveEventListener = this.mouseMove.bind(this);
 
     this.events();
     this.curAction = {
@@ -167,23 +167,7 @@ export default class Pencil extends BaseTools {
     };
   }
 
-  /**
-   * Override basetoolevents
-   */
-  events() {
-    super.events();
-    document.addEventListener("mousedown", this.mouseDownEventListener);
-    document.addEventListener("mouseup", this.mouseUpEventListener);
-    document.addEventListener("mousemove", this.mouseMoveEventListener);
-  }
-
-  removeEvents() {
-    document.removeEventListener("mousedown", this.mouseDownEventListener);
-    document.removeEventListener("mouseup", this.mouseUpEventListener);
-    document.removeEventListener("mousemove", this.mouseMoveEventListener);
-  }
-
-  onMouseMove(event: MouseEvent): void {
+  mouseMove(event: MouseEvent): void {
     super.onMouseMove(event);
     if (!this.isDrag) {
       return;
@@ -192,7 +176,7 @@ export default class Pencil extends BaseTools {
     this.recordCommand();
   }
 
-  onMouseDown(event: MouseEvent): void {
+  mouseDown(event: MouseEvent): void {
     if (!this.isValidMouseEvent(event)) {
       return;
     }
@@ -204,7 +188,7 @@ export default class Pencil extends BaseTools {
     };
   }
 
-  onMouseUp(event: MouseEvent): void {
+  mouseUp(event: MouseEvent): void {
     super.onMouseUp(event);
     this.state.do(this.curAction);
   }
@@ -303,15 +287,5 @@ export default class Pencil extends BaseTools {
 
   recordCommand() {
     this.curAction.commands.push(this.getCommand())
-  }
-
-  /**
-   * override Basetool destroy method
-   */
-  destroy() {
-    super.destroy();
-    this.toolAttrib.destroy();
-    this.removeEvents();
-    this.toolAttrib.removeEvents();
   }
 }

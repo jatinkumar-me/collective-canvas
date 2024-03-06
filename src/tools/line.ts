@@ -10,6 +10,8 @@ const DEFAULT_LINE_TOOL_ATTRIBUTES: DefaultToolAttributes<LineToolAttributes> =
   strokeStyle: "#000000",
   strokeWidth: 1,
   isEqual: false,
+  isFilled: false,
+  fillStyle: ""
 };
 
 export class LineToolAttributes extends ShapeToolAttributes {
