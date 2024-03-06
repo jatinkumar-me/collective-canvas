@@ -1,6 +1,7 @@
 import State, { Reversible } from "../actions/state";
 import BaseLayer from "../components/Layer";
 import { Connection } from "../modules/network";
+import ToolAttributes from "./toolAttributes";
 
 /**
  * @class BaseTools
@@ -13,6 +14,8 @@ export default abstract class BaseTools implements Reversible {
   connection: Connection | null;
   state: State;
 
+  abstract toolAttrib: ToolAttributes;
+
   isDrag: boolean;
   isTouch: boolean;
   mouseLastClickPosition: [number, number];
@@ -21,6 +24,10 @@ export default abstract class BaseTools implements Reversible {
   readonly MAX_AVERAGE_MOUSE_SPEED = 100;
 
   private canvasFocusEventListener: (this: HTMLCanvasElement, ev: FocusEvent) => any;
+
+  protected abstract mouseDownEventListener: (this: Document, ev: MouseEvent) => any;
+  protected abstract mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
+  protected abstract mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
 
   constructor(baseLayer: BaseLayer, connection: Connection, state: State) {
     this.baseLayer = baseLayer;
@@ -37,7 +44,18 @@ export default abstract class BaseTools implements Reversible {
 
   events() {
     this.baseLayer.canvas.addEventListener('blur', this.canvasFocusEventListener);
+    document.addEventListener("mousedown", this.mouseDownEventListener);
+    document.addEventListener("mouseup", this.mouseUpEventListener);
+    document.addEventListener("mousemove", this.mouseMoveEventListener);
   }
+
+  removeEvents() {
+    this.baseLayer.canvas.removeEventListener('blur', this.canvasFocusEventListener);
+    document.removeEventListener("mousedown", this.mouseDownEventListener);
+    document.removeEventListener("mouseup", this.mouseUpEventListener);
+    document.removeEventListener("mousemove", this.mouseMoveEventListener);
+  }
+
 
   onMouseDown(event: MouseEvent) {
     this.isDrag = true;
@@ -90,12 +108,9 @@ export default abstract class BaseTools implements Reversible {
     this.isDrag = false;
   }
 
-  removeEvents() {
-    this.baseLayer.canvas.removeEventListener('blur', this.canvasFocusEventListener);
-  }
-
   destroy() {
     this.removeEvents();
+    this.toolAttrib.removeEvents();
   }
 
   /**
@@ -104,4 +119,8 @@ export default abstract class BaseTools implements Reversible {
   abstract draw(): void;
   abstract sendMessageOverConnection(): void;
   abstract recordCommand(): void;
+
+  abstract mouseDown(event: MouseEvent): void;
+  abstract mouseUp(event: MouseEvent): void;
+  abstract mouseMove(event: MouseEvent): void;
 }

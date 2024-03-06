@@ -17,14 +17,14 @@ function getShapeToolAttributeMarkup(shapeName: string): ToolAttributesMarkup<Sh
                   </div>`,
     strokeWidth: `<div>
                     <label for="${shapeName}-stroke-width-input">Stroke width</label>
-                    <input type="range" id="${shapeName}-stroke-width-input" name="${shapeName}-stroke-width-input" min="0" max="50" step="1" value="1">
+                    <input type="range" id="${shapeName}-stroke-width-input" name="${shapeName}-stroke-width-input" min="1" max="50" step="1" value="1">
                </div>`,
     isFilled: `<div>
                   <input type="checkbox" id="${shapeName}-isfilled" />
                   <label for="${shapeName}-isfilled">fill</label>
               </div>`,
     fillStyle: `<div><label for="${shapeName}-fill-color-picker">Fill color</label>
-                  <input type="color" id="${shapeName}-fill-color-picker" disabled/>
+                  <input type="color" id="${shapeName}-fill-color-picker"/>
                 </div>`,
     isEqual: `<div>
                   <input type="checkbox" id="${shapeName}-isequal" />
@@ -35,10 +35,10 @@ function getShapeToolAttributeMarkup(shapeName: string): ToolAttributesMarkup<Sh
 
 export abstract class ShapeToolAttributes extends ToolAttributes {
   strokeStyle: string | CanvasGradient | CanvasPattern;
-  isFilled?: boolean;
-  fillStyle?: string;
+  isFilled: boolean;
+  fillStyle: string;
   strokeWidth: number;
-  isEqual?: boolean;
+  isEqual: boolean;
 
   private strokeStyleInput: HTMLInputElement;
   private isFilledInput: HTMLInputElement;
@@ -122,11 +122,12 @@ export abstract class ShapeToolAttributes extends ToolAttributes {
 
   setIsFilled(e: Event) {
     this.isFilled = (e.target as HTMLInputElement).checked;
-    this.fillStyleInput.disabled = !this.isFilled;
   }
 
   setFillStyle(e: Event) {
     this.fillStyle = (e.target as HTMLInputElement).value;
+    this.isFilled = true;
+    this.isFilledInput.checked = true;
   }
 
   setStrokeWidth(e: Event) {
@@ -172,14 +173,12 @@ export abstract class ShapeToolAttributes extends ToolAttributes {
  * - Make it more extensible, so that tools can add additional functionality to it.
  */
 export default abstract class Shape extends BaseTools {
-  ctx: CanvasRenderingContext2D;
-  previewCtx: CanvasRenderingContext2D;
   toolName: ToolName;
   toolAttrib: ShapeToolAttributes;
 
-  private mouseDownEventListener: (this: Document, ev: MouseEvent) => any;
-  private mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
-  private mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
+  mouseDownEventListener: (this: Document, ev: MouseEvent) => any;
+  mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
+  mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
 
   /**
    * `shouldDraw` is a boolean value used as a flag, to be sent along with the command,
@@ -193,32 +192,16 @@ export default abstract class Shape extends BaseTools {
     super(baseLayer, connection, state);
     this.toolName = toolName;
     this.toolAttrib = toolAttrib;
-    this.ctx = baseLayer.ctx;
-    this.previewCtx = baseLayer.previewCtx;
-    this.mouseDownEventListener = this.onMouseDown.bind(this);
-    this.mouseUpEventListener = this.onMouseUp.bind(this);
-    this.mouseMoveEventListener = this.onMouseMove.bind(this);
+
+    this.mouseDownEventListener = this.mouseDown.bind(this);
+    this.mouseUpEventListener = this.mouseUp.bind(this);
+    this.mouseMoveEventListener = this.mouseMove.bind(this);
     this.shouldDraw = false;
 
     this.events();
   }
 
-  /**
-   * Override basetoolevents
-   */
-  events() {
-    super.events(); document.addEventListener("mousedown", this.mouseDownEventListener);
-    document.addEventListener("mouseup", this.mouseUpEventListener);
-    document.addEventListener("mousemove", this.mouseMoveEventListener);
-  }
-
-  removeEvents() {
-    document.removeEventListener("mousedown", this.mouseDownEventListener);
-    document.removeEventListener("mouseup", this.mouseUpEventListener);
-    document.removeEventListener("mousemove", this.mouseMoveEventListener);
-  }
-
-  onMouseMove(event: MouseEvent): void {
+  mouseMove(event: MouseEvent): void {
     this.shouldDraw = false;
     super.onMouseMove(event);
     if (this.isDrag) {
@@ -226,7 +209,7 @@ export default abstract class Shape extends BaseTools {
     }
   }
 
-  onMouseDown(event: MouseEvent): void {
+  mouseDown(event: MouseEvent): void {
     this.shouldDraw = false;
     if (!this.isValidMouseEvent(event)) {
       return;
@@ -234,7 +217,7 @@ export default abstract class Shape extends BaseTools {
     super.onMouseDown(event);
   }
 
-  onMouseUp(event: MouseEvent): void {
+  mouseUp(event: MouseEvent): void {
     this.shouldDraw = false;
     if (this.isDrag) {
       this.shouldDraw = true;
@@ -246,12 +229,12 @@ export default abstract class Shape extends BaseTools {
   }
 
   draw() {
-    this.drawShape(this.ctx);
+    this.drawShape(this.baseLayer.ctx);
   }
 
   drawPreview() {
     this.baseLayer.clearPreview();
-    this.drawShape(this.previewCtx);
+    this.drawShape(this.baseLayer.previewCtx);
   }
 
   abstract drawShape(ctx: CanvasRenderingContext2D): void;
@@ -286,14 +269,5 @@ export default abstract class Shape extends BaseTools {
         clickY: this.mouseLastClickPosition[1],
       }]
     })
-  }
-
-  /**
-   * override Basetool destroy method
-   */
-  destroy() {
-    super.destroy();
-    this.removeEvents();
-    this.toolAttrib.removeEvents();
   }
 }
