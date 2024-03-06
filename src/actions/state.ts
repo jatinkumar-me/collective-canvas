@@ -69,6 +69,7 @@ export default class State {
   undo() {
     if (!this.canUndo()) {
       console.info("Already the last change");
+      alert("Already the last change");
       return;
     }
     const lastAction = this.actions.pop();
@@ -82,6 +83,7 @@ export default class State {
   redo() {
     if (!this.canRedo()) {
       console.info("Already the newest change");
+      alert("Already the newest change");
       return;
     }
 
