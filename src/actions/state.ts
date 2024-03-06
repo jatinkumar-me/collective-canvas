@@ -1,6 +1,7 @@
 import BaseLayer from "../components/Layer";
 import { UserCommand } from "../modules/network";
 import Ellipse from "../tools/ellipse";
+import Line from "../tools/line";
 import Pencil from "../tools/pencil";
 import Rectangle from "../tools/rectangle";
 import ToolAttributes from "../tools/toolAttributes";
@@ -118,13 +119,20 @@ export default class State {
         Rectangle.drawRect(this.baseLayer.ctx, [command.clickX, command.clickY], [command.x, command.y], command.toolAttributes)
         break;
       }
-      case ToolName.LINE:
       case ToolName.ELLIPSE: {
         const command = action.commands[0];
         if (!command.clickX || !command.clickY) {
           break;
         }
         Ellipse.drawEllipse(this.baseLayer.ctx, [command.clickX, command.clickY], [command.x, command.y], command.toolAttributes)
+        break;
+      }
+      case ToolName.LINE: {
+        const command = action.commands[0];
+        if (!command.clickX || !command.clickY) {
+          break;
+        }
+        Line.drawLine(this.baseLayer.ctx, [command.clickX, command.clickY], [command.x, command.y], command.toolAttributes)
         break;
       }
     }
