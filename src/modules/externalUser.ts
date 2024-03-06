@@ -1,5 +1,6 @@
 import State, { Action } from "../actions/state";
 import Ellipse from "../tools/ellipse";
+import Line from "../tools/line";
 import Pencil from "../tools/pencil";
 import Rectangle from "../tools/rectangle";
 import ToolAttributes, { DefaultToolAttributes } from "../tools/toolAttributes";
@@ -122,6 +123,22 @@ export class ExternalUser extends User {
                     break;
                 }
                 Ellipse.drawEllipse(
+                    ctx,
+                    [this.clickX, this.clickY],
+                    [command.x, command.y],
+                    this.toolAttributes
+                )
+                this.initCurAction(command.toolName)
+                this.recordCommand(command);
+                this.recordState();
+                this.initCurAction(command.toolName)
+                break;
+            }
+            case ToolName.LINE: {
+                if (!command.draw || this.isDrag) {
+                    break;
+                }
+                Line.drawLine(
                     ctx,
                     [this.clickX, this.clickY],
                     [command.x, command.y],
