@@ -65,8 +65,12 @@ fieldset {
   gap: 0.3rem;
 }
 
+.tool-container {
+  /* min-width: 20rem; */
+}
+
 .user-status-div {
-  min-width: 16rem;
+  min-width: 20rem;
 }
 
 @media screen and (max-width: 1000px) {
