@@ -157,7 +157,7 @@ export default class Pencil extends BaseTools {
     this.toolAttrib = new PencilToolAttributes(DEFAULT_PENCIL_TOOL_ATTRIBUTES);
 
     this.mouseDownEventListener = this.mouseDown.bind(this);
-    this.mouseUpEventListener = this.onMouseUp.bind(this);
+    this.mouseUpEventListener = this.mouseUp.bind(this);
     this.mouseMoveEventListener = this.mouseMove.bind(this);
 
     this.events();
