@@ -3,6 +3,7 @@ import BaseLayer from "../components/Layer";
 import { Connection } from "../modules/network";
 import Bezier from "./bezier";
 import Ellipse from "./ellipse";
+import Fill from "./fill";
 import Line from "./line";
 import Pencil from "./pencil";
 import Rectangle from "./rectangle";
@@ -14,6 +15,7 @@ export enum ToolName {
   RECTANGLE = 'rectangle',
   LINE = 'line',
   ELLIPSE = 'ellipse',
+  FILL = 'fill',
 }
 
 /**
@@ -78,13 +80,15 @@ export default class ToolManager {
       case ToolName.PENCIL:
         return new Pencil(this.baseLayer, this.connection, this.state);
       case ToolName.BEZIER:
-        return new Bezier(this.baseLayer);
+        // return new Bezier(this.baseLayer);
       case ToolName.RECTANGLE:
         return new Rectangle(this.baseLayer, this.connection, this.state);
       case ToolName.ELLIPSE:
         return new Ellipse(this.baseLayer, this.connection, this.state);
       case ToolName.LINE:
         return new Line(this.baseLayer, this.connection, this.state);
+      case ToolName.FILL:
+        return new Fill(this.baseLayer, this.connection, this.state);
       default:
         return null;
     }
