@@ -1,7 +1,8 @@
 import State, { Action } from "../actions/state";
 import BaseLayer from "../components/Layer";
 import { Connection } from "../modules/network";
-import { getColorAtPixel, getOffset, hexStringToUintClampedArray, isInValidPixel, setPixel } from "../utils/utils";
+import { PixelData } from "../utils/utilTypes";
+import { getColorAtPixel, hexStringToUintClampedArray as hexStringToUint32, isInValidPixel, setPixel } from "../utils/utils";
 import ToolAttributes, {
   DefaultToolAttributes,
   ToolAttributesMarkup,
@@ -65,6 +66,7 @@ export default class Fill extends BaseTools {
   mouseDownEventListener: (this: Document, ev: MouseEvent) => any;
   mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
   mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
+  maxTol: number;
 
   private curAction: Action<FillToolAttributes>;
 
@@ -76,6 +78,7 @@ export default class Fill extends BaseTools {
     this.mouseDownEventListener = this.mouseDown.bind(this);
     this.mouseUpEventListener = this.mouseUp.bind(this);
     this.mouseMoveEventListener = this.mouseMove.bind(this);
+    this.maxTol = 0;
 
     this.events();
     this.curAction = {
@@ -119,18 +122,20 @@ export default class Fill extends BaseTools {
     const dr = c1[0] - c2[0];
     const dg = c1[1] - c2[1];
     const db = c1[2] - c2[2];
-    const da = c1[3] - c2[3];
-    return dr * dr + dg * dg + db * db + da * da < tolerance;
+
+    const delta = (dr * dr) + (dg * dg) + (db * db);
+    return delta < tolerance;
   }
 
   /**
   * Checks whether should two colors are exactly the same or not.
+  * both c1 and c2 are Uint32.
   */
   isExactColorMatch(
-    c1: Uint8ClampedArray,
-    c2: Uint8ClampedArray,
+    c1: number,
+    c2: number,
   ): boolean {
-    return c1[0] === c2[0] && c1[1] === c2[1] && c1[2] === c2[2] && c1[3] === c2[3];
+    return c1 === c2;
   }
 
   /**
@@ -140,47 +145,48 @@ export default class Fill extends BaseTools {
     const x = this.mouseLastClickPosition[0];
     const y = this.mouseLastClickPosition[1];
 
-    const color = hexStringToUintClampedArray(this.toolAttrib.fillColor);
+    const color = hexStringToUint32(this.toolAttrib.fillColor);
 
     const imageData = this.ctx.getImageData(0, 0, this.baseLayer.canvas.width, this.baseLayer.canvas.height);
+    const { height, width, data } = imageData;
 
-    const visited = new Array<boolean>(imageData.width * imageData.height);
+    // We will represent a color value by a 32 bit unsinged integer.
+    // 32 bit integer includes 4 bytes each representing R, G, B and Alpha respectively.
+    const pixelData: PixelData = {
+      height: height,
+      width: width,
+      data: new Uint32Array(data.buffer),
+    }
 
-    const targetColor = getColorAtPixel(imageData, x, y);
+    const targetColor = getColorAtPixel(pixelData, x, y);
 
-    if (this.isExactColorMatch(color, targetColor)) {
+    if (color === targetColor) {
       console.log('same color')
       return;
     }
 
-    const TOLERANCE = 1000;
-
-    const pixelsToCheck: [number, number][] = [];
-
-    pixelsToCheck.push([x, y]);
+    const pixelsToCheck: number[] = [];
+    pixelsToCheck.push(x, y);
 
     while (pixelsToCheck.length > 0) {
-      const [curX, curY] = pixelsToCheck.pop()!;
-      if (isInValidPixel(curX, curY, imageData.width, imageData.height)) {
+      const curY = pixelsToCheck.pop();
+      const curX = pixelsToCheck.pop();
+
+      if (!curX || !curY || isInValidPixel(curX, curY, imageData.width, imageData.height)) {
         continue;
       }
 
-      const currentColor = getColorAtPixel(imageData, curX, curY);
+      const currentColor = getColorAtPixel(pixelData, curX, curY);
 
       if (
-        !visited[curY * imageData.width + curX] &&
-        this.isColorMatch(currentColor, targetColor, TOLERANCE)
+        currentColor === targetColor
       ) {
-        setPixel(imageData, curX, curY, color);
-        visited[curY * imageData.width + curX] = true;  // mark we were here already
-        pixelsToCheck.push([curX + 1, curY]);
-        pixelsToCheck.push([curX - 1, curY]);
-        pixelsToCheck.push([curX, curY + 1]);
-        pixelsToCheck.push([curX, curY - 1]);
-        pixelsToCheck.push([curX + 1, curY + 1]);
-        pixelsToCheck.push([curX - 1, curY - 1]);
-        pixelsToCheck.push([curX - 1, curY + 1]);
-        pixelsToCheck.push([curX + 1, curY - 1]);
+        setPixel(pixelData, curX, curY, color);
+
+        pixelsToCheck.push(curX + 1, curY);
+        pixelsToCheck.push(curX - 1, curY);
+        pixelsToCheck.push(curX, curY + 1);
+        pixelsToCheck.push(curX, curY - 1);
       }
     }
 
