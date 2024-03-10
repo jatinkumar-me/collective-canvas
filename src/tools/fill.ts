@@ -1,7 +1,8 @@
 import State, { Action } from "../actions/state";
 import BaseLayer from "../components/Layer";
 import { Connection } from "../modules/network";
-import { getColorAtPixel, getOffset, hexStringToUintClampedArray, isInValidPixel, setPixel } from "../utils/utils";
+import { PixelData } from "../utils/utilTypes";
+import { getColorAtPixel, hexStringToUintClampedArray as hexStringToUint32, isInValidPixel, setPixel } from "../utils/utils";
 import ToolAttributes, {
   DefaultToolAttributes,
   ToolAttributesMarkup,
@@ -58,24 +59,34 @@ class FillToolAttributes extends ToolAttributes {
 }
 
 
+/**
+ * Fill tool implement flood-fill algorithm
+ * TODO:
+ * - Add tolerance value in color match, to prevent fringes caused by antialiasing
+ * - Make it faster?
+ */
 export default class Fill extends BaseTools {
+  toolName: ToolName;
   ctx: CanvasRenderingContext2D;
   toolAttrib: FillToolAttributes;
 
   mouseDownEventListener: (this: Document, ev: MouseEvent) => any;
   mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
   mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
+  maxTol: number;
 
   private curAction: Action<FillToolAttributes>;
 
   constructor(baseLayer: BaseLayer, connection: Connection, state: State) {
     super(baseLayer, connection, state);
+    this.toolName = ToolName.FILL;
     this.ctx = baseLayer.ctx;
     this.toolAttrib = new FillToolAttributes(DEFAULT_FILL_TOOL_ATTRIBUTES);
 
     this.mouseDownEventListener = this.mouseDown.bind(this);
     this.mouseUpEventListener = this.mouseUp.bind(this);
     this.mouseMoveEventListener = this.mouseMove.bind(this);
+    this.maxTol = 0;
 
     this.events();
     this.curAction = {
@@ -112,89 +123,103 @@ export default class Fill extends BaseTools {
   * Checks whether should two colors are same or not.
   */
   isColorMatch(
-    c1: Uint8ClampedArray,
-    c2: Uint8ClampedArray,
+    c1: number,
+    c2: number,
     tolerance: number,
   ): boolean {
-    const dr = c1[0] - c2[0];
-    const dg = c1[1] - c2[1];
-    const db = c1[2] - c2[2];
-    const da = c1[3] - c2[3];
-    return dr * dr + dg * dg + db * db + da * da < tolerance;
+    return false;
   }
 
   /**
   * Checks whether should two colors are exactly the same or not.
+  * both c1 and c2 are Uint32.
   */
   isExactColorMatch(
-    c1: Uint8ClampedArray,
-    c2: Uint8ClampedArray,
+    c1: number,
+    c2: number,
   ): boolean {
-    return c1[0] === c2[0] && c1[1] === c2[1] && c1[2] === c2[2] && c1[3] === c2[3];
+    return c1 === c2;
   }
 
   /**
   * Draw implement basic flood-fill algorithm based on iterative DFS.
   */
   draw() {
-    const x = this.mouseLastClickPosition[0];
-    const y = this.mouseLastClickPosition[1];
+    Fill.drawFill(
+      this.ctx,
+      this.mouseLastClickPosition,
+      this.toolAttrib,
+    )
+  }
 
-    const color = hexStringToUintClampedArray(this.toolAttrib.fillColor);
+  static drawFill(
+    ctx: CanvasRenderingContext2D,
+    clickPosition: [number, number],
+    toolAttrib: DefaultToolAttributes<FillToolAttributes>,
+  ) {
+    const [x, y] = clickPosition;
+    const color = hexStringToUint32(toolAttrib.fillColor);
 
-    const imageData = this.ctx.getImageData(0, 0, this.baseLayer.canvas.width, this.baseLayer.canvas.height);
+    const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+    const { height, width, data } = imageData;
 
-    const visited = new Array<boolean>(imageData.width * imageData.height);
+    // We will represent a color value by a 32 bit unsinged integer.
+    // 32 bit integer includes 4 bytes each representing R, G, B and Alpha respectively.
+    const pixelData: PixelData = {
+      height: height,
+      width: width,
+      data: new Uint32Array(data.buffer),
+    }
 
-    const targetColor = getColorAtPixel(imageData, x, y);
+    const targetColor = getColorAtPixel(pixelData, x, y);
 
-    if (this.isExactColorMatch(color, targetColor)) {
+    if (color === targetColor) {
       console.log('same color')
       return;
     }
 
-    const TOLERANCE = 1000;
-
-    const pixelsToCheck: [number, number][] = [];
-
-    pixelsToCheck.push([x, y]);
+    const pixelsToCheck: number[] = [];
+    pixelsToCheck.push(x, y);
 
     while (pixelsToCheck.length > 0) {
-      const [curX, curY] = pixelsToCheck.pop()!;
-      if (isInValidPixel(curX, curY, imageData.width, imageData.height)) {
+      const curY = pixelsToCheck.pop();
+      const curX = pixelsToCheck.pop();
+
+      if (!curX || !curY || isInValidPixel(curX, curY, imageData.width, imageData.height)) {
         continue;
       }
 
-      const currentColor = getColorAtPixel(imageData, curX, curY);
+      const currentColor = getColorAtPixel(pixelData, curX, curY);
 
       if (
-        !visited[curY * imageData.width + curX] &&
-        this.isColorMatch(currentColor, targetColor, TOLERANCE)
+        currentColor === targetColor
       ) {
-        setPixel(imageData, curX, curY, color);
-        visited[curY * imageData.width + curX] = true;  // mark we were here already
-        pixelsToCheck.push([curX + 1, curY]);
-        pixelsToCheck.push([curX - 1, curY]);
-        pixelsToCheck.push([curX, curY + 1]);
-        pixelsToCheck.push([curX, curY - 1]);
-        pixelsToCheck.push([curX + 1, curY + 1]);
-        pixelsToCheck.push([curX - 1, curY - 1]);
-        pixelsToCheck.push([curX - 1, curY + 1]);
-        pixelsToCheck.push([curX + 1, curY - 1]);
+        setPixel(pixelData, curX, curY, color);
+
+        pixelsToCheck.push(curX + 1, curY);
+        pixelsToCheck.push(curX - 1, curY);
+        pixelsToCheck.push(curX, curY + 1);
+        pixelsToCheck.push(curX, curY - 1);
       }
     }
 
-    this.ctx.putImageData(imageData, 0, 0);
+    ctx.putImageData(imageData, 0, 0);
   }
 
   sendMessageOverConnection() {
     if (!this.connection?.isConnected()) {
       return;
     }
-    // this.connection.sendUserCommand();
+    this.connection.sendUserCommand(
+      this.getCommand()
+    );
   }
 
   recordCommand() {
+    this.curAction = {
+      toolName: this.toolName,
+      commands: [this.getCommand()]
+    }
     this.state.do(this.curAction);
   }
 }

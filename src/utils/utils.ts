@@ -1,3 +1,5 @@
+import { PixelData } from "./utilTypes";
+
 /**
  * Clamps a value of a function between a min and max value;
  *
@@ -76,50 +78,53 @@ export function isInValidPixel(
  * function to get RGBA value at a particular coordinate.
  * @param x 
  * @param y 
- * @param imageData 
- * @returns {Uint8ClampedArray} - Returns an array of length 4 consisting of RGBA value.
+ * @param pixelData 
+ * @returns {number} - Returns a 32bit unsigned integer
  */
 export function getColorAtPixel(
-  imageData: ImageData,
+  pixelData: PixelData,
   x: number,
   y: number,
-): Uint8ClampedArray {
-  const { width } = imageData;
-  const offset = getOffset(width, x, y);
-
-  return imageData.data.slice(offset, offset + 4);
+): number {
+  const { width } = pixelData;
+  return pixelData.data[y * width + x];
 }
 
 /**
- * function to get RGBA value at a particular coordinate.
+ * function to set RGBA value at a particular coordinate.
+ * @param pixelData 
  * @param x 
  * @param y 
- * @param imageData 
- * @returns {Uint8ClampedArray} - Returns an array of length 4 consisting of RGBA value.
+ * @param number - Uint32 number representing RGBA value
  */
 export function setPixel(
-  imageData: ImageData,
+  pixelData: PixelData,
   x: number,
   y: number,
-  color: Uint8ClampedArray
+  color: number
 ): void {
-  const offset = (y * imageData.width + x) * 4;
-  imageData.data[offset + 0] = color[0];
-  imageData.data[offset + 1] = color[1];
-  imageData.data[offset + 2] = color[2];
-  imageData.data[offset + 3] = 255;
+  const red = (color >> 24) & 0xFF;     // Extract Alpha (most significant byte)
+  const green = (color >> 16) & 0xFF;   // Extract Blue (second byte from the left)
+  const blue = (color >> 8) & 0xFF;     // Extract Green (third byte from the left)
+  const alpha = color & 0xFF;           // Extract Red (third byte from the left)
+
+  const abgrColor = (alpha << 24) | (blue << 16) | (green << 8) | red;
+  pixelData.data[y * pixelData.width + x] = abgrColor;
 }
 
 /**
- * Convert hexColor obtained from color picker to a UintClampedArray
+ * Convert hexColor obtained from color picker to a Uint32 number
+ * It adds alpha channel if it's not present.
  */
 export function hexStringToUintClampedArray(
   hex: string,
-): Uint8ClampedArray {
+): number {
   hex = hex.replace('#', '');
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
 
-  return new Uint8ClampedArray([r, g, b, 0]);
+  // Append alpha channel in the color
+  if (hex.length <= 6) {
+    hex += 'FF';
+  }
+
+  return parseInt(hex, 16) >>> 0;
 }

@@ -137,6 +137,7 @@ class PencilToolAttributes extends ToolAttributes {
 
 
 export default class Pencil extends BaseTools {
+  toolName: ToolName;
   ctx: CanvasRenderingContext2D;
   toolAttrib: PencilToolAttributes;
   readonly MAX_STROKE_WIDTH: number;
@@ -152,6 +153,7 @@ export default class Pencil extends BaseTools {
 
   constructor(baseLayer: BaseLayer, connection: Connection, state: State) {
     super(baseLayer, connection, state);
+    this.toolName = ToolName.PENCIL;
     this.ctx = baseLayer.ctx;
     this.MAX_STROKE_WIDTH = 100;
     this.toolAttrib = new PencilToolAttributes(DEFAULT_PENCIL_TOOL_ATTRIBUTES);
@@ -265,16 +267,6 @@ export default class Pencil extends BaseTools {
         [curCommand.x, curCommand.y],
         [prevCommand.x, prevCommand.y]
       );
-    }
-  }
-
-  getCommand(): UserCommand<PencilToolAttributes> {
-    return {
-      x: this.mouseLastPosition[0],
-      y: this.mouseLastPosition[1],
-      isDrag: this.isDrag,
-      toolName: ToolName.PENCIL,
-      toolAttributes: this.toolAttrib.getAttributes(),
     }
   }
 

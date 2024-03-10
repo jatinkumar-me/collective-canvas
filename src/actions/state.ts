@@ -1,6 +1,7 @@
 import BaseLayer from "../components/Layer";
 import { UserCommand } from "../modules/network";
 import Ellipse from "../tools/ellipse";
+import Fill from "../tools/fill";
 import Line from "../tools/line";
 import Pencil from "../tools/pencil";
 import Rectangle from "../tools/rectangle";
@@ -136,6 +137,13 @@ export default class State {
         }
         Line.drawLine(this.baseLayer.ctx, [command.clickX, command.clickY], [command.x, command.y], command.toolAttributes)
         break;
+      }
+      case ToolName.FILL: {
+        const command = action.commands[0];
+        if (!command.clickX || !command.clickY) {
+          break;
+        }
+        Fill.drawFill(this.baseLayer.ctx, [command.clickX, command.clickY], command.toolAttributes)
       }
     }
   }
