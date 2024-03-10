@@ -1,7 +1,8 @@
 import State, { Reversible } from "../actions/state";
 import BaseLayer from "../components/Layer";
-import { Connection } from "../modules/network";
+import { Connection, UserCommand } from "../modules/network";
 import ToolAttributes from "./toolAttributes";
+import { ToolName } from "./toolManager";
 
 /**
  * @class BaseTools
@@ -15,6 +16,7 @@ export default abstract class BaseTools implements Reversible {
   state: State;
 
   abstract toolAttrib: ToolAttributes;
+  abstract toolName: ToolName;
 
   isDrag: boolean;
   isTouch: boolean;
@@ -106,6 +108,19 @@ export default abstract class BaseTools implements Reversible {
 
   onCanvasBlur(_event: FocusEvent) {
     this.isDrag = false;
+  }
+
+  getCommand<T extends ToolAttributes>(draw?: boolean): UserCommand<T> {
+    return {
+      x: this.mouseLastPosition[0],
+      y: this.mouseLastPosition[1],
+      isDrag: this.isDrag,
+      toolName: this.toolName,
+      toolAttributes: this.toolAttrib.getAttributes(),
+      draw: draw,
+      clickX: this.mouseLastClickPosition[0],
+      clickY: this.mouseLastClickPosition[1],
+    }
   }
 
   destroy() {

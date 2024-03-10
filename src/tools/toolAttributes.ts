@@ -44,4 +44,5 @@ export default abstract class ToolAttributes {
 
   abstract events(): void;
   abstract removeEvents(): void;
+  abstract getAttributes(): DefaultToolAttributes<any>;
 }
