@@ -59,7 +59,14 @@ class FillToolAttributes extends ToolAttributes {
 }
 
 
+/**
+ * Fill tool implement flood-fill algorithm
+ * TODO:
+ * - Add tolerance value in color match, to prevent fringes caused by antialiasing
+ * - Make it faster?
+ */
 export default class Fill extends BaseTools {
+  toolName: ToolName;
   ctx: CanvasRenderingContext2D;
   toolAttrib: FillToolAttributes;
 
@@ -72,6 +79,7 @@ export default class Fill extends BaseTools {
 
   constructor(baseLayer: BaseLayer, connection: Connection, state: State) {
     super(baseLayer, connection, state);
+    this.toolName = ToolName.FILL;
     this.ctx = baseLayer.ctx;
     this.toolAttrib = new FillToolAttributes(DEFAULT_FILL_TOOL_ATTRIBUTES);
 
@@ -115,16 +123,11 @@ export default class Fill extends BaseTools {
   * Checks whether should two colors are same or not.
   */
   isColorMatch(
-    c1: Uint8ClampedArray,
-    c2: Uint8ClampedArray,
+    c1: number,
+    c2: number,
     tolerance: number,
   ): boolean {
-    const dr = c1[0] - c2[0];
-    const dg = c1[1] - c2[1];
-    const db = c1[2] - c2[2];
-
-    const delta = (dr * dr) + (dg * dg) + (db * db);
-    return delta < tolerance;
+    return false;
   }
 
   /**
@@ -142,12 +145,22 @@ export default class Fill extends BaseTools {
   * Draw implement basic flood-fill algorithm based on iterative DFS.
   */
   draw() {
-    const x = this.mouseLastClickPosition[0];
-    const y = this.mouseLastClickPosition[1];
+    Fill.drawFill(
+      this.ctx,
+      this.mouseLastClickPosition,
+      this.toolAttrib,
+    )
+  }
 
-    const color = hexStringToUint32(this.toolAttrib.fillColor);
+  static drawFill(
+    ctx: CanvasRenderingContext2D,
+    clickPosition: [number, number],
+    toolAttrib: DefaultToolAttributes<FillToolAttributes>,
+  ) {
+    const [x, y] = clickPosition;
+    const color = hexStringToUint32(toolAttrib.fillColor);
 
-    const imageData = this.ctx.getImageData(0, 0, this.baseLayer.canvas.width, this.baseLayer.canvas.height);
+    const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
     const { height, width, data } = imageData;
 
     // We will represent a color value by a 32 bit unsinged integer.
@@ -190,17 +203,23 @@ export default class Fill extends BaseTools {
       }
     }
 
-    this.ctx.putImageData(imageData, 0, 0);
+    ctx.putImageData(imageData, 0, 0);
   }
 
   sendMessageOverConnection() {
     if (!this.connection?.isConnected()) {
       return;
     }
-    // this.connection.sendUserCommand();
+    this.connection.sendUserCommand(
+      this.getCommand()
+    );
   }
 
   recordCommand() {
+    this.curAction = {
+      toolName: this.toolName,
+      commands: [this.getCommand()]
+    }
     this.state.do(this.curAction);
   }
 }
