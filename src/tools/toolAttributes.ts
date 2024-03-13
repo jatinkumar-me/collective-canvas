@@ -7,6 +7,36 @@ type ExcludeMethods<T> = {
   [K in keyof T as T[K] extends Function ? never : K]: T[K];
 };
 
+export type ToolAttributeInput = {
+  type: 'color',
+  label: string
+  default: string,
+  tooltip?: string,
+} | {
+  type: 'range',
+  label: string
+  min: number,
+  max: number,
+  default: number,
+  step?: number,
+  tooltip?:string,
+} | {
+  type: 'checkbox',
+  label: string
+  checked: boolean,
+  tooltip?:string,
+} | {
+  type: 'select',
+  label: string
+  options: string[],
+  tooltip?:string,
+  default: string,
+}
+
+export type ToolAttributeInputParam<T extends ToolAttributes> = Partial<
+  Record<keyof DefaultToolAttributes<T>, ToolAttributeInput>
+>
+
 
 export default abstract class ToolAttributes {
   toolBoxDiv: HTMLDivElement | null;
