@@ -1,7 +1,6 @@
 import State from "../actions/state";
 import BaseLayer from "../components/Layer";
 import { Connection } from "../modules/network";
-import Bezier from "./bezier";
 import Ellipse from "./ellipse";
 import Fill from "./fill";
 import Line from "./line";
