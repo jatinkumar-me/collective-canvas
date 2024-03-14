@@ -64,17 +64,17 @@ export default abstract class ToolAttributes {
       let fieldMarkup = '';
       switch (field.type) {
         case 'color':
-          fieldMarkup = `<div><label for="${key}">${field.label}</label><input type="color" id="${key}" /></div>`;
+          fieldMarkup = `<div><label for="${key}">${field.label} </label><input type="color" id="${key}" /></div>`;
           break;
         case 'range':
           fieldMarkup = `<div>
-                          <label for="${key}">${field.label}</label>
+                          <label for="${key}">${field.label} </label>
                           <input type="range" id="${key}" name="${key}" min="${field.min}" max="${field.max}" step="${field.step ?? 1}" value="${field.default}">
                         </div>`;
           break;
         case 'select':
           fieldMarkup = `<div>
-                          <label for="${key}">${field.label}</label>
+                          <label for="${key}">${field.label} </label>
                           <select name="${key}" id="${key}" >
                             ${field.options.map((option) => `<option value=${option} ${field.default === option ? "selected" : ""} >${option}</option>`).join('')}
                           </select>
