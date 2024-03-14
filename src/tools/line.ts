@@ -17,7 +17,7 @@ const DEFAULT_LINE_TOOL_ATTRIBUTES: DefaultToolAttributes<LineToolAttributes> =
 export class LineToolAttributes extends ShapeToolAttributes {
 
   constructor(defaultAttribs: DefaultToolAttributes<LineToolAttributes>) {
-    super('line', defaultAttribs);
+    super(defaultAttribs, 'Snap angle (uninmplmented)');
   }
 }
 
