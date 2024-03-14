@@ -4,8 +4,7 @@ import { Connection } from "../modules/network";
 import { PixelData } from "../utils/utilTypes";
 import { getColorAtPixel, hexStringToUintClampedArray as hexStringToUint32, isInValidPixel, setPixel } from "../utils/utils";
 import ToolAttributes, {
-  DefaultToolAttributes,
-  ToolAttributesMarkup,
+  DefaultToolAttributes, ToolAttributeInputParam,
 } from "./toolAttributes";
 import { ToolName } from "./toolManager";
 import BaseTools from "./tools";
@@ -15,9 +14,14 @@ const DEFAULT_FILL_TOOL_ATTRIBUTES: DefaultToolAttributes<FillToolAttributes> =
   fillColor: "#000000",
 };
 
-const FILL_TOOL_ATTRIBUTE_MARKUP: ToolAttributesMarkup<FillToolAttributes> =
+const FILL_TOOL_ATTRIBUTE_MARKUP: ToolAttributeInputParam<FillToolAttributes> =
 {
-  fillColor: `<div><label for="fill-color-picker">Fill color </label><input type="color" id="fill-color-picker" /></div>`,
+  fillColor: {
+      type: 'color',
+      label: 'Fill color',
+      default: DEFAULT_FILL_TOOL_ATTRIBUTES.fillColor,
+      tooltip: 'Current flood fill algorithm is under beta'
+    },
 };
 
 

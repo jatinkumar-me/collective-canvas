@@ -19,7 +19,7 @@ const DEFAULT_RECTANGLE_TOOL_ATTRIBUTES: DefaultToolAttributes<RectangleToolAttr
 
 export class RectangleToolAttributes extends ShapeToolAttributes {
   constructor(defaultAttribs: DefaultToolAttributes<RectangleToolAttributes>) {
-    super('rectangle', defaultAttribs);
+    super(defaultAttribs, 'Square');
   }
 }
 

@@ -3,38 +3,50 @@ import BaseLayer from "../components/Layer";
 import { Connection, UserCommand } from "../modules/network";
 
 import ToolAttributes, {
-  DefaultToolAttributes,
-  ToolAttributesMarkup,
+  DefaultToolAttributes, ToolAttributeInputParam,
 } from "./toolAttributes";
 import { ToolName } from "./toolManager";
 import BaseTools from "./tools";
 
 
-function getShapeToolAttributeMarkup(shapeName: string): ToolAttributesMarkup<ShapeToolAttributes> {
+function getShapeToolAttributeMarkup(
+  defaultAttrib: DefaultToolAttributes<ShapeToolAttributes>,
+  equalLabel: string
+): ToolAttributeInputParam<ShapeToolAttributes> {
   return {
-    strokeStyle: `<div><label for="${shapeName}-stroke-color-picker">Stroke color</label>
-                  <input type="color" id="${shapeName}-stroke-color-picker" />
-                  </div>`,
-    strokeWidth: `<div>
-                    <label for="${shapeName}-stroke-width-input">Stroke width</label>
-                    <input type="range" id="${shapeName}-stroke-width-input" name="${shapeName}-stroke-width-input" min="1" max="50" step="1" value="1">
-               </div>`,
-    isFilled: `<div>
-                  <input type="checkbox" id="${shapeName}-isfilled" />
-                  <label for="${shapeName}-isfilled">fill</label>
-              </div>`,
-    fillStyle: `<div><label for="${shapeName}-fill-color-picker">Fill color</label>
-                  <input type="color" id="${shapeName}-fill-color-picker"/>
-                </div>`,
-    isEqual: `<div>
-                  <input type="checkbox" id="${shapeName}-isequal" />
-                  <label for="${shapeName}-isequal" title="Press Shift to toggle this checkbox">fix aspect ratio </label>
-              </div>`,
+    strokeStyle: {
+      type: 'color',
+      default: defaultAttrib.strokeStyle,
+      label: 'Stroke Color',
+    },
+    strokeWidth: {
+      type: 'range',
+      label: 'Stroke Width',
+      default: defaultAttrib.strokeWidth,
+      min: 1,
+      max: 50,
+      step: 1,
+    },
+    isFilled: {
+      type: 'checkbox',
+      label: 'Fill',
+      checked: defaultAttrib.isFilled,
+    },
+    fillStyle: {
+      type: 'color',
+      label: 'Fill color',
+      default: defaultAttrib.fillStyle,
+    },
+    isEqual: {
+      type: 'checkbox',
+      label: equalLabel,
+      checked: defaultAttrib.isEqual,
+    },
   };
 }
 
 export abstract class ShapeToolAttributes extends ToolAttributes {
-  strokeStyle: string | CanvasGradient | CanvasPattern;
+  strokeStyle: string;
   isFilled: boolean;
   fillStyle: string;
   strokeWidth: number;
@@ -44,7 +56,7 @@ export abstract class ShapeToolAttributes extends ToolAttributes {
   private isFilledInput: HTMLInputElement;
   private fillStyleInput: HTMLInputElement;
   private strokeWidthInput: HTMLInputElement;
-  private isSquareInput: HTMLInputElement;
+  private isEqualInput: HTMLInputElement;
 
   /**
    * Holding on to references to the eventlisteners to remove them when the component is destroyed
@@ -58,8 +70,13 @@ export abstract class ShapeToolAttributes extends ToolAttributes {
   private shiftKeyDownEventListener: (this: Document, ev: KeyboardEvent) => void;
   private shiftKeyUpEventListener: (this: Document, ev: KeyboardEvent) => void;
 
-  constructor(shapeName: string, defaultAttribs: DefaultToolAttributes<ShapeToolAttributes>) {
-    super(getShapeToolAttributeMarkup(shapeName));
+  constructor(
+    defaultAttribs: DefaultToolAttributes<ShapeToolAttributes>,
+    equalLabel: string,
+    additionalAttrib?: ToolAttributeInputParam<any>
+  ) {
+    const baseShapeMarkup = getShapeToolAttributeMarkup(defaultAttribs, equalLabel);
+    super({ ...baseShapeMarkup, ...additionalAttrib });
 
     this.strokeStyle = defaultAttribs.strokeStyle;
     this.isFilled = defaultAttribs.isFilled;
@@ -68,19 +85,19 @@ export abstract class ShapeToolAttributes extends ToolAttributes {
     this.isEqual = defaultAttribs.isEqual;
 
     this.strokeStyleInput = document.getElementById(
-      `${shapeName}-stroke-color-picker`
+      "strokeStyle"
     ) as HTMLInputElement;
     this.isFilledInput = document.getElementById(
-      `${shapeName}-isfilled`
+      `isFilled`
     ) as HTMLInputElement;
     this.fillStyleInput = document.getElementById(
-      `${shapeName}-fill-color-picker`
+      `fillStyle`
     ) as HTMLInputElement;
     this.strokeWidthInput = document.getElementById(
-      `${shapeName}-stroke-width-input`
+      `strokeWidth`
     ) as HTMLInputElement;
-    this.isSquareInput = document.getElementById(
-      `${shapeName}-isequal`
+    this.isEqualInput = document.getElementById(
+      `isEqual`
     ) as HTMLInputElement;
 
     this.strokeStyleChangeListener = this.setStrokeStyleInput.bind(this);
@@ -100,7 +117,7 @@ export abstract class ShapeToolAttributes extends ToolAttributes {
     this.isFilledInput.addEventListener("change", this.isFilledListener);
     this.fillStyleInput.addEventListener("change", this.fillStyleChangeListener);
     this.strokeWidthInput.addEventListener("change", this.strokeWidthChangeListener);
-    this.isSquareInput.addEventListener("change", this.isSquareListener);
+    this.isEqualInput.addEventListener("change", this.isSquareListener);
     document.addEventListener("keydown", this.shiftKeyDownEventListener);
     document.addEventListener("keyup", this.shiftKeyUpEventListener);
   }
@@ -110,7 +127,7 @@ export abstract class ShapeToolAttributes extends ToolAttributes {
     this.isFilledInput.removeEventListener("change", this.isFilledListener);
     this.fillStyleInput.removeEventListener("change", this.fillStyleChangeListener);
     this.strokeWidthInput.removeEventListener("change", this.strokeWidthChangeListener);
-    this.isSquareInput.removeEventListener("change", this.isSquareListener);
+    this.isEqualInput.removeEventListener("change", this.isSquareListener);
     document.removeEventListener("keydown", this.shiftKeyDownEventListener);
     document.removeEventListener("keyup", this.shiftKeyUpEventListener);
     super.destroy();
@@ -140,7 +157,7 @@ export abstract class ShapeToolAttributes extends ToolAttributes {
 
   private toggleSetIsSquare() {
     this.isEqual = !this.isEqual;
-    this.isSquareInput.checked = !this.isSquareInput.checked;
+    this.isEqualInput.checked = !this.isEqualInput.checked;
   }
 
   onShiftKeyUp(e: KeyboardEvent) {
