@@ -3,8 +3,7 @@ import BaseLayer from "../components/Layer";
 import { Connection, UserCommand } from "../modules/network";
 import { clamp } from "../utils/utils";
 import ToolAttributes, {
-  DefaultToolAttributes,
-  ToolAttributesMarkup,
+  DefaultToolAttributes, ToolAttributeInputParam,
 } from "./toolAttributes";
 import { ToolName } from "./toolManager";
 import BaseTools from "./tools";
@@ -17,26 +16,31 @@ const DEFAULT_PENCIL_TOOL_ATTRIBUTES: DefaultToolAttributes<PencilToolAttributes
     speedDependenceFactor: 0,
   };
 
-const PENCIL_TOOL_ATTRIBUTE_MARKUP: ToolAttributesMarkup<PencilToolAttributes> =
+const PENCIL_TOOL_ATTRIBUTE_INPUT: ToolAttributeInputParam<PencilToolAttributes> =
   {
-    strokeStyle: `<div><label for="pencil-color-picker">Stroke color </label><input type="color" id="pencil-color-picker" /></div>`,
-    lineCap: `<div>
-              <label for="pencil-line-cap">Line cap</label>
-              <select name="linecap" id="pencil-line-cap">
-                <option value="butt">butt</option>
-                <option value="round" selected>round</option>
-                <option value="square">square</option>
-              </select>
-          </div>`,
-    strokeWidth: `<div>
-                    <label for="pencil-stroke-width-input">Stroke width</label>
-                    <input type="range" id="pencil-stroke-width-input" name="pencil-stroke-width-input" min="1" max="50" step="1" value="${DEFAULT_PENCIL_TOOL_ATTRIBUTES.strokeWidth}">
-               </div>`,
+    strokeStyle: {
+      type: 'color',
+      default: DEFAULT_PENCIL_TOOL_ATTRIBUTES.strokeStyle,
+      label: 'Stroke color'
+    },
+    lineCap: {
+      type: 'select',
+      options: ['butt', 'round', 'square'],
+      label: 'Line cap',
+      default: DEFAULT_PENCIL_TOOL_ATTRIBUTES.lineCap,
+    },
+    strokeWidth: {
+      type: 'range',
+      label: 'Stroke width',
+      default: DEFAULT_PENCIL_TOOL_ATTRIBUTES.strokeWidth,
+      min: 1,
+      max: 50,
+    },
   };
 
 
 class PencilToolAttributes extends ToolAttributes {
-  strokeStyle: string | CanvasGradient | CanvasPattern;
+  strokeStyle: string;
   lineCap: CanvasLineCap;
   strokeWidth: number;
   speedDependenceFactor: number;
@@ -59,7 +63,7 @@ class PencilToolAttributes extends ToolAttributes {
   constructor(
     defaultPencilToolAttributes: DefaultToolAttributes<PencilToolAttributes>
   ) {
-    super(PENCIL_TOOL_ATTRIBUTE_MARKUP);
+    super(PENCIL_TOOL_ATTRIBUTE_INPUT);
     this.strokeWidth = defaultPencilToolAttributes.strokeWidth;
     this.lineCap = defaultPencilToolAttributes.lineCap;
     this.strokeStyle = defaultPencilToolAttributes.strokeStyle;
@@ -67,15 +71,15 @@ class PencilToolAttributes extends ToolAttributes {
       defaultPencilToolAttributes.speedDependenceFactor;
 
     this.strokeStyleInput = document.getElementById(
-      "pencil-color-picker"
+      "strokeStyle"
     ) as HTMLInputElement;
 
     this.linecapInput = document.getElementById(
-      "pencil-line-cap"
+      "lineCap"
     ) as HTMLInputElement;
 
     this.strokeWidthInput = document.getElementById(
-      "pencil-stroke-width-input"
+      "strokeWidth"
     ) as HTMLInputElement;
 
     this.canvasContainer = document.getElementById('canvas-container') as HTMLDivElement;
