@@ -39,6 +39,12 @@ export default class State {
     this.redoActions = [];
     this.#setEventListeners();
     this.baseLayer = baseLayer;
+
+    this.initBaseLayerState();
+  }
+
+  initBaseLayerState() {
+    this.baseLayer.onCanvasClear = this.resetState.bind(this);
   }
 
   #setEventListeners() {
@@ -54,6 +60,18 @@ export default class State {
         this.redo();
       }
     }, false);
+  }
+
+  resetState() {
+    this.actions = [];
+    this.redoActions = [];
+  }
+
+  onCanvasClearAction() {
+    this.do({
+      toolName: ToolName.CLEAR,
+      commands: [],
+    })
   }
 
   canUndo(): boolean {
@@ -153,6 +171,10 @@ export default class State {
           break;
         }
         Text.drawText(this.baseLayer.ctx, [command.clickX, command.clickY], command.toolAttributes)
+        break;
+      }
+      case ToolName.CLEAR: {
+        this.baseLayer.clearCanvas();
       }
     }
   }
