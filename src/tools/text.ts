@@ -149,8 +149,8 @@ export default class Text extends Shape {
   }
 
   drawShape(ctx: CanvasRenderingContext2D): void {
-    if (this.toolAttrib.isEqual) {
-      this.dynamicFontSize(
+    if (!this.toolAttrib.isEqual) {
+      this.isFixedFontSize(
         this.mouseLastPosition,
         this.mouseLastClickPosition,
       )
@@ -163,7 +163,7 @@ export default class Text extends Shape {
     )
   }
 
-  dynamicFontSize(
+  isFixedFontSize(
     mouseLastPosition: [number, number],
     mouseLastClickPosition: [number, number],
   ) {
