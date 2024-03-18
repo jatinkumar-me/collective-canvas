@@ -5,6 +5,7 @@ import Fill from "../tools/fill";
 import Line from "../tools/line";
 import Pencil from "../tools/pencil";
 import Rectangle from "../tools/rectangle";
+import Text from "../tools/text";
 import ToolAttributes from "../tools/toolAttributes";
 import { ToolName } from "../tools/toolManager";
 
@@ -144,6 +145,14 @@ export default class State {
           break;
         }
         Fill.drawFill(this.baseLayer.ctx, [command.clickX, command.clickY], command.toolAttributes)
+        break;
+      }
+      case ToolName.TEXT: {
+        const command = action.commands[0];
+        if (!command.clickX || !command.clickY) {
+          break;
+        }
+        Text.drawText(this.baseLayer.ctx, [command.clickX, command.clickY], command.toolAttributes)
       }
     }
   }
