@@ -17,6 +17,7 @@ export enum ToolName {
   ELLIPSE = 'ellipse',
   FILL = 'fill',
   TEXT = 'text',
+  CLEAR = 'clear',
 }
 
 /**
