@@ -4,6 +4,7 @@ import Fill from "../tools/fill";
 import Line from "../tools/line";
 import Pencil from "../tools/pencil";
 import Rectangle from "../tools/rectangle";
+import Text from "../tools/text";
 import ToolAttributes, { DefaultToolAttributes } from "../tools/toolAttributes";
 import { ToolName } from "../tools/toolManager";
 import { UserCommand } from "./network";
@@ -143,6 +144,21 @@ export class ExternalUser extends User {
                     ctx,
                     [this.clickX, this.clickY],
                     [command.x, command.y],
+                    this.toolAttributes
+                )
+                this.initCurAction(command.toolName)
+                this.recordCommand(command);
+                this.recordState();
+                this.initCurAction(command.toolName)
+                break;
+            }
+            case ToolName.TEXT: {
+                if (!command.draw || this.isDrag) {
+                    break;
+                }
+                Text.drawText(
+                    ctx,
+                    [this.clickX, this.clickY],
                     this.toolAttributes
                 )
                 this.initCurAction(command.toolName)
