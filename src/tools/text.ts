@@ -180,12 +180,16 @@ export default class Text extends Shape {
       console.warn("Text field is empty");
       return;
     }
-    ctx.strokeStyle = toolAttrib.strokeStyle;
     ctx.fillStyle = toolAttrib.fillStyle;
     ctx.font = toolAttrib.fontSize + 'px ' + toolAttrib.font;
     ctx.textAlign = toolAttrib.align;
     ctx.textBaseline = 'top'
 
+    if (toolAttrib.strokeWidth > 1) {
+      ctx.lineWidth = toolAttrib.strokeWidth;
+      ctx.strokeStyle = toolAttrib.strokeStyle;
+      ctx.strokeText(toolAttrib.textContent, mouseLastClickPosition[0], mouseLastClickPosition[1])
+    }
     ctx.fillText(toolAttrib.textContent, mouseLastClickPosition[0], mouseLastClickPosition[1])
   }
 
