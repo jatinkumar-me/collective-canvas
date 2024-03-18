@@ -6,6 +6,7 @@ import Fill from "./fill";
 import Line from "./line";
 import Pencil from "./pencil";
 import Rectangle from "./rectangle";
+import Text from "./text";
 import BaseTools from "./tools";
 
 export enum ToolName {
@@ -15,6 +16,7 @@ export enum ToolName {
   LINE = 'line',
   ELLIPSE = 'ellipse',
   FILL = 'fill',
+  TEXT = 'text',
 }
 
 /**
@@ -88,6 +90,8 @@ export default class ToolManager {
         return new Line(this.baseLayer, this.connection, this.state);
       case ToolName.FILL:
         return new Fill(this.baseLayer, this.connection, this.state);
+      case ToolName.TEXT:
+        return new Text(this.baseLayer, this.connection, this.state);
       default:
         return null;
     }
