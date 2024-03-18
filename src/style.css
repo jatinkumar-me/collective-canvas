@@ -15,6 +15,16 @@ main {
   /* margin: auto; */
 }
 
+kbd {
+  background-color: #eee;
+  border-radius: 3px;
+  border: 1px solid #b4b4b4;
+  color: #333;
+  line-height: 1;
+  padding: 1px 4px;
+  white-space: nowrap;
+}
+
 legend {
   font-weight: bold;
 }
