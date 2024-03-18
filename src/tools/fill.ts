@@ -37,7 +37,7 @@ class FillToolAttributes extends ToolAttributes {
     super(FILL_TOOL_ATTRIBUTE_MARKUP);
     this.fillColor = defaultFillToolAttributes.fillColor;
     this.fillColorInput = document.getElementById(
-      "fill-color-picker"
+      "fillColor"
     ) as HTMLInputElement;
     this.fillColorChangeListener = this.setFillColorInput.bind(this);
     this.events();
