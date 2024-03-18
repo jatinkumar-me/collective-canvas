@@ -31,6 +31,10 @@ export type ToolAttributeInput = {
   options: string[],
   tooltip?:string,
   default: string,
+} | {
+  type: 'text-area',
+  label: string,
+  placeholder: string,
 }
 
 export type ToolAttributeInputParam<T extends ToolAttributes> = Partial<
@@ -86,6 +90,11 @@ export default abstract class ToolAttributes {
                           <label for="${key}" title="${field.tooltip}">${field.label}</label>
                         </div>`;
           break;
+        case "text-area":
+          fieldMarkup = `<div>
+                          <div><label for="${key}">${field.label} </label></div>
+                          <textarea id="${key}" rows="${3}" required placeholder="${field.placeholder}"></textarea>
+                        </div>`
       }
 
       inputMarkup += fieldMarkup;

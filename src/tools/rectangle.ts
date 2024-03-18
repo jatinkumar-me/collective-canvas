@@ -65,13 +65,4 @@ export default class Rectangle extends Shape {
     ctx.lineWidth = toolAttrib.strokeWidth;
     ctx.stroke();
   }
-
-  /**
-   * override Basetool destroy method
-   */
-  destroy() {
-    super.destroy();
-    this.removeEvents();
-    this.toolAttrib.removeEvents();
-  }
 }
