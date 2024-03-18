@@ -103,10 +103,10 @@ export function setPixel(
   y: number,
   color: number
 ): void {
-  const red = (color >> 24) & 0xFF;     // Extract Alpha (most significant byte)
-  const green = (color >> 16) & 0xFF;   // Extract Blue (second byte from the left)
-  const blue = (color >> 8) & 0xFF;     // Extract Green (third byte from the left)
-  const alpha = color & 0xFF;           // Extract Red (third byte from the left)
+  const red = (color >> 24) & 0xFF;     // Extract Red (most significant byte)
+  const green = (color >> 16) & 0xFF;   // Extract Green (second byte from the left)
+  const blue = (color >> 8) & 0xFF;     // Extract Blue (third byte from the left)
+  const alpha = color & 0xFF;           // Extract Alpha (third byte from the left)
 
   const abgrColor = (alpha << 24) | (blue << 16) | (green << 8) | red;
   pixelData.data[y * pixelData.width + x] = abgrColor;
