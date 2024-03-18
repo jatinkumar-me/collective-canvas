@@ -70,7 +70,7 @@ export class TextToolAttributes extends ShapeToolAttributes {
   private fontSizeInputListener: EventListener;
 
   constructor(defaultAttribs: DefaultToolAttributes<TextToolAttributes>) {
-    super(defaultAttribs, 'Dynamic font size', TEXT_TOOL_ATTRIBUTE_INPUT);
+    super(defaultAttribs, 'Fix font size', TEXT_TOOL_ATTRIBUTE_INPUT);
     this.font = defaultAttribs.font
     this.align = defaultAttribs.align
     this.textContent = defaultAttribs.textContent
