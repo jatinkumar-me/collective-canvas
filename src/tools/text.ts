@@ -135,6 +135,9 @@ export class TextToolAttributes extends ShapeToolAttributes {
   setFont(e: Event) {
     this.font = (e.target as HTMLInputElement).value
   }
+  focusTextArea() {
+    this.textContentInput.focus();
+  }
 }
 
 export default class Text extends Shape {
