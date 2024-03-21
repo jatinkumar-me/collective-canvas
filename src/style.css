@@ -15,6 +15,16 @@ main {
   /* margin: auto; */
 }
 
+kbd {
+  background-color: #eee;
+  border-radius: 3px;
+  border: 1px solid #b4b4b4;
+  color: #333;
+  line-height: 1;
+  padding: 1px 4px;
+  white-space: nowrap;
+}
+
 legend {
   font-weight: bold;
 }
@@ -69,6 +79,10 @@ fieldset {
   /* min-width: 20rem; */
 }
 
+.tool-info-div {
+  max-width: 23rem;
+}
+
 .user-status-div {
   min-width: 20rem;
 }
@@ -82,5 +96,9 @@ fieldset {
     display: flex;
     flex-direction: row;
     gap: 0.2;
+  }
+
+  .tool-info-div {
+    max-width: unset;
   }
 }

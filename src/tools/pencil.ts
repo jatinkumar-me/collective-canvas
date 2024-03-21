@@ -38,6 +38,9 @@ const PENCIL_TOOL_ATTRIBUTE_INPUT: ToolAttributeInputParam<PencilToolAttributes>
     },
   };
 
+const PENCIL_TOOL_INFO = `Basic pencil tool implementation.<br>
+You can use <kbd>mouse-wheel</kbd> to control the stroke width`
+
 
 class PencilToolAttributes extends ToolAttributes {
   strokeStyle: string;
@@ -63,7 +66,7 @@ class PencilToolAttributes extends ToolAttributes {
   constructor(
     defaultPencilToolAttributes: DefaultToolAttributes<PencilToolAttributes>
   ) {
-    super(PENCIL_TOOL_ATTRIBUTE_INPUT);
+    super(PENCIL_TOOL_ATTRIBUTE_INPUT, PENCIL_TOOL_INFO);
     this.strokeWidth = defaultPencilToolAttributes.strokeWidth;
     this.lineCap = defaultPencilToolAttributes.lineCap;
     this.strokeStyle = defaultPencilToolAttributes.strokeStyle;

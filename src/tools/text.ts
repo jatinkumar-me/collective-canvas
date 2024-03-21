@@ -70,7 +70,7 @@ export class TextToolAttributes extends ShapeToolAttributes {
   private fontSizeInputListener: EventListener;
 
   constructor(defaultAttribs: DefaultToolAttributes<TextToolAttributes>) {
-    super(defaultAttribs, 'Dynamic font size', TEXT_TOOL_ATTRIBUTE_INPUT);
+    super(defaultAttribs, 'Fix font size', TEXT_TOOL_ATTRIBUTE_INPUT);
     this.font = defaultAttribs.font
     this.align = defaultAttribs.align
     this.textContent = defaultAttribs.textContent
@@ -135,6 +135,9 @@ export class TextToolAttributes extends ShapeToolAttributes {
   setFont(e: Event) {
     this.font = (e.target as HTMLInputElement).value
   }
+  focusTextArea() {
+    this.textContentInput.focus();
+  }
 }
 
 export default class Text extends Shape {
@@ -149,8 +152,8 @@ export default class Text extends Shape {
   }
 
   drawShape(ctx: CanvasRenderingContext2D): void {
-    if (this.toolAttrib.isEqual) {
-      this.dynamicFontSize(
+    if (!this.toolAttrib.isEqual) {
+      this.isFixedFontSize(
         this.mouseLastPosition,
         this.mouseLastClickPosition,
       )
@@ -163,7 +166,7 @@ export default class Text extends Shape {
     )
   }
 
-  dynamicFontSize(
+  isFixedFontSize(
     mouseLastPosition: [number, number],
     mouseLastClickPosition: [number, number],
   ) {
@@ -180,12 +183,16 @@ export default class Text extends Shape {
       console.warn("Text field is empty");
       return;
     }
-    ctx.strokeStyle = toolAttrib.strokeStyle;
     ctx.fillStyle = toolAttrib.fillStyle;
     ctx.font = toolAttrib.fontSize + 'px ' + toolAttrib.font;
     ctx.textAlign = toolAttrib.align;
     ctx.textBaseline = 'top'
 
+    if (toolAttrib.strokeWidth > 1) {
+      ctx.lineWidth = toolAttrib.strokeWidth;
+      ctx.strokeStyle = toolAttrib.strokeStyle;
+      ctx.strokeText(toolAttrib.textContent, mouseLastClickPosition[0], mouseLastClickPosition[1])
+    }
     ctx.fillText(toolAttrib.textContent, mouseLastClickPosition[0], mouseLastClickPosition[1])
   }
 

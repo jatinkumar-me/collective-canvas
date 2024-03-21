@@ -1,6 +1,7 @@
 import State from "../actions/state";
 import BaseLayer from "../components/Layer";
 import { Connection, UserCommand } from "../modules/network";
+import { TextToolAttributes } from "./text";
 
 import ToolAttributes, {
   DefaultToolAttributes, ToolAttributeInputParam,
@@ -76,7 +77,8 @@ export abstract class ShapeToolAttributes extends ToolAttributes {
     additionalAttrib?: ToolAttributeInputParam<any>
   ) {
     const baseShapeMarkup = getShapeToolAttributeMarkup(defaultAttribs, equalLabel);
-    super({ ...baseShapeMarkup, ...additionalAttrib });
+    const toolInfo = `Press and hold <kbd>Shift</kbd> for toggling ${equalLabel}`;
+    super({ ...baseShapeMarkup, ...additionalAttrib }, toolInfo);
 
     this.strokeStyle = defaultAttribs.strokeStyle;
     this.isFilled = defaultAttribs.isFilled;
@@ -243,6 +245,10 @@ export default abstract class Shape extends BaseTools {
     }
     super.onMouseUp(event);
     this.baseLayer.clearPreview();
+
+    if (this.toolName === 'text') {
+      (this.toolAttrib as TextToolAttributes).focusTextArea();
+    }
   }
 
   draw() {

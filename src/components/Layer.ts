@@ -29,7 +29,7 @@ export default class BaseLayer {
             console.warn("clear canvas button not in the dom");
             return;
         }
-        clearCanvasButton.addEventListener('click', this.clearCanvas.bind(this));
+        clearCanvasButton.addEventListener('click', this.handleClearCanvasClick.bind(this));
 
         const saveCanvasButton = document.querySelector('#save-canvas');
         if (!saveCanvasButton) {
@@ -37,6 +37,13 @@ export default class BaseLayer {
         }
         saveCanvasButton.addEventListener('click', this.saveCanvas.bind(this));
     }
+
+    private handleClearCanvasClick() {
+        this.clearCanvas();
+        this.onCanvasClear();
+    }
+
+    public onCanvasClear(): void {}
 
     public clearCanvas() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);

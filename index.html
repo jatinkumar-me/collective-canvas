@@ -11,8 +11,19 @@
 <body>
   <div id="app"></div>
   <nav class="navbar">
-    <h3 class="title" id="navbar-logo">🖌️ Collective-Canvas</h3>
+    <h1 class="title" id="navbar-logo">🖌️ Collective-Canvas</h1>
+    <p>
+      Collective canvas is a collaborative drawing/whiteboarding tool. <a
+        href="https://github.com/jatinkumar-me/collective-canvas" target="_blank"><button><i class="fa fa-github"></i>
+          Github </button></a>
+    </p>
   </nav>
+
+  <hr />
+
+  <p>
+    Press <kbd>U</kbd> to undo and <kbd>Ctrl + R</kbd> to redo.
+  </p>
 
   <main>
 
@@ -55,11 +66,11 @@
               <i class="fa fa-solid fa-slash"></i>
               <span class="button-label">Line</span>
             </button>
-            <button id="bezier" class="tool-button" aria-label="bezier tool button" type="button" data-tool="bezier"
-              title="Bezier">
-              <i class="fa fa-solid fa-bezier-curve"></i>
-              <span class="button-label">Bezier</span>
-            </button>
+            <!-- <button id="bezier" class="tool-button" aria-label="bezier tool button" type="button" data-tool="bezier" -->
+            <!--   title="Bezier"> -->
+            <!--   <i class="fa fa-solid fa-bezier-curve"></i> -->
+            <!--   <span class="button-label">Bezier</span> -->
+            <!-- </button> -->
             <button id="fill" class="tool-button" aria-label="fill tool button" type="button" data-tool="fill"
               title="Fill, (it's slow and often buggy)">
               <i class="fa fa-solid fa-fill"></i>
@@ -73,6 +84,12 @@
           </fieldset>
         </div>
         <div id="tool-attributes" class="tool-settings"></div>
+        <div class="tool-info-div">
+            <fieldset>
+              <legend>ⓘ Info</legend>
+              <div id="tool-info" class="tool-info"></div>
+            </fieldset>
+          </div>
       </aside>
 
       <div id="white-board" class="white-board">
@@ -96,6 +113,23 @@
       </div>
     </div>
   </main>
+  <hr>
+  <footer>
+    <b>Todos</b>
+    <ul>
+      <li>Add multiple path tool, something like mirrored drawing.</li>
+      <li>Move, rotate and scale tools</li>
+      <li>Implement zoom</li>
+      <li>Add Image tool</li>
+      <li>Store tooldata in localstorage.</li>
+      <li>Clean up the code (lol)</li>
+    </ul>
+    If you'd like to help me do these things, have at!
+    <p>
+      If you found this app useful or interesting, please make sure to leave a <a
+        href="https://github.com/jatinkumar-me/collective-canvas"><i class="fa fa-star"></i> star</a>.
+    </p>
+  </footer>
   <script type="module" src="/src/main.ts"></script>
 </body>
 

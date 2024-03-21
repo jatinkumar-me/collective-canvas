@@ -24,6 +24,10 @@ const FILL_TOOL_ATTRIBUTE_MARKUP: ToolAttributeInputParam<FillToolAttributes> =
     },
 };
 
+const FILL_TOOL_INFO = `The fill tool implements basic flood fill algorithm.<br>
+<b>Note:</b> Fringes may appear on the edges of the colored area, this is due to anti-aliasing done in HTML Canvas.
+Possible workaround for this is using a better color-matching algorithm, without compromising performance`
+
 
 class FillToolAttributes extends ToolAttributes {
   fillColor: string;
@@ -32,9 +36,9 @@ class FillToolAttributes extends ToolAttributes {
   private fillColorChangeListener: EventListener;
 
   constructor(
-    defaultFillToolAttributes: DefaultToolAttributes<FillToolAttributes>
+    defaultFillToolAttributes: DefaultToolAttributes<FillToolAttributes>,
   ) {
-    super(FILL_TOOL_ATTRIBUTE_MARKUP);
+    super(FILL_TOOL_ATTRIBUTE_MARKUP, FILL_TOOL_INFO);
     this.fillColor = defaultFillToolAttributes.fillColor;
     this.fillColorInput = document.getElementById(
       "fillColor"
@@ -126,13 +130,13 @@ export default class Fill extends BaseTools {
   /**
   * Checks whether should two colors are same or not.
   */
-  isColorMatch(
-    c1: number,
-    c2: number,
-    tolerance: number,
-  ): boolean {
-    return false;
-  }
+  // isColorMatch(
+  //   c1: number,
+  //   c2: number,
+  //   tolerance: number,
+  // ): boolean {
+  //   return false;
+  // }
 
   /**
   * Checks whether should two colors are exactly the same or not.
