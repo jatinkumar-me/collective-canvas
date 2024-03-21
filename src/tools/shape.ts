@@ -77,7 +77,8 @@ export abstract class ShapeToolAttributes extends ToolAttributes {
     additionalAttrib?: ToolAttributeInputParam<any>
   ) {
     const baseShapeMarkup = getShapeToolAttributeMarkup(defaultAttribs, equalLabel);
-    super({ ...baseShapeMarkup, ...additionalAttrib });
+    const toolInfo = `Press and hold <kbd>Shift</kbd> for toggling ${equalLabel}`;
+    super({ ...baseShapeMarkup, ...additionalAttrib }, toolInfo);
 
     this.strokeStyle = defaultAttribs.strokeStyle;
     this.isFilled = defaultAttribs.isFilled;
