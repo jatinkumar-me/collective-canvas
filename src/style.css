@@ -79,6 +79,10 @@ fieldset {
   /* min-width: 20rem; */
 }
 
+.tool-info-div {
+  max-width: 23rem;
+}
+
 .user-status-div {
   min-width: 20rem;
 }
@@ -92,5 +96,9 @@ fieldset {
     display: flex;
     flex-direction: row;
     gap: 0.2;
+  }
+
+  .tool-info-div {
+    max-width: unset;
   }
 }
