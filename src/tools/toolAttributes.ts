@@ -19,17 +19,17 @@ export type ToolAttributeInput = {
   max: number,
   default: number,
   step?: number,
-  tooltip?:string,
+  tooltip?: string,
 } | {
   type: 'checkbox',
   label: string
   checked: boolean,
-  tooltip?:string,
+  tooltip?: string,
 } | {
   type: 'select',
   label: string
   options: string[],
-  tooltip?:string,
+  tooltip?: string,
   default: string,
 } | {
   type: 'text-area',
@@ -44,18 +44,29 @@ export type ToolAttributeInputParam<T extends ToolAttributes> = Partial<
 
 export default abstract class ToolAttributes {
   toolBoxDiv: HTMLDivElement | null;
+  toolInfoDiv: HTMLDivElement | null;
   toolAttributesMarkup: string;
+  toolInfoMarkup?: string;
 
-  constructor(toolAttributeInput: ToolAttributeInputParam<any>) {
+  constructor(toolAttributeInput: ToolAttributeInputParam<any>, toolInfoMarkup?: string) {
     this.toolAttributesMarkup = this.generateToolMarkup(toolAttributeInput);
+    this.toolInfoMarkup = toolInfoMarkup;
     this.toolBoxDiv = document.getElementById(
       "tool-attributes"
     ) as HTMLDivElement | null;
     if (this.toolBoxDiv === null) {
       console.error("toolbox div not present in dom");
     }
+    this.toolInfoDiv = document.getElementById(
+      "tool-info"
+    ) as HTMLDivElement | null;
+    if (this.toolBoxDiv === null) {
+      throw new Error("toolbox div not present in dom");
+    }
     this.insertToolAttributeMarkup();
+    this.insertToolInfo();
   }
+
 
   private generateToolMarkup(toolAttributeInput: ToolAttributeInputParam<any>): string {
     let inputMarkup = '';
@@ -93,7 +104,7 @@ export default abstract class ToolAttributes {
         case "text-area":
           fieldMarkup = `<div>
                           <div><label for="${key}">${field.label} </label></div>
-                          <textarea id="${key}" rows="${3}" required placeholder="${field.placeholder}"></textarea>
+                          <textarea id="${key}" rows="${3}" required placeholder="${field.placeholder}" autofocus></textarea>
                         </div>`
       }
 
@@ -109,6 +120,13 @@ export default abstract class ToolAttributes {
     }
 
     this.toolBoxDiv.innerHTML = `<fieldset><legend>Tool Attributes</legend>${this.toolAttributesMarkup}</fieldset>`;
+  }
+
+  insertToolInfo() {
+    if (!this.toolInfoDiv) {
+      return;
+    }
+    this.toolInfoDiv.innerHTML = this.toolInfoMarkup ?? "";
   }
 
   destroy() {
