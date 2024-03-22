@@ -25,6 +25,7 @@ export class EllipseToolAttributes extends ShapeToolAttributes {
 
 
 export default class Ellipse extends Shape {
+  toolAttrib: EllipseToolAttributes;
 
   constructor(baseLayer: BaseLayer, connection: Connection, state: State) {
     super(
@@ -32,8 +33,8 @@ export default class Ellipse extends Shape {
       connection,
       state,
       ToolName.ELLIPSE,
-      new EllipseToolAttributes(DEFAULT_ELLIPSE_TOOL_ATTRIBUTES),
     );
+    this.toolAttrib = new EllipseToolAttributes(this.retrieveToolAttributes() ?? DEFAULT_ELLIPSE_TOOL_ATTRIBUTES);
   }
 
   drawShape(ctx: CanvasRenderingContext2D): void {

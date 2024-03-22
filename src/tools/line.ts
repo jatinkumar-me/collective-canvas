@@ -23,14 +23,15 @@ export class LineToolAttributes extends ShapeToolAttributes {
 
 
 export default class Line extends Shape {
+  toolAttrib: LineToolAttributes;
 
   constructor(baseLayer: BaseLayer, connection: Connection, state: State) {
     super(baseLayer,
       connection,
       state,
       ToolName.LINE,
-      new LineToolAttributes(DEFAULT_LINE_TOOL_ATTRIBUTES)
     );
+    this.toolAttrib = new LineToolAttributes(this.retrieveToolAttributes() ?? DEFAULT_LINE_TOOL_ATTRIBUTES)
   }
 
   drawShape(ctx: CanvasRenderingContext2D,) {

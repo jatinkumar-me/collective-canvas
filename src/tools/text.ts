@@ -49,7 +49,8 @@ const TEXT_TOOL_ATTRIBUTE_INPUT: ToolAttributeInputParam<TextToolAttributes> = {
   textContent: {
     type: 'text-area',
     placeholder: 'Type your text here',
-    label: 'Text'
+    label: 'Text',
+    default: '',
   }
 }
 
@@ -141,14 +142,16 @@ export class TextToolAttributes extends ShapeToolAttributes {
 }
 
 export default class Text extends Shape {
+  toolAttrib: TextToolAttributes;
+
   constructor(baseLayer: BaseLayer, connection: Connection, state: State) {
     super(
       baseLayer,
       connection,
       state,
       ToolName.TEXT,
-      new TextToolAttributes(DEFAULT_TEXT_TOOL_ATTRIBUTES)
     );
+    this.toolAttrib = new TextToolAttributes(this.retrieveToolAttributes() ?? DEFAULT_TEXT_TOOL_ATTRIBUTES)
   }
 
   drawShape(ctx: CanvasRenderingContext2D): void {

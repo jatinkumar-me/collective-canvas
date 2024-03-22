@@ -25,14 +25,17 @@ export class RectangleToolAttributes extends ShapeToolAttributes {
 
 
 export default class Rectangle extends Shape {
+  toolAttrib: RectangleToolAttributes;
+
   constructor(baseLayer: BaseLayer, connection: Connection, state: State) {
     super(
       baseLayer,
       connection,
       state,
       ToolName.RECTANGLE,
-      new RectangleToolAttributes(DEFAULT_RECTANGLE_TOOL_ATTRIBUTES)
     );
+    this.toolAttrib = new RectangleToolAttributes(
+      this.retrieveToolAttributes() ?? DEFAULT_RECTANGLE_TOOL_ATTRIBUTES);
   }
 
   drawShape(ctx: CanvasRenderingContext2D,) {
