@@ -70,6 +70,7 @@ fieldset {
   gap: 0.3rem;
 }
 
+
 .tool-container {
   display: flex;
   flex-direction: column;
@@ -89,10 +90,26 @@ fieldset {
 }
 
 
+.right-side {
+  max-width: 25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .user-status-div {
-  min-width: 20rem;
+  flex-grow: 1;
+}
+
+.user-chat-div {
+  flex-grow: 1;
+  max-height: 50%;
+}
+
+.user-status-div > fieldset {
+  height: 100%;
+}
+
 }
 
 @media screen and (max-width: 1000px) {
