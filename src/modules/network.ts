@@ -1,5 +1,6 @@
 import ToolAttributes, { DefaultToolAttributes } from "../tools/toolAttributes";
 import { ToolName } from "../tools/toolManager";
+import UserChat from "./chat";
 import User, { UserData, UserId }  from "./user";
 import UserManager from "./userManager";
 
@@ -8,6 +9,7 @@ enum SocketMessageKind {
     USER_DISCONNECTED = 2,
     USER_COMMAND = 3,
     USER_CONNECTION_ACKNOWLEDGED = 4,
+    USER_MESSAGE = 5,
 }
 
 export type UserCommand<T extends ToolAttributes> = {
@@ -38,15 +40,21 @@ export type SocketMessage =
         type: SocketMessageKind.USER_CONNECTION_ACKNOWLEDGED;
         user: UserData;
         users: UserData[];
+    } | {
+        type: SocketMessageKind.USER_MESSAGE;
+        userId: UserId;
+        message: string;
     };
 
 export class Connection {
     private webSocket: WebSocket;
     private userManager: UserManager;
+    private userChat: UserChat;
 
-    constructor(connectionURL: string, userManaager: UserManager) {
+    constructor(connectionURL: string, userManaager: UserManager, userChat: UserChat) {
         this.webSocket = new WebSocket(connectionURL);
         this.userManager = userManaager;
+        this.userChat = userChat;
         this.webSocket.onmessage = this.socketMessageHandler.bind(this);
         this.webSocket.onclose = this.connectionCloseHandler.bind(this);
         this.webSocket.onopen = this.connectionOpenHandler.bind(this);
@@ -89,6 +97,9 @@ export class Connection {
             case SocketMessageKind.USER_CONNECTION_ACKNOWLEDGED:
                 this.handlUserConnectionAcknowledged(data.user, data.users);
                 break;
+            case SocketMessageKind.USER_MESSAGE:
+                this.handleUserMessage(data.userId, data.message);
+                break;
             default: {
                 console.error("invalid message sent by the socket");
             }
@@ -108,6 +119,10 @@ export class Connection {
         this.userManager.removeUser(userId);
     }
 
+    handleUserMessage(userId: UserId, message: string) {
+        this.userChat.receiveMessage(userId, message);
+    }
+
     sendUserCommand<T extends ToolAttributes>(command: UserCommand<T>) {
         if (!this.isConnected()) {
             return;
@@ -119,5 +134,14 @@ export class Connection {
         };
         const messageString = JSON.stringify(message);
         this.webSocket.send(messageString);
+    }
+
+    sendUserMessage(userId: UserId, message: string) {
+        const socketMessage: SocketMessage = {
+            type: SocketMessageKind.USER_MESSAGE,
+            message,
+            userId,
+        }
+        this.webSocket.send(JSON.stringify(socketMessage));
     }
 }
