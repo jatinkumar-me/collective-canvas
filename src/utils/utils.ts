@@ -9,6 +9,16 @@ export function clamp(value: number, min: number, max: number): number {
 }
 
 /**
+ * Find distance between two points
+ */
+export function calcDistance(
+  a: [number, number],
+  b: [number, number],
+): number {
+  return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2));
+}
+
+/**
  * function to get the square dimensions of the rectangle
  * @param width
  * @param height
@@ -127,4 +137,24 @@ export function hexStringToUintClampedArray(
   }
 
   return parseInt(hex, 16) >>> 0;
+}
+
+/**
+ * Snap the 'free' end of a line to a point such that the new line
+ * makes an angle that is a multiple of 15deg with the x axis.
+ * 
+ */
+export function snapFreeEndAngle(
+  startPoint: [number, number],
+  endPoint: [number, number],
+): void {
+  const SNAP_ANGLE = Math.PI / 12;
+
+  let currentAngle = Math.atan2(endPoint[1] - startPoint[1], endPoint[0] - startPoint[0]);
+  currentAngle = Math.round(currentAngle/SNAP_ANGLE) * SNAP_ANGLE;
+
+  const distance = calcDistance(startPoint, endPoint);
+
+  endPoint[0] = startPoint[0] + distance * Math.cos(currentAngle);
+  endPoint[1] = startPoint[1] + distance * Math.sin(currentAngle);
 }

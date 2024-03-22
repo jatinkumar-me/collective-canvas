@@ -1,6 +1,7 @@
 import State from "../actions/state";
 import BaseLayer from "../components/Layer";
 import { Connection } from "../modules/network";
+import { snapFreeEndAngle } from "../utils/utils";
 import Shape, { ShapeToolAttributes } from "./shape";
 import { DefaultToolAttributes } from "./toolAttributes";
 import { ToolName } from "./toolManager";
@@ -17,20 +18,21 @@ const DEFAULT_LINE_TOOL_ATTRIBUTES: DefaultToolAttributes<LineToolAttributes> =
 export class LineToolAttributes extends ShapeToolAttributes {
 
   constructor(defaultAttribs: DefaultToolAttributes<LineToolAttributes>) {
-    super(defaultAttribs, 'Snap angle (uninmplmented)');
+    super(defaultAttribs, 'Snap angle (Multiple of 15 deg)');
   }
 }
 
 
 export default class Line extends Shape {
+  toolAttrib: LineToolAttributes;
 
   constructor(baseLayer: BaseLayer, connection: Connection, state: State) {
     super(baseLayer,
       connection,
       state,
       ToolName.LINE,
-      new LineToolAttributes(DEFAULT_LINE_TOOL_ATTRIBUTES)
     );
+    this.toolAttrib = new LineToolAttributes(this.retrieveToolAttributes() ?? DEFAULT_LINE_TOOL_ATTRIBUTES)
   }
 
   drawShape(ctx: CanvasRenderingContext2D,) {
@@ -50,6 +52,9 @@ export default class Line extends Shape {
   ) {
     ctx.beginPath();
     ctx.moveTo(startPoint[0], startPoint[1]);
+    if (toolAttrib.isEqual) {
+      snapFreeEndAngle(startPoint, endPoint);
+    }
     ctx.lineTo(endPoint[0], endPoint[1]);
     ctx.lineWidth = toolAttrib.strokeWidth;
     ctx.strokeStyle = toolAttrib.strokeStyle;

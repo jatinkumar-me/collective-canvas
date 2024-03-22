@@ -51,7 +51,7 @@ export default class State {
     document.addEventListener('keydown', (event: KeyboardEvent) => {
       const key = (event.key || '').toLowerCase();
 
-      if (key == "u") {
+      if (key == "z" && (event.ctrlKey == true || event.metaKey)) {
         event.preventDefault();
         this.undo();
       }

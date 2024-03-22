@@ -23,7 +23,7 @@ export type ToolAttributeInput = {
 } | {
   type: 'checkbox',
   label: string
-  checked: boolean,
+  default: boolean,
   tooltip?: string,
 } | {
   type: 'select',
@@ -35,12 +35,12 @@ export type ToolAttributeInput = {
   type: 'text-area',
   label: string,
   placeholder: string,
+  default: string,
 }
 
 export type ToolAttributeInputParam<T extends ToolAttributes> = Partial<
   Record<keyof DefaultToolAttributes<T>, ToolAttributeInput>
 >
-
 
 export default abstract class ToolAttributes {
   toolBoxDiv: HTMLDivElement | null;
@@ -48,8 +48,12 @@ export default abstract class ToolAttributes {
   toolAttributesMarkup: string;
   toolInfoMarkup?: string;
 
-  constructor(toolAttributeInput: ToolAttributeInputParam<any>, toolInfoMarkup?: string) {
-    this.toolAttributesMarkup = this.generateToolMarkup(toolAttributeInput);
+  constructor(
+    defaultAttribs: DefaultToolAttributes<any>,
+    toolAttributeInput: ToolAttributeInputParam<any>,
+    toolInfoMarkup?: string
+  ) {
+    this.toolAttributesMarkup = this.generateToolMarkup(toolAttributeInput, defaultAttribs);
     this.toolInfoMarkup = toolInfoMarkup;
     this.toolBoxDiv = document.getElementById(
       "tool-attributes"
@@ -68,7 +72,10 @@ export default abstract class ToolAttributes {
   }
 
 
-  private generateToolMarkup(toolAttributeInput: ToolAttributeInputParam<any>): string {
+  private generateToolMarkup(
+    toolAttributeInput: ToolAttributeInputParam<any>,
+    defaultAttribs: DefaultToolAttributes<any>
+  ): string {
     let inputMarkup = '';
     for (let key in toolAttributeInput) {
       const field = toolAttributeInput[key]
@@ -76,10 +83,12 @@ export default abstract class ToolAttributes {
         continue;
       }
 
+      field.default = defaultAttribs[key]; // Assign default value
+
       let fieldMarkup = '';
       switch (field.type) {
         case 'color':
-          fieldMarkup = `<div><label for="${key}">${field.label} </label><input type="color" id="${key}" /></div>`;
+          fieldMarkup = `<div><label for="${key}">${field.label} </label><input type="color" id="${key}" value="${field.default}" /></div>`;
           break;
         case 'range':
           fieldMarkup = `<div>
@@ -97,7 +106,7 @@ export default abstract class ToolAttributes {
           break;
         case 'checkbox':
           fieldMarkup = `<div>
-                          <input type="checkbox" id="${key}" />
+                          <input type="checkbox" id="${key}" ${field.default ? "checked" : ""}/>
                           <label for="${key}" title="${field.tooltip}">${field.label}</label>
                         </div>`;
           break;

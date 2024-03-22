@@ -31,7 +31,7 @@ function getShapeToolAttributeMarkup(
     isFilled: {
       type: 'checkbox',
       label: 'Fill',
-      checked: defaultAttrib.isFilled,
+      default: defaultAttrib.isFilled,
     },
     fillStyle: {
       type: 'color',
@@ -41,7 +41,7 @@ function getShapeToolAttributeMarkup(
     isEqual: {
       type: 'checkbox',
       label: equalLabel,
-      checked: defaultAttrib.isEqual,
+      default: defaultAttrib.isEqual,
     },
   };
 }
@@ -78,7 +78,7 @@ export abstract class ShapeToolAttributes extends ToolAttributes {
   ) {
     const baseShapeMarkup = getShapeToolAttributeMarkup(defaultAttribs, equalLabel);
     const toolInfo = `Press and hold <kbd>Shift</kbd> for toggling ${equalLabel}`;
-    super({ ...baseShapeMarkup, ...additionalAttrib }, toolInfo);
+    super(defaultAttribs, { ...baseShapeMarkup, ...additionalAttrib }, toolInfo);
 
     this.strokeStyle = defaultAttribs.strokeStyle;
     this.isFilled = defaultAttribs.isFilled;
@@ -220,6 +220,8 @@ export default abstract class Shape extends BaseTools {
     this.events();
   }
 
+  abstract init(): void;
+
   mouseMove(event: MouseEvent): void {
     this.shouldDraw = false;
     super.onMouseMove(event);
@@ -246,7 +248,7 @@ export default abstract class Shape extends BaseTools {
     super.onMouseUp(event);
     this.baseLayer.clearPreview();
 
-    if (this.toolName === 'text') {
+    if (this.toolName === 'text' && this.isValidMouseEvent(event)) {
       (this.toolAttrib as TextToolAttributes).focusTextArea();
     }
   }

@@ -66,7 +66,7 @@ class PencilToolAttributes extends ToolAttributes {
   constructor(
     defaultPencilToolAttributes: DefaultToolAttributes<PencilToolAttributes>
   ) {
-    super(PENCIL_TOOL_ATTRIBUTE_INPUT, PENCIL_TOOL_INFO);
+    super(defaultPencilToolAttributes, PENCIL_TOOL_ATTRIBUTE_INPUT, PENCIL_TOOL_INFO);
     this.strokeWidth = defaultPencilToolAttributes.strokeWidth;
     this.lineCap = defaultPencilToolAttributes.lineCap;
     this.strokeStyle = defaultPencilToolAttributes.strokeStyle;
@@ -163,7 +163,11 @@ export default class Pencil extends BaseTools {
     this.toolName = ToolName.PENCIL;
     this.ctx = baseLayer.ctx;
     this.MAX_STROKE_WIDTH = 100;
-    this.toolAttrib = new PencilToolAttributes(DEFAULT_PENCIL_TOOL_ATTRIBUTES);
+    let defaultPencilToolAttrib = this.retrieveToolAttributes();
+    if (!defaultPencilToolAttrib) {
+      defaultPencilToolAttrib = DEFAULT_PENCIL_TOOL_ATTRIBUTES;
+    }
+    this.toolAttrib = new PencilToolAttributes(defaultPencilToolAttrib);
 
     this.mouseDownEventListener = this.mouseDown.bind(this);
     this.mouseUpEventListener = this.mouseUp.bind(this);
