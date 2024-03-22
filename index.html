@@ -85,11 +85,11 @@
         </div>
         <div id="tool-attributes" class="tool-settings"></div>
         <div class="tool-info-div">
-            <fieldset>
-              <legend>ⓘ Info</legend>
-              <div id="tool-info" class="tool-info"></div>
-            </fieldset>
-          </div>
+          <fieldset id="tool-info-box">
+            <legend>ⓘ Info</legend>
+            <div id="tool-info" class="tool-info"></div>
+          </fieldset>
+        </div>
       </aside>
 
       <div id="white-board" class="white-board">
@@ -99,18 +99,35 @@
         </div>
       </div>
 
-      <div id="user-status-div" class="user-status-div">
-        <fieldset id="user-status">
-          <legend>
-            <b>
-              <i class="fa fa-users" aria-hidden="true"></i>
-              Users
-            </b>
-          </legend>
-          <div class="user-list" id="user-list-div">
-          </div>
-        </fieldset>
-      </div>
+      <aside class="right-side">
+        <div id="user-status-div" class="user-status-div">
+          <fieldset id="user-status">
+            <legend>
+              <b>
+                <i class="fa fa-users" aria-hidden="true"></i>
+                &nbsp;Users
+              </b>
+            </legend>
+            <div class="user-list" id="user-list-div">
+            </div>
+          </fieldset>
+        </div>
+        <div id="user-chat-div" class="user-chat-div">
+          <fieldset id="user-chat">
+            <legend>
+              <i class="fa fa-regular fa-comment"></i>
+              &nbsp;User Chat
+            </legend>
+            <div class="message-list" id="message-list"></div>
+            <form id="message-form" class="message-form">
+              <div class="message-form-div">
+                <input type="text" id="message-input" placeholder="Type your message..." name="message">
+                <button type="submit" id="message-button">Send</button>
+              </div>
+            </form>
+          </fieldset>
+        </div>
+      </aside>
     </div>
   </main>
   <hr>

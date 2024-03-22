@@ -67,7 +67,7 @@ export default class UserManager {
     }
 
     getUser(userId: string) {
-        this.users.get(userId);
+        return this.users.get(userId);
     }
 
     handleUserCommand<T extends ToolAttributes>(
