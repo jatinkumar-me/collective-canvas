@@ -130,12 +130,16 @@ fieldset {
 }
 
 .message-list {
+  margin-top: auto;
   display: flex;
   flex-direction: column;
-  overflow-y: scroll;
-  justify-content: flex-end;
   align-items: flex-start;
   height: 100%;
+  overflow-y: scroll;
+}
+
+.message-list > :first-child {
+  margin-top: auto;
 }
 
 .message {
