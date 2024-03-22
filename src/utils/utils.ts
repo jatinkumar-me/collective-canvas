@@ -138,3 +138,23 @@ export function hexStringToUintClampedArray(
 
   return parseInt(hex, 16) >>> 0;
 }
+
+/**
+ * Snap the 'free' end of a line to a point such that the new line
+ * makes an angle that is a multiple of 15deg with the x axis.
+ * 
+ */
+export function snapFreeEndAngle(
+  startPoint: [number, number],
+  endPoint: [number, number],
+): void {
+  const SNAP_ANGLE = Math.PI / 12;
+
+  let currentAngle = Math.atan2(endPoint[1] - startPoint[1], endPoint[0] - startPoint[0]);
+  currentAngle = Math.round(currentAngle/SNAP_ANGLE) * SNAP_ANGLE;
+
+  const distance = calcDistance(startPoint, endPoint);
+
+  endPoint[0] = startPoint[0] + distance * Math.cos(currentAngle);
+  endPoint[1] = startPoint[1] + distance * Math.sin(currentAngle);
+}
