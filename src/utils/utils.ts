@@ -9,6 +9,16 @@ export function clamp(value: number, min: number, max: number): number {
 }
 
 /**
+ * Find distance between two points
+ */
+export function calcDistance(
+  a: [number, number],
+  b: [number, number],
+): number {
+  return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2));
+}
+
+/**
  * function to get the square dimensions of the rectangle
  * @param width
  * @param height
