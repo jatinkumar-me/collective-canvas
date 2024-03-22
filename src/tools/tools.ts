@@ -1,7 +1,7 @@
 import State, { Reversible } from "../actions/state";
 import BaseLayer from "../components/Layer";
 import { Connection, UserCommand } from "../modules/network";
-import ToolAttributes from "./toolAttributes";
+import ToolAttributes, { DefaultToolAttributes } from "./toolAttributes";
 import { ToolName } from "./toolManager";
 
 /**
@@ -123,9 +123,23 @@ export default abstract class BaseTools implements Reversible {
     }
   }
 
+  saveToolAttributes() {
+    const toolAttribString = JSON.stringify(this.toolAttrib.getAttributes());
+    localStorage.setItem(this.toolName, toolAttribString);
+  }
+
+  retrieveToolAttributes(): DefaultToolAttributes<any> | null {
+    const toolAttribString = localStorage.getItem(this.toolName);
+    if (!toolAttribString) {
+      return null;
+    }
+    return JSON.parse(toolAttribString) as DefaultToolAttributes<any>;
+  }
+
   destroy() {
     this.removeEvents();
     this.toolAttrib.removeEvents();
+    this.saveToolAttributes();
   }
 
   /**
