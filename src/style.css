@@ -110,6 +110,59 @@ fieldset {
   height: 100%;
 }
 
+.user-chat-div > fieldset {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.3rem;
+}
+
+.message-form-div {
+  display: flex;
+  gap: 0.3rem;
+  justify-content: space-between;
+  width: 100%;
+}
+
+#message-input {
+  flex-grow: 1;
+}
+
+.message-list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  justify-content: flex-end;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.message {
+  margin: 0;
+  margin-bottom: 0.1rem;
+  padding: 0.1rem 0.4rem;
+  max-width: calc(min(38rem, 80%));
+  background-color: #eee;
+  border-radius: 3px;
+  border: 1px solid #b4b4b4;
+}
+
+.message-sender {
+  font-size: 0.8rem;
+  margin: 0;
+  padding: 0;
+}
+
+.message-text {
+  margin: 0;
+  padding: 0;
+}
+
+.user-message {
+  background-color: #d9e5fa;
+  border: 1px solid #99beff;
+  align-self: flex-end;
 }
 
 @media screen and (max-width: 1000px) {
@@ -124,6 +177,10 @@ fieldset {
   }
 
   .tool-info-div {
+    max-width: unset;
+  }
+
+  .right-side {
     max-width: unset;
   }
 }
