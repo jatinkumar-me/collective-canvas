@@ -71,11 +71,24 @@ fieldset {
 }
 
 .tool-container {
-  /* min-width: 20rem; */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+#tool-attributes {
+  flex-grow: 1;
+}
+
+#tool-attributes > fieldset {
+  height: 100%;
 }
 
 .tool-info-div {
-  max-width: 23rem;
+  max-width: 20rem;
+}
+
+
 }
 
 .user-status-div {
