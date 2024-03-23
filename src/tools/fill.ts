@@ -78,9 +78,9 @@ export default class Fill extends BaseTools {
   ctx: CanvasRenderingContext2D;
   toolAttrib: FillToolAttributes;
 
-  mouseDownEventListener: (this: Document, ev: MouseEvent) => any;
-  mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
-  mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
+  mouseDownEventListener: (this: Document, ev: MouseEvent | TouchEvent) => any;
+  mouseUpEventListener: (this: Document, ev: MouseEvent | TouchEvent) => any;
+  mouseMoveEventListener: (this: Document, ev: MouseEvent | TouchEvent) => any;
   maxTol: number;
 
   private curAction: Action<FillToolAttributes>;
@@ -103,14 +103,14 @@ export default class Fill extends BaseTools {
     };
   }
 
-  mouseMove(event: MouseEvent): void {
+  mouseMove(event: MouseEvent | TouchEvent): void {
     super.onMouseMove(event);
     if (!this.isDrag) {
       return;
     }
   }
 
-  mouseDown(event: MouseEvent): void {
+  mouseDown(event: MouseEvent | TouchEvent): void {
     if (!this.isValidMouseEvent(event)) {
       return;
     }
@@ -123,7 +123,7 @@ export default class Fill extends BaseTools {
     };
   }
 
-  mouseUp(event: MouseEvent): void {
+  mouseUp(event: MouseEvent | TouchEvent): void {
     super.onMouseUp(event);
     this.sendMessageOverConnection(true)
   }

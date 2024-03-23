@@ -195,9 +195,9 @@ export default abstract class Shape extends BaseTools {
   toolName: ToolName;
   abstract toolAttrib: ShapeToolAttributes;
 
-  mouseDownEventListener: (this: Document, ev: MouseEvent) => any;
-  mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
-  mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
+  mouseDownEventListener: (this: Document, ev: MouseEvent | TouchEvent) => any;
+  mouseUpEventListener: (this: Document, ev: MouseEvent | TouchEvent) => any;
+  mouseMoveEventListener: (this: Document, ev: MouseEvent | TouchEvent) => any;
 
   /**
    * `shouldDraw` is a boolean value used as a flag, to be sent along with the command,
@@ -219,7 +219,7 @@ export default abstract class Shape extends BaseTools {
     this.events();
   }
 
-  mouseMove(event: MouseEvent): void {
+  mouseMove(event: MouseEvent | TouchEvent): void {
     this.shouldDraw = false;
     super.onMouseMove(event);
     if (this.isDrag) {
@@ -227,7 +227,7 @@ export default abstract class Shape extends BaseTools {
     }
   }
 
-  mouseDown(event: MouseEvent): void {
+  mouseDown(event: MouseEvent | TouchEvent): void {
     this.shouldDraw = false;
     if (!this.isValidMouseEvent(event)) {
       return;
@@ -235,7 +235,7 @@ export default abstract class Shape extends BaseTools {
     super.onMouseDown(event);
   }
 
-  mouseUp(event: MouseEvent): void {
+  mouseUp(event: MouseEvent | TouchEvent): void {
     this.shouldDraw = false;
     if (this.isDrag) {
       this.shouldDraw = true;
