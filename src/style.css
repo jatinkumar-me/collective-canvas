@@ -103,7 +103,7 @@ fieldset {
 
 .user-chat-div {
   flex-grow: 1;
-  max-height: 50%;
+  max-height: calc(min(50%, 30rem));
 }
 
 .user-status-div > fieldset {
@@ -138,9 +138,9 @@ fieldset {
   overflow-y: scroll;
 }
 
-.message-list > :first-child {
-  margin-top: auto;
-}
+/* .message-list > :first-child { */
+/*   margin-top: auto; */
+/* } */
 
 .message {
   margin: 0;
@@ -187,4 +187,12 @@ fieldset {
   .right-side {
     max-width: unset;
   }
+
+  .user-status-div {
+    flex-grow: 0;
+  }
+  /**/
+  /* .user-chat-div { */
+  /*   min-height: 10rem; */
+  /* } */
 }

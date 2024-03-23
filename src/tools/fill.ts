@@ -38,7 +38,7 @@ class FillToolAttributes extends ToolAttributes {
   constructor(
     defaultFillToolAttributes: DefaultToolAttributes<FillToolAttributes>,
   ) {
-    super(FILL_TOOL_ATTRIBUTE_MARKUP, FILL_TOOL_INFO);
+    super(defaultFillToolAttributes, FILL_TOOL_ATTRIBUTE_MARKUP, FILL_TOOL_INFO);
     this.fillColor = defaultFillToolAttributes.fillColor;
     this.fillColorInput = document.getElementById(
       "fillColor"
@@ -89,7 +89,7 @@ export default class Fill extends BaseTools {
     super(baseLayer, connection, state);
     this.toolName = ToolName.FILL;
     this.ctx = baseLayer.ctx;
-    this.toolAttrib = new FillToolAttributes(DEFAULT_FILL_TOOL_ATTRIBUTES);
+    this.toolAttrib = new FillToolAttributes(this.retrieveToolAttributes() ?? DEFAULT_FILL_TOOL_ATTRIBUTES);
 
     this.mouseDownEventListener = this.mouseDown.bind(this);
     this.mouseUpEventListener = this.mouseUp.bind(this);
