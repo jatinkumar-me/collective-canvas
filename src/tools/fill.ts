@@ -125,6 +125,7 @@ export default class Fill extends BaseTools {
 
   mouseUp(event: MouseEvent): void {
     super.onMouseUp(event);
+    this.sendMessageOverConnection(true)
   }
 
   /**
@@ -214,12 +215,12 @@ export default class Fill extends BaseTools {
     ctx.putImageData(imageData, 0, 0);
   }
 
-  sendMessageOverConnection() {
+  sendMessageOverConnection(draw?: boolean) {
     if (!this.connection?.isConnected()) {
       return;
     }
     this.connection.sendUserCommand(
-      this.getCommand()
+      this.getCommand(draw ?? false)
     );
   }
 
