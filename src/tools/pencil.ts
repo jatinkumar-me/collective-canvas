@@ -147,6 +147,7 @@ export default class Pencil extends BaseTools {
   toolName: ToolName;
   ctx: CanvasRenderingContext2D;
   toolAttrib: PencilToolAttributes;
+  previousMousePosition?: [number, number];
   readonly MAX_STROKE_WIDTH: number;
 
   mouseDownEventListener: (this: Document, ev: MouseEvent | TouchEvent) => any;
@@ -181,6 +182,7 @@ export default class Pencil extends BaseTools {
   }
 
   mouseMove(event: MouseEvent | TouchEvent): void {
+    this.previousMousePosition = this.mouseLastPosition;
     super.onMouseMove(event);
     if (!this.isDrag) {
       return;
@@ -194,7 +196,6 @@ export default class Pencil extends BaseTools {
       return;
     }
     super.onMouseDown(event);
-    this.ctx.beginPath();
     this.curAction = {
       toolName: ToolName.PENCIL,
       commands: [],
@@ -229,11 +230,13 @@ export default class Pencil extends BaseTools {
     this.ctx.lineWidth = this.getStrokeWidth();
     this.ctx.lineCap = this.toolAttrib.lineCap;
     this.ctx.strokeStyle = this.toolAttrib.strokeStyle;
-
+    if (!this.previousMousePosition) {
+      return;
+    }
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.previousMousePosition[0], this.previousMousePosition[1]);
     this.ctx.lineTo(this.mouseLastPosition[0], this.mouseLastPosition[1]);
     this.ctx.stroke();
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.mouseLastPosition[0], this.mouseLastPosition[1]);
   }
 
   /**
