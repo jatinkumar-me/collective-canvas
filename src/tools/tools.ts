@@ -52,7 +52,7 @@ export default abstract class BaseTools implements Reversible {
 
     document.addEventListener("touchstart", this.mouseDownEventListener);
     document.addEventListener("touchend", this.mouseUpEventListener);
-    document.addEventListener("touchmove", this.mouseMoveEventListener);
+    document.addEventListener("touchmove", this.mouseMoveEventListener, { passive: false });
   }
 
   removeEvents() {
@@ -76,14 +76,14 @@ export default abstract class BaseTools implements Reversible {
   }
 
   onMouseMove(event: MouseEvent | TouchEvent) {
+    if (event instanceof TouchEvent && this.isValidMouseEvent(event)) {
+      event.preventDefault();
+    }
     const currentMousePosition = this.getMouseCoordinates(event);
 
     this.mouseAverageSpeed = this.getMouseAverageSpeed(currentMousePosition);
     this.mouseLastPosition = currentMousePosition;
     this.sendMessageOverConnection();
-    if (event instanceof TouchEvent && this.isValidMouseEvent(event)) {
-      event.preventDefault();
-    }
   }
 
   onMouseUp(_event: MouseEvent | TouchEvent) {
