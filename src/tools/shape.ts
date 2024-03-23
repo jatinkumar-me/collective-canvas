@@ -193,7 +193,7 @@ export abstract class ShapeToolAttributes extends ToolAttributes {
  */
 export default abstract class Shape extends BaseTools {
   toolName: ToolName;
-  toolAttrib: ShapeToolAttributes;
+  abstract toolAttrib: ShapeToolAttributes;
 
   mouseDownEventListener: (this: Document, ev: MouseEvent) => any;
   mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
@@ -207,10 +207,9 @@ export default abstract class Shape extends BaseTools {
    */
   shouldDraw: boolean;
 
-  constructor(baseLayer: BaseLayer, connection: Connection, state: State, toolName: ToolName, toolAttrib: ShapeToolAttributes) {
+  constructor(baseLayer: BaseLayer, connection: Connection, state: State, toolName: ToolName) {
     super(baseLayer, connection, state);
     this.toolName = toolName;
-    this.toolAttrib = toolAttrib;
 
     this.mouseDownEventListener = this.mouseDown.bind(this);
     this.mouseUpEventListener = this.mouseUp.bind(this);
@@ -219,8 +218,6 @@ export default abstract class Shape extends BaseTools {
 
     this.events();
   }
-
-  abstract init(): void;
 
   mouseMove(event: MouseEvent): void {
     this.shouldDraw = false;
