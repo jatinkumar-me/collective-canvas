@@ -168,6 +168,9 @@ export class ExternalUser extends User {
                 break;
             }
             case ToolName.FILL: {
+                if (!command.draw) {
+                    break;
+                }
                 Fill.drawFill(
                     ctx,
                     [this.clickX, this.clickY],

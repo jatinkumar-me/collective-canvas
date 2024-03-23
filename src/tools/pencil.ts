@@ -149,9 +149,9 @@ export default class Pencil extends BaseTools {
   toolAttrib: PencilToolAttributes;
   readonly MAX_STROKE_WIDTH: number;
 
-  mouseDownEventListener: (this: Document, ev: MouseEvent) => any;
-  mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
-  mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
+  mouseDownEventListener: (this: Document, ev: MouseEvent | TouchEvent) => any;
+  mouseUpEventListener: (this: Document, ev: MouseEvent | TouchEvent) => any;
+  mouseMoveEventListener: (this: Document, ev: MouseEvent | TouchEvent) => any;
 
   /**
    * Storing the current action, it will be sent to the state
@@ -180,7 +180,7 @@ export default class Pencil extends BaseTools {
     };
   }
 
-  mouseMove(event: MouseEvent): void {
+  mouseMove(event: MouseEvent | TouchEvent): void {
     super.onMouseMove(event);
     if (!this.isDrag) {
       return;
@@ -189,7 +189,7 @@ export default class Pencil extends BaseTools {
     this.recordCommand();
   }
 
-  mouseDown(event: MouseEvent): void {
+  mouseDown(event: MouseEvent | TouchEvent): void {
     if (!this.isValidMouseEvent(event)) {
       return;
     }
@@ -201,7 +201,7 @@ export default class Pencil extends BaseTools {
     };
   }
 
-  mouseUp(event: MouseEvent): void {
+  mouseUp(event: MouseEvent | TouchEvent): void {
     super.onMouseUp(event);
     this.state.do(this.curAction);
   }

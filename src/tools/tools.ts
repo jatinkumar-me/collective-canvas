@@ -27,9 +27,9 @@ export default abstract class BaseTools implements Reversible {
 
   private canvasFocusEventListener: (this: HTMLCanvasElement, ev: FocusEvent) => any;
 
-  protected abstract mouseDownEventListener: (this: Document, ev: MouseEvent) => any;
-  protected abstract mouseUpEventListener: (this: Document, ev: MouseEvent) => any;
-  protected abstract mouseMoveEventListener: (this: Document, ev: MouseEvent) => any;
+  protected abstract mouseDownEventListener: (this: Document, ev: MouseEvent | TouchEvent) => any;
+  protected abstract mouseUpEventListener: (this: Document, ev: MouseEvent | TouchEvent) => any;
+  protected abstract mouseMoveEventListener: (this: Document, ev: MouseEvent | TouchEvent) => any;
 
   constructor(baseLayer: BaseLayer, connection: Connection, state: State) {
     this.baseLayer = baseLayer;
@@ -49,6 +49,10 @@ export default abstract class BaseTools implements Reversible {
     document.addEventListener("mousedown", this.mouseDownEventListener);
     document.addEventListener("mouseup", this.mouseUpEventListener);
     document.addEventListener("mousemove", this.mouseMoveEventListener);
+
+    document.addEventListener("touchstart", this.mouseDownEventListener);
+    document.addEventListener("touchend", this.mouseUpEventListener);
+    document.addEventListener("touchmove", this.mouseMoveEventListener, { passive: false });
   }
 
   removeEvents() {
@@ -56,10 +60,14 @@ export default abstract class BaseTools implements Reversible {
     document.removeEventListener("mousedown", this.mouseDownEventListener);
     document.removeEventListener("mouseup", this.mouseUpEventListener);
     document.removeEventListener("mousemove", this.mouseMoveEventListener);
+
+    document.removeEventListener("touchstart", this.mouseDownEventListener);
+    document.removeEventListener("touchend", this.mouseUpEventListener);
+    document.removeEventListener("touchmove", this.mouseMoveEventListener);
   }
 
 
-  onMouseDown(event: MouseEvent) {
+  onMouseDown(event: MouseEvent | TouchEvent) {
     this.isDrag = true;
     this.mouseAverageSpeed = 0;
     this.mouseLastPosition = this.getMouseCoordinates(event);
@@ -67,7 +75,10 @@ export default abstract class BaseTools implements Reversible {
     this.sendMessageOverConnection();
   }
 
-  onMouseMove(event: MouseEvent) {
+  onMouseMove(event: MouseEvent | TouchEvent) {
+    if (event instanceof TouchEvent && this.isValidMouseEvent(event)) {
+      event.preventDefault();
+    }
     const currentMousePosition = this.getMouseCoordinates(event);
 
     this.mouseAverageSpeed = this.getMouseAverageSpeed(currentMousePosition);
@@ -75,22 +86,36 @@ export default abstract class BaseTools implements Reversible {
     this.sendMessageOverConnection();
   }
 
-  onMouseUp(_event: MouseEvent) {
+  onMouseUp(_event: MouseEvent | TouchEvent) {
     this.isDrag = false;
     this.sendMessageOverConnection();
   }
 
-  isValidMouseEvent(event: MouseEvent): boolean {
+  isValidMouseEvent(event: MouseEvent | TouchEvent): boolean {
     const rect = this.baseLayer.canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+    const [clientX, clientY] = this.getClientCoordinates(event);
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
     return (x >= 0 && x <= this.baseLayer.canvas.width && y >= 0 && y <= this.baseLayer.canvas.height); 
   }
 
-  getMouseCoordinates(event: MouseEvent): [number, number] {
+  getClientCoordinates(event: MouseEvent | TouchEvent): [number, number] {
+    let clientX: number, clientY: number;
+    if (event instanceof TouchEvent) {
+      clientX = event.touches[0].clientX;
+      clientY = event.touches[0].clientY;
+    } else {
+      clientX = event.clientX;
+      clientY = event.clientY;
+    }
+    return [clientX, clientY];
+  }
+
+  getMouseCoordinates(event: MouseEvent | TouchEvent): [number, number] {
     const { x, y } = this.baseLayer.canvas.getBoundingClientRect();
-    const mouseX = Math.round(event.clientX - x);
-    const mouseY = Math.round(event.clientY - y);
+    const [clientX, clientY] = this.getClientCoordinates(event);
+    const mouseX = Math.round(clientX - x);
+    const mouseY = Math.round(clientY - y);
 
     return [mouseX, mouseY];
   }
