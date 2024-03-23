@@ -81,6 +81,9 @@ export default abstract class BaseTools implements Reversible {
     this.mouseAverageSpeed = this.getMouseAverageSpeed(currentMousePosition);
     this.mouseLastPosition = currentMousePosition;
     this.sendMessageOverConnection();
+    if (event instanceof TouchEvent && this.isValidMouseEvent(event)) {
+      event.preventDefault();
+    }
   }
 
   onMouseUp(_event: MouseEvent | TouchEvent) {
