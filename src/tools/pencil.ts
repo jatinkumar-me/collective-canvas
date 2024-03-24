@@ -240,18 +240,23 @@ export default class Pencil extends BaseTools {
   }
 
   setStrokeWidth(): void {
-    if (this.toolAttrib.speedDependenceFactor === 0) {
+    if (this.toolAttrib.speedDependenceFactor === 1) {
       return;
     }
     let curWidth = this.toolAttrib.strokeWidth;
 
-    const min = Math.max(curWidth - 10, 1);
-    const max = Math.min(this.toolAttrib.strokeWidth + 10, 50);
+    const min = 1;
+    const max = 10;
     
-    curWidth = this.mouseAverageSpeed;
+    if (this.toolAttrib.speedDependenceFactor === 0) {
+      curWidth = max - this.mouseAverageSpeed;
+    } else {
+      curWidth = min + this.mouseAverageSpeed;
+    }
+
+    curWidth = clamp(curWidth, min, max);
 
     this.toolAttrib.strokeWidth = curWidth;
-    console.log(this.toolAttrib.strokeWidth);
   }
 
   draw() {
