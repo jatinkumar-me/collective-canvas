@@ -23,7 +23,6 @@ export default abstract class BaseTools implements Reversible {
   mouseLastClickPosition: [number, number];
   mouseLastPosition: [number, number];
   mouseAverageSpeed: number;
-  readonly MAX_AVERAGE_MOUSE_SPEED = 100;
 
   private canvasFocusEventListener: (this: HTMLCanvasElement, ev: FocusEvent) => any;
 
@@ -81,7 +80,7 @@ export default abstract class BaseTools implements Reversible {
     }
     const currentMousePosition = this.getMouseCoordinates(event);
 
-    this.mouseAverageSpeed = this.getMouseAverageSpeed(currentMousePosition);
+    this.setMouseAverageSpeed(currentMousePosition);
     this.mouseLastPosition = currentMousePosition;
     this.sendMessageOverConnection();
   }
@@ -120,15 +119,15 @@ export default abstract class BaseTools implements Reversible {
     return [mouseX, mouseY];
   }
 
-  getMouseAverageSpeed([mouseX, mouseY]: [number, number]): number {
+  protected setMouseAverageSpeed([mouseX, mouseY]: [number, number]) {
     if (this.isDrag == false) return 0;
 
-    const movementX = Math.round(Math.abs(mouseX - this.mouseLastPosition[0]));
-    const movementY = Math.round(Math.abs(mouseY - this.mouseLastPosition[1]));
+    const movementX = Math.abs(mouseX - this.mouseLastPosition[0]);
+    const movementY = Math.abs(mouseY - this.mouseLastPosition[1]);
 
     const distance = movementX + movementY;
 
-    return Math.min(distance, this.MAX_AVERAGE_MOUSE_SPEED);
+    this.mouseAverageSpeed =  distance;
   }
 
   onCanvasBlur(_event: FocusEvent) {

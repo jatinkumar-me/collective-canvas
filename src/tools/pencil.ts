@@ -13,7 +13,7 @@ const DEFAULT_PENCIL_TOOL_ATTRIBUTES: DefaultToolAttributes<PencilToolAttributes
     strokeStyle: "#000000",
     lineCap: "round",
     strokeWidth: 5,
-    speedDependenceFactor: 0,
+    speedDependenceFactor: 1,
   };
 
 const PENCIL_TOOL_ATTRIBUTE_INPUT: ToolAttributeInputParam<PencilToolAttributes> =
@@ -140,6 +140,13 @@ class PencilToolAttributes extends ToolAttributes {
   setStrokeWidth(e: Event) {
     this.strokeWidth = parseInt((e.target as HTMLInputElement).value);
   }
+
+  /**
+   * Returns the assigned value of the input range.
+   */
+  getStrokWidth(): number {
+    return parseInt(this.strokeWidthInput.value);
+  }
 }
 
 
@@ -187,6 +194,7 @@ export default class Pencil extends BaseTools {
     if (!this.isDrag) {
       return;
     }
+    this.setStrokeWidth();
     this.draw();
     this.recordCommand();
   }
@@ -207,27 +215,23 @@ export default class Pencil extends BaseTools {
     this.state.do(this.curAction);
   }
 
-  getStrokeWidth(): number {
+  setStrokeWidth(): void {
     if (this.toolAttrib.speedDependenceFactor === 0) {
-      this.toolAttrib.strokeWidth = Math.min(
-        this.MAX_STROKE_WIDTH,
-        this.toolAttrib.strokeWidth
-      );
-      return this.toolAttrib.strokeWidth;
+      return;
     }
+    let curWidth = this.toolAttrib.strokeWidth;
 
-    const temp =
-      this.toolAttrib.speedDependenceFactor > 0
-        ? this.mouseAverageSpeed * this.toolAttrib.speedDependenceFactor
-        : this.MAX_STROKE_WIDTH +
-          this.mouseAverageSpeed * this.toolAttrib.speedDependenceFactor;
+    const min = Math.max(curWidth - 10, 1);
+    const max = Math.min(this.toolAttrib.strokeWidth + 10, 50);
+    
+    curWidth = this.mouseAverageSpeed;
 
-    this.toolAttrib.strokeWidth = Math.min(this.MAX_STROKE_WIDTH, temp);
-    return this.toolAttrib.strokeWidth;
+    this.toolAttrib.strokeWidth = curWidth;
+    console.log(this.toolAttrib.strokeWidth);
   }
 
   draw() {
-    this.ctx.lineWidth = this.getStrokeWidth();
+    this.ctx.lineWidth = this.toolAttrib.strokeWidth;
     this.ctx.lineCap = this.toolAttrib.lineCap;
     this.ctx.strokeStyle = this.toolAttrib.strokeStyle;
     if (!this.previousMousePosition) {
