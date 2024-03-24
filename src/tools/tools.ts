@@ -23,6 +23,8 @@ export default abstract class BaseTools implements Reversible {
   isTouch: boolean;
   mouseLastClickPosition: [number, number];
   mouseLastPosition: [number, number];
+
+  shouldRecordSpeed: boolean;
   mouseAverageSpeed: number;
   readonly MOUSE_AVERAGE_SPEED_SAMPLE_SIZE: number;
   mouseSpeedSample: DoublyLinkedList;
