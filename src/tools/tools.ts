@@ -1,6 +1,7 @@
 import State, { Reversible } from "../actions/state";
 import BaseLayer from "../components/Layer";
 import { Connection, UserCommand } from "../modules/network";
+import DoublyLinkedList from "../utils/linkedList";
 import ToolAttributes, { DefaultToolAttributes } from "./toolAttributes";
 import { ToolName } from "./toolManager";
 
@@ -23,6 +24,10 @@ export default abstract class BaseTools implements Reversible {
   mouseLastClickPosition: [number, number];
   mouseLastPosition: [number, number];
   mouseAverageSpeed: number;
+  readonly MOUSE_AVERAGE_SPEED_SAMPLE_SIZE: number;
+  mouseSpeedSample: DoublyLinkedList;
+  mouseSpeedSum: number;
+
 
   private canvasFocusEventListener: (this: HTMLCanvasElement, ev: FocusEvent) => any;
 
@@ -39,6 +44,10 @@ export default abstract class BaseTools implements Reversible {
     this.mouseLastClickPosition = [0, 0];
     this.mouseLastPosition = [0, 0];
     this.mouseAverageSpeed = 0;
+    this.MOUSE_AVERAGE_SPEED_SAMPLE_SIZE = 10;
+    this.mouseSpeedSample = new DoublyLinkedList();
+    this.mouseSpeedSum = 0;
+    this.shouldRecordSpeed = false;
 
     this.canvasFocusEventListener = this.onCanvasBlur.bind(this);
   }
@@ -71,6 +80,7 @@ export default abstract class BaseTools implements Reversible {
     this.mouseAverageSpeed = 0;
     this.mouseLastPosition = this.getMouseCoordinates(event);
     this.mouseLastClickPosition = this.mouseLastPosition;
+    this.resetAverageSpeed();
     this.sendMessageOverConnection();
   }
 
@@ -80,14 +90,27 @@ export default abstract class BaseTools implements Reversible {
     }
     const currentMousePosition = this.getMouseCoordinates(event);
 
-    this.setMouseAverageSpeed(currentMousePosition);
+    if (this.shouldRecordSpeed) {
+      this.setMouseAverageSpeed(currentMousePosition);
+    }
+
     this.mouseLastPosition = currentMousePosition;
     this.sendMessageOverConnection();
   }
 
   onMouseUp(_event: MouseEvent | TouchEvent) {
     this.isDrag = false;
+    this.resetAverageSpeed();
     this.sendMessageOverConnection();
+  }
+
+  private resetAverageSpeed() {
+    if (!this.shouldRecordSpeed) {
+      return;
+    }
+    this.mouseSpeedSample.clear();
+    this.mouseAverageSpeed = 0;
+    this.mouseSpeedSum = 0;
   }
 
   isValidMouseEvent(event: MouseEvent | TouchEvent): boolean {
@@ -95,7 +118,7 @@ export default abstract class BaseTools implements Reversible {
     const [clientX, clientY] = this.getClientCoordinates(event);
     const x = clientX - rect.left;
     const y = clientY - rect.top;
-    return (x >= 0 && x <= this.baseLayer.canvas.width && y >= 0 && y <= this.baseLayer.canvas.height); 
+    return (x >= 0 && x <= this.baseLayer.canvas.width && y >= 0 && y <= this.baseLayer.canvas.height);
   }
 
   getClientCoordinates(event: MouseEvent | TouchEvent): [number, number] {
@@ -120,14 +143,26 @@ export default abstract class BaseTools implements Reversible {
   }
 
   protected setMouseAverageSpeed([mouseX, mouseY]: [number, number]) {
-    if (this.isDrag == false) return 0;
+    if (!this.isDrag) {
+      return;
+    }
 
     const movementX = Math.abs(mouseX - this.mouseLastPosition[0]);
     const movementY = Math.abs(mouseY - this.mouseLastPosition[1]);
 
     const distance = movementX + movementY;
 
-    this.mouseAverageSpeed =  distance;
+    this.mouseSpeedSum += distance;
+    this.mouseSpeedSample.append(distance);
+
+    if (this.mouseSpeedSample.length > this.MOUSE_AVERAGE_SPEED_SAMPLE_SIZE) {
+      const head = this.mouseSpeedSample.removeHead();
+      if (head) {
+        this.mouseSpeedSum -= head;
+      }
+    }
+
+    this.mouseAverageSpeed = this.mouseSpeedSum / this.mouseSpeedSample.length;
   }
 
   onCanvasBlur(_event: FocusEvent) {
