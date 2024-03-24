@@ -201,6 +201,7 @@ export default class Pencil extends BaseTools {
     this.mouseDownEventListener = this.mouseDown.bind(this);
     this.mouseUpEventListener = this.mouseUp.bind(this);
     this.mouseMoveEventListener = this.mouseMove.bind(this);
+    this.shouldRecordSpeed = false;
 
     this.events();
     this.curAction = {
@@ -221,6 +222,7 @@ export default class Pencil extends BaseTools {
   }
 
   mouseDown(event: MouseEvent | TouchEvent): void {
+    this.shouldRecordSpeed = true;
     if (!this.isValidMouseEvent(event)) {
       return;
     }
@@ -232,6 +234,7 @@ export default class Pencil extends BaseTools {
   }
 
   mouseUp(event: MouseEvent | TouchEvent): void {
+    this.shouldRecordSpeed = false;
     super.onMouseUp(event);
     this.state.do(this.curAction);
   }
