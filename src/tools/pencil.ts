@@ -36,6 +36,14 @@ const PENCIL_TOOL_ATTRIBUTE_INPUT: ToolAttributeInputParam<PencilToolAttributes>
       min: 1,
       max: 50,
     },
+    speedDependenceFactor: {
+      type: 'range',
+      label: 'Speed dependence',
+      default: DEFAULT_PENCIL_TOOL_ATTRIBUTES.speedDependenceFactor,
+      min: 0,
+      max: 2,
+      step: 1,
+    }
   };
 
 const PENCIL_TOOL_INFO = `Basic pencil tool implementation.<br>
@@ -51,6 +59,7 @@ class PencilToolAttributes extends ToolAttributes {
   private strokeStyleInput: HTMLInputElement;
   private strokeWidthInput: HTMLInputElement;
   private linecapInput: HTMLInputElement;
+  private speedDependenceFactorInput: HTMLInputElement;
 
   private canvasContainer: HTMLDivElement;
 
@@ -60,6 +69,7 @@ class PencilToolAttributes extends ToolAttributes {
   private strokeStyleChangeListener: EventListener;
   private lineCapChangeListener: EventListener;
   private strokeWidthChangeListener: EventListener;
+  private speedDependenceChangeListener: EventListener;
   private wheelEventListener: (this: HTMLDivElement, ev: WheelEvent) => any;
 
 
@@ -85,11 +95,16 @@ class PencilToolAttributes extends ToolAttributes {
       "strokeWidth"
     ) as HTMLInputElement;
 
+    this.speedDependenceFactorInput = document.getElementById(
+      "speedDependenceFactor",
+    ) as HTMLInputElement;
+
     this.canvasContainer = document.getElementById('canvas-container') as HTMLDivElement;
 
     this.strokeStyleChangeListener = this.setStrokeStyleInput.bind(this);
     this.lineCapChangeListener = this.setLineCap.bind(this);
     this.strokeWidthChangeListener = this.setStrokeWidth.bind(this);
+    this.speedDependenceChangeListener = this.setSpeedDependenceFactor.bind(this);
     this.wheelEventListener = this.onWheel.bind(this);
 
     this.events();
@@ -108,6 +123,7 @@ class PencilToolAttributes extends ToolAttributes {
     this.strokeStyleInput.addEventListener("change", this.strokeStyleChangeListener);
     this.linecapInput.addEventListener("change", this.lineCapChangeListener);
     this.strokeWidthInput.addEventListener("change", this.strokeWidthChangeListener);
+    this.speedDependenceFactorInput.addEventListener("change", this.speedDependenceChangeListener);
     this.canvasContainer.addEventListener("wheel", this.wheelEventListener, {
       passive: false,
     });
@@ -117,6 +133,7 @@ class PencilToolAttributes extends ToolAttributes {
     this.strokeStyleInput.removeEventListener("change", this.strokeStyleChangeListener);
     this.linecapInput.removeEventListener("change", this.lineCapChangeListener);
     this.strokeWidthInput.removeEventListener("change", this.strokeWidthChangeListener);
+    this.speedDependenceFactorInput.removeEventListener("change", this.speedDependenceChangeListener);
     this.canvasContainer.removeEventListener("wheel", this.wheelEventListener);
   }
 
@@ -139,6 +156,10 @@ class PencilToolAttributes extends ToolAttributes {
 
   setStrokeWidth(e: Event) {
     this.strokeWidth = parseInt((e.target as HTMLInputElement).value);
+  }
+
+  setSpeedDependenceFactor(e: Event) {
+    this.speedDependenceFactor = parseInt((e.target as HTMLInputElement).value);
   }
 
   /**
