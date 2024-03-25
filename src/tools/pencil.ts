@@ -251,7 +251,7 @@ export default class Pencil extends BaseTools {
     if (this.toolAttrib.speedDependenceFactor === 0) {
       curWidth = max - this.mouseAverageSpeed;
     } else {
-      curWidth = min + this.mouseAverageSpeed;
+      curWidth = this.mouseAverageSpeed;
     }
 
     curWidth = clamp(curWidth, min, max);
