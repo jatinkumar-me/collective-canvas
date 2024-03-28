@@ -2,6 +2,7 @@ import BaseLayer from "../components/Layer";
 import { UserCommand } from "../modules/network";
 import Ellipse from "../tools/ellipse";
 import Fill from "../tools/fill";
+import ImageTool from "../tools/image";
 import Line from "../tools/line";
 import Pencil from "../tools/pencil";
 import Rectangle from "../tools/rectangle";
@@ -92,6 +93,7 @@ export default class State {
       alert("Already the last change");
       return;
     }
+    console.log(this.actions)
     const lastAction = this.actions.pop();
     if (!lastAction) {
       return;
@@ -172,6 +174,15 @@ export default class State {
         }
         Text.drawText(this.baseLayer.ctx, [command.clickX, command.clickY], command.toolAttributes)
         break;
+      }
+      case ToolName.IMAGE: {
+        const command = action.commands[0];
+        if (!command.clickX || !command.clickY) {
+          break;
+        }
+        ImageTool.drawImage(this.baseLayer.ctx, [command.clickX, command.clickY], [command.x, command.y], command.toolAttributes)
+        break;
+
       }
       case ToolName.CLEAR: {
         this.baseLayer.clearCanvas();
