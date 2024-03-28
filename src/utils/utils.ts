@@ -38,6 +38,27 @@ export function getSquareDimensions(
   return [width, height];
 }
 
+/**
+ * function to get the aspect ratio preserved dimensions of a rectangle
+ * @param width
+ * @param height
+ * @param aspectRatio - width/height
+ * @returns [newWidth, newHeight]
+ */
+export function getPreservedDimension(
+  width: number,
+  height: number,
+  aspectRatio: number
+): [number, number] {
+  const signX = Math.sign(width);
+  const signY = Math.sign(height);
+  const absWidth = Math.abs(width);
+  const absHeight = Math.abs(height);
+  const maxDimension = Math.max(absWidth, absHeight);
+  width = signX * maxDimension * aspectRatio;
+  height = signY * maxDimension;
+  return [width, height];
+}
 
 /**
  * function to get the circle dimensions of the ellipse

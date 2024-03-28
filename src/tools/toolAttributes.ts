@@ -36,6 +36,10 @@ export type ToolAttributeInput = {
   label: string,
   placeholder: string,
   default: string,
+} | {
+  type: 'image',
+  label: string,
+  default: string,
 }
 
 export type ToolAttributeInputParam<T extends ToolAttributes> = Partial<
@@ -115,6 +119,13 @@ export default abstract class ToolAttributes {
                           <div><label for="${key}">${field.label} </label></div>
                           <textarea id="${key}" rows="${3}" required placeholder="${field.placeholder}" autofocus></textarea>
                         </div>`
+          break;
+        case "image":
+          fieldMarkup = `<div>
+                          <label for="${key}">${field.label}</label>
+                          <input type="file" id="${key}" accept="image/*">
+                        </div `
+          break;
       }
 
       inputMarkup += fieldMarkup;
@@ -147,5 +158,5 @@ export default abstract class ToolAttributes {
 
   abstract events(): void;
   abstract removeEvents(): void;
-  abstract getAttributes(): DefaultToolAttributes<any>;
+  abstract getAttributes(draw?: boolean): DefaultToolAttributes<any>;
 }

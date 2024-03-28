@@ -236,7 +236,9 @@ export default class Pencil extends BaseTools {
   mouseUp(event: MouseEvent | TouchEvent): void {
     this.shouldRecordSpeed = false;
     super.onMouseUp(event);
-    this.state.do(this.curAction);
+    if (this.curAction.commands.length > 0) {
+      this.state.do(this.curAction);
+    }
   }
 
   setStrokeWidth(): void {

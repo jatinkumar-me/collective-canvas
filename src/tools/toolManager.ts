@@ -3,6 +3,7 @@ import BaseLayer from "../components/Layer";
 import { Connection } from "../modules/network";
 import Ellipse from "./ellipse";
 import Fill from "./fill";
+import ImageTool from "./image";
 import Line from "./line";
 import Pencil from "./pencil";
 import Rectangle from "./rectangle";
@@ -17,6 +18,7 @@ export enum ToolName {
   ELLIPSE = 'ellipse',
   FILL = 'fill',
   TEXT = 'text',
+  IMAGE = 'image',
   CLEAR = 'clear',
 }
 
@@ -93,6 +95,8 @@ export default class ToolManager {
         return new Fill(this.baseLayer, this.connection, this.state);
       case ToolName.TEXT:
         return new Text(this.baseLayer, this.connection, this.state);
+      case ToolName.IMAGE:
+        return new ImageTool(this.baseLayer, this.connection, this.state);
       default:
         return null;
     }
