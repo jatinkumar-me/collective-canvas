@@ -177,7 +177,7 @@ export default abstract class BaseTools implements Reversible {
       y: this.mouseLastPosition[1],
       isDrag: this.isDrag,
       toolName: this.toolName,
-      toolAttributes: this.toolAttrib.getAttributes(),
+      toolAttributes: this.toolAttrib.getAttributes(draw),
       draw: draw,
       clickX: this.mouseLastClickPosition[0],
       clickY: this.mouseLastClickPosition[1],

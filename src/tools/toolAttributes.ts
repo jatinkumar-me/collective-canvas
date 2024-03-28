@@ -158,5 +158,5 @@ export default abstract class ToolAttributes {
 
   abstract events(): void;
   abstract removeEvents(): void;
-  abstract getAttributes(): DefaultToolAttributes<any>;
+  abstract getAttributes(draw?: boolean): DefaultToolAttributes<any>;
 }
