@@ -1,6 +1,6 @@
 import State from "../actions/state";
 import BaseLayer from "../components/Layer";
-import { Connection, UserCommand } from "../modules/network";
+import { Connection } from "../modules/network";
 import { TextToolAttributes } from "./text";
 
 import ToolAttributes, {
@@ -193,7 +193,7 @@ export abstract class ShapeToolAttributes extends ToolAttributes {
  */
 export default abstract class Shape extends BaseTools {
   toolName: ToolName;
-  abstract toolAttrib: ShapeToolAttributes;
+  abstract toolAttrib: ToolAttributes;
 
   mouseDownEventListener: (this: Document, ev: MouseEvent | TouchEvent) => any;
   mouseUpEventListener: (this: Document, ev: MouseEvent | TouchEvent) => any;
@@ -265,31 +265,15 @@ export default abstract class Shape extends BaseTools {
     if (!this.connection?.isConnected()) {
       return;
     }
-    const userCommand: UserCommand<ShapeToolAttributes> = {
-      clickX: this.mouseLastClickPosition[0],
-      clickY: this.mouseLastClickPosition[1],
-      draw: this.shouldDraw,
-      x: this.mouseLastPosition[0],
-      y: this.mouseLastPosition[1],
-      isDrag: this.isDrag,
-      toolName: this.toolName,
-      toolAttributes: this.toolAttrib.getAttributes(),
-    }
+    const userCommand = this.getCommand(this.shouldDraw);
     this.connection.sendUserCommand(userCommand);
   }
 
   recordCommand() {
+    const command = this.getCommand(this.shouldDraw);
     this.state.do({
       toolName: this.toolName,
-      commands: [{
-        toolName: this.toolName,
-        toolAttributes: this.toolAttrib.getAttributes(),
-        isDrag: false,
-        x: this.mouseLastPosition[0],
-        y: this.mouseLastPosition[1],
-        clickX: this.mouseLastClickPosition[0],
-        clickY: this.mouseLastClickPosition[1],
-      }]
+      commands: [command]
     })
   }
 }
