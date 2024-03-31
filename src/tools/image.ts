@@ -78,6 +78,14 @@ export class ImageToolAttributes extends ToolAttributes {
       console.error("No image uploaded")
       return;
     }
+    if (!fileList[0].type.startsWith('image')) {
+      alert('Only images are acceptable');
+      return;
+    }
+    if (fileList[0].size > 1<<20) {
+      alert('Image too big, must be lest than 1MB');
+      return;
+    }
     const reader = new FileReader();
 
     reader.onload = (event) => {
