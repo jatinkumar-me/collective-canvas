@@ -100,8 +100,8 @@ export class ImageToolAttributes extends ToolAttributes {
   getAttributes(draw: boolean): DefaultToolAttributes<any> {
     let imgSrc;
     if (draw && this.imageData) {
-      imgSrc = this.imageData;
-      // imgSrc = btoa(this.imageData.src); //TODO: Made it send binary imageData.
+      // imgSrc = this.imageData.src;
+      imgSrc = btoa(this.imageData.src); //TODO: Made it send binary imageData.
     }
     return {
       imageData: imgSrc ?? new Image(),
