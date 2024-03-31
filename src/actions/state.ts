@@ -59,7 +59,14 @@ export default class State {
     const { actions, redoActions } = JSON.parse(stateString) as StaticState;
     this.actions = actions;
     this.redoActions = redoActions;
-    this.drawAllActions();
+    try {
+      this.drawAllActions();
+    } catch {
+      console.warn("Invalid data in state, removing all state actions");
+      this.actions = [];
+      this.redoActions = [];
+      this.drawAllActions();
+    }
   }
 
   initBaseLayerState() {
