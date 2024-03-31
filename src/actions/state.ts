@@ -42,6 +42,31 @@ export default class State {
     this.baseLayer = baseLayer;
 
     this.initBaseLayerState();
+    this.retrieveState();
+  }
+
+  saveState() {
+    const stateString = JSON.stringify({ actions: this.actions, redoActions: this.redoActions });
+    localStorage.setItem('state', stateString);
+  }
+
+  retrieveState() {
+    const stateString = localStorage.getItem('state');
+    if (!stateString) {
+      return;
+    }
+    type StaticState = { actions: Action<any>[], redoActions: Action<any>[] }
+    const { actions, redoActions } = JSON.parse(stateString) as StaticState;
+    this.actions = actions;
+    this.redoActions = redoActions;
+    try {
+      this.drawAllActions();
+    } catch {
+      console.warn("Invalid data in state, removing all state actions");
+      this.actions = [];
+      this.redoActions = [];
+      this.drawAllActions();
+    }
   }
 
   initBaseLayerState() {
@@ -66,6 +91,7 @@ export default class State {
   resetState() {
     this.actions = [];
     this.redoActions = [];
+    localStorage.removeItem('state');
   }
 
   onCanvasClearAction() {
@@ -85,6 +111,7 @@ export default class State {
 
   do(action: Action<any>) {
     this.actions.push(action);
+    this.saveState();
   }
 
   undo() {

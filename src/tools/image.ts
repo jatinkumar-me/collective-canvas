@@ -78,6 +78,14 @@ export class ImageToolAttributes extends ToolAttributes {
       console.error("No image uploaded")
       return;
     }
+    if (!fileList[0].type.startsWith('image')) {
+      alert('Only images are acceptable');
+      return;
+    }
+    if (fileList[0].size > 1<<20) {
+      alert('Image too big, must be lest than 1MB');
+      return;
+    }
     const reader = new FileReader();
 
     reader.onload = (event) => {
@@ -100,8 +108,8 @@ export class ImageToolAttributes extends ToolAttributes {
   getAttributes(draw: boolean): DefaultToolAttributes<any> {
     let imgSrc;
     if (draw && this.imageData) {
-      imgSrc = this.imageData;
-      // imgSrc = btoa(this.imageData.src); //TODO: Made it send binary imageData.
+      // imgSrc = this.imageData.src;
+      imgSrc = btoa(this.imageData.src); //TODO: Made it send binary imageData.
     }
     return {
       imageData: imgSrc ?? new Image(),
@@ -142,6 +150,12 @@ export default class ImageTool extends Shape {
       console.warn("Must select an image first");
       return;
     }
+    if (typeof toolAttrib.imageData === 'string') {
+      const imgSrc: string = atob(toolAttrib.imageData);
+      toolAttrib.imageData = new Image();
+      toolAttrib.imageData.src = imgSrc;
+    }
+
     let width = endPoint[0] - startPoint[0];
     let height = endPoint[1] - startPoint[1];
 
