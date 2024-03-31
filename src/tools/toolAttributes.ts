@@ -51,6 +51,7 @@ export default abstract class ToolAttributes {
   toolInfoDiv: HTMLDivElement | null;
   toolAttributesMarkup: string;
   toolInfoMarkup?: string;
+  abstract toolName: string;
 
   constructor(
     defaultAttribs: DefaultToolAttributes<any>,
