@@ -33,6 +33,7 @@ const IMAGE_TOOL_INFO_MARKUP: string = `<b>NOTE:</b> Image tool currently doesn'
 export class ImageToolAttributes extends ToolAttributes {
   imageData?: HTMLImageElement;
   preserveAspectRatio: boolean;
+  toolName: string;
 
   private imageInput: HTMLInputElement;
   private preserveAspectRatioInput: HTMLInputElement;
@@ -57,6 +58,7 @@ export class ImageToolAttributes extends ToolAttributes {
 
     this.imageChangeListener = this.setImage.bind(this);
     this.preserveAspectRatioListener = this.setPreserveAspectRatio.bind(this);
+    this.toolName = 'image'
     this.events();
   }
 

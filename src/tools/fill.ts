@@ -31,6 +31,7 @@ Possible workaround for this is using a better color-matching algorithm, without
 
 class FillToolAttributes extends ToolAttributes {
   fillColor: string;
+  toolName: string;
 
   private fillColorInput: HTMLInputElement;
   private fillColorChangeListener: EventListener;
@@ -44,6 +45,7 @@ class FillToolAttributes extends ToolAttributes {
       "fillColor"
     ) as HTMLInputElement;
     this.fillColorChangeListener = this.setFillColorInput.bind(this);
+    this.toolName = 'fill';
     this.events();
   }
 
@@ -63,6 +65,7 @@ class FillToolAttributes extends ToolAttributes {
 
   setFillColorInput(e: Event) {
     this.fillColor = (e.target as HTMLInputElement).value;
+    this.saveToolAttributes();
   }
 }
 

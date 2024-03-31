@@ -18,8 +18,10 @@ const DEFAULT_ELLIPSE_TOOL_ATTRIBUTES: DefaultToolAttributes<EllipseToolAttribut
 };
 
 export class EllipseToolAttributes extends ShapeToolAttributes {
+  toolName: string;
   constructor(defaultAttribs: DefaultToolAttributes<EllipseToolAttributes>) {
     super(defaultAttribs, 'Circle');
+    this.toolName = 'ellipse'
   }
 }
 
