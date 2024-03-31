@@ -157,6 +157,11 @@ export default abstract class ToolAttributes {
     this.toolBoxDiv = null;
   }
 
+  saveToolAttributes() {
+    const toolAttribString = JSON.stringify(this.getAttributes());
+    localStorage.setItem(this.toolName, toolAttribString);
+  }
+
   abstract events(): void;
   abstract removeEvents(): void;
   abstract getAttributes(draw?: boolean): DefaultToolAttributes<any>;
