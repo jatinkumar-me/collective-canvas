@@ -84,6 +84,7 @@ export default class State {
   resetState() {
     this.actions = [];
     this.redoActions = [];
+    localStorage.removeItem('state');
   }
 
   onCanvasClearAction() {
