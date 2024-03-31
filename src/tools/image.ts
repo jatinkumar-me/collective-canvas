@@ -152,7 +152,6 @@ export default class ImageTool extends Shape {
     }
     if (typeof toolAttrib.imageData === 'string') {
       const imgSrc: string = atob(toolAttrib.imageData);
-      console.log(imgSrc)
       toolAttrib.imageData = new Image();
       toolAttrib.imageData.src = imgSrc;
     }
