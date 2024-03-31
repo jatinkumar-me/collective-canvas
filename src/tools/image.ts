@@ -142,6 +142,13 @@ export default class ImageTool extends Shape {
       console.warn("Must select an image first");
       return;
     }
+    if (typeof toolAttrib.imageData === 'string') {
+      const imgSrc: string = atob(toolAttrib.imageData);
+      console.log(imgSrc)
+      toolAttrib.imageData = new Image();
+      toolAttrib.imageData.src = imgSrc;
+    }
+
     let width = endPoint[0] - startPoint[0];
     let height = endPoint[1] - startPoint[1];
 
