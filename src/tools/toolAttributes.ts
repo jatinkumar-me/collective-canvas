@@ -118,7 +118,7 @@ export default abstract class ToolAttributes {
         case "text-area":
           fieldMarkup = `<div>
                           <div><label for="${key}">${field.label} </label></div>
-                          <textarea id="${key}" rows="${3}" required placeholder="${field.placeholder}" autofocus></textarea>
+                          <textarea id="${key}" rows="${3}" required placeholder="${field.placeholder}" autofocus >${field.default}</textarea>
                         </div>`
           break;
         case "image":
