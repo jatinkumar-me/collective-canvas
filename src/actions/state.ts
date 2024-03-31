@@ -42,10 +42,24 @@ export default class State {
     this.baseLayer = baseLayer;
 
     this.initBaseLayerState();
+    this.retrieveState();
+  }
+
   saveState() {
     const stateString = JSON.stringify({ actions: this.actions, redoActions: this.redoActions });
     localStorage.setItem('state', stateString);
   }
+
+  retrieveState() {
+    const stateString = localStorage.getItem('state');
+    if (!stateString) {
+      return;
+    }
+    type StaticState = { actions: Action<any>[], redoActions: Action<any>[] }
+    const { actions, redoActions } = JSON.parse(stateString) as StaticState;
+    this.actions = actions;
+    this.redoActions = redoActions;
+    this.drawAllActions();
   }
 
   initBaseLayerState() {
