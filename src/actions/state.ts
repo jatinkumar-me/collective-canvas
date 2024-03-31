@@ -42,6 +42,10 @@ export default class State {
     this.baseLayer = baseLayer;
 
     this.initBaseLayerState();
+  saveState() {
+    const stateString = JSON.stringify({ actions: this.actions, redoActions: this.redoActions });
+    localStorage.setItem('state', stateString);
+  }
   }
 
   initBaseLayerState() {
@@ -85,6 +89,7 @@ export default class State {
 
   do(action: Action<any>) {
     this.actions.push(action);
+    this.saveState();
   }
 
   undo() {
