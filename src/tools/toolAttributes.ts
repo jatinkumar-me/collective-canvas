@@ -51,6 +51,7 @@ export default abstract class ToolAttributes {
   toolInfoDiv: HTMLDivElement | null;
   toolAttributesMarkup: string;
   toolInfoMarkup?: string;
+  abstract toolName: string;
 
   constructor(
     defaultAttribs: DefaultToolAttributes<any>,
@@ -117,7 +118,7 @@ export default abstract class ToolAttributes {
         case "text-area":
           fieldMarkup = `<div>
                           <div><label for="${key}">${field.label} </label></div>
-                          <textarea id="${key}" rows="${3}" required placeholder="${field.placeholder}" autofocus></textarea>
+                          <textarea id="${key}" rows="${3}" required placeholder="${field.placeholder}" autofocus >${field.default}</textarea>
                         </div>`
           break;
         case "image":
@@ -154,6 +155,11 @@ export default abstract class ToolAttributes {
       return;
     }
     this.toolBoxDiv = null;
+  }
+
+  saveToolAttributes() {
+    const toolAttribString = JSON.stringify(this.getAttributes());
+    localStorage.setItem(this.toolName, toolAttribString);
   }
 
   abstract events(): void;

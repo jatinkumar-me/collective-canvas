@@ -59,6 +59,7 @@ export class TextToolAttributes extends ShapeToolAttributes {
   align: CanvasTextAlign;
   textContent: string;
   fontSize: number;
+  toolName: string;
 
   private fontInput: HTMLInputElement;
   private alignInput: HTMLInputElement;
@@ -94,6 +95,7 @@ export class TextToolAttributes extends ShapeToolAttributes {
     this.alignInputListener = this.setAlign.bind(this);
     this.textContentInputListener = this.setTextContent.bind(this);
     this.fontSizeInputListener = this.setFontSize.bind(this);
+    this.toolName = 'text';
 
     this.additionalEvents();
   }
@@ -126,15 +128,19 @@ export class TextToolAttributes extends ShapeToolAttributes {
 
   setAlign(e: Event) {
     this.align = (e.target as HTMLInputElement).value as CanvasTextAlign;
+    this.saveToolAttributes();
   }
   setTextContent(e: Event) {
     this.textContent = (e.target as HTMLInputElement).value;
+    this.saveToolAttributes();
   }
   setFontSize(e: Event) {
     this.fontSize = parseInt((e.target as HTMLInputElement).value)
+    this.saveToolAttributes();
   }
   setFont(e: Event) {
     this.font = (e.target as HTMLInputElement).value
+    this.saveToolAttributes();
   }
   focusTextArea() {
     this.textContentInput.focus();

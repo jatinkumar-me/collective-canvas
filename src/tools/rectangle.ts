@@ -18,8 +18,10 @@ const DEFAULT_RECTANGLE_TOOL_ATTRIBUTES: DefaultToolAttributes<RectangleToolAttr
 };
 
 export class RectangleToolAttributes extends ShapeToolAttributes {
+  toolName: string;
   constructor(defaultAttribs: DefaultToolAttributes<RectangleToolAttributes>) {
     super(defaultAttribs, 'Square');
+    this.toolName = 'rectangle'
   }
 }
 

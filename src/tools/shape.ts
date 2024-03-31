@@ -137,20 +137,24 @@ export abstract class ShapeToolAttributes extends ToolAttributes {
 
   setStrokeStyleInput(e: Event) {
     this.strokeStyle = (e.target as HTMLInputElement).value;
+    this.saveToolAttributes();
   }
 
   setIsFilled(e: Event) {
     this.isFilled = (e.target as HTMLInputElement).checked;
+    this.saveToolAttributes();
   }
 
   setFillStyle(e: Event) {
     this.fillStyle = (e.target as HTMLInputElement).value;
     this.isFilled = true;
     this.isFilledInput.checked = true;
+    this.saveToolAttributes();
   }
 
   setStrokeWidth(e: Event) {
     this.strokeWidth = parseInt((e.target as HTMLInputElement).value);
+    this.saveToolAttributes();
   }
 
   setIsSquare(e: Event) {

@@ -7,9 +7,6 @@ import { ToolName } from "./toolManager";
 
 /**
  * @class BaseTools
- * TODO:
- * - Add support for touch devices.
- * - Make the code a lot more cleaner.
  */
 export default abstract class BaseTools implements Reversible {
   baseLayer: BaseLayer;
@@ -184,10 +181,10 @@ export default abstract class BaseTools implements Reversible {
     }
   }
 
-  saveToolAttributes() {
-    const toolAttribString = JSON.stringify(this.toolAttrib.getAttributes());
-    localStorage.setItem(this.toolName, toolAttribString);
-  }
+  // saveToolAttributes() {
+  //   const toolAttribString = JSON.stringify(this.toolAttrib.getAttributes());
+  //   localStorage.setItem(this.toolName, toolAttribString);
+  // }
 
   retrieveToolAttributes(): DefaultToolAttributes<any> | null {
     const toolAttribString = localStorage.getItem(this.toolName);
@@ -200,7 +197,6 @@ export default abstract class BaseTools implements Reversible {
   destroy() {
     this.removeEvents();
     this.toolAttrib.removeEvents();
-    this.saveToolAttributes();
   }
 
   /**
