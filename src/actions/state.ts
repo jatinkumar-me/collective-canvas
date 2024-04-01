@@ -126,6 +126,7 @@ export default class State {
     }
     this.redoActions.push(lastAction);
     this.drawAllActions();
+    this.saveState();
   }
 
   redo() {
@@ -141,6 +142,7 @@ export default class State {
     }
     this.drawAction(lastAction);
     this.actions.push(lastAction);
+    this.saveState();
   }
 
   drawAllActions() {
