@@ -120,13 +120,13 @@ export default class State {
       alert("Already the last change");
       return;
     }
-    console.log(this.actions)
     const lastAction = this.actions.pop();
     if (!lastAction) {
       return;
     }
     this.redoActions.push(lastAction);
     this.drawAllActions();
+    this.saveState();
   }
 
   redo() {
@@ -142,6 +142,7 @@ export default class State {
     }
     this.drawAction(lastAction);
     this.actions.push(lastAction);
+    this.saveState();
   }
 
   drawAllActions() {

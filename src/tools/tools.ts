@@ -94,6 +94,9 @@ export default abstract class BaseTools implements Reversible {
     }
 
     this.mouseLastPosition = currentMousePosition;
+    if (!this.isValidMouseEvent(event) && !this.isDrag) {
+      return;
+    }
     this.sendMessageOverConnection();
   }
 
