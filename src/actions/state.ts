@@ -120,7 +120,6 @@ export default class State {
       alert("Already the last change");
       return;
     }
-    console.log(this.actions)
     const lastAction = this.actions.pop();
     if (!lastAction) {
       return;
